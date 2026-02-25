@@ -1709,7 +1709,7 @@ const ApiService = {
                     awayScore: typeof awayScore === 'number' ? awayScore : undefined,
                 };
             }
-        });
+        }).filter(Boolean);
     },
 
     // BDL 키 없거나 권한 없을 때 → ESPN으로만 fallback (시뮬 없음)
@@ -1957,7 +1957,7 @@ const ApiService = {
                     let matches = await this._fetchLeague(lg, statusFilter);
 
                     // ── 상태 필터 ──
-                    if (statusFilter==='live')     matches = matches.filter(m=>m.status==='live'||m.status==='finished');
+                    if (statusFilter==='live')     matches = matches.filter(m=>m.status==='live');
                     if (statusFilter==='upcoming') matches = matches.filter(m=>m.status==='upcoming');
 
                     // ── 정렬: live → upcoming → finished ──
@@ -2072,7 +2072,8 @@ const StandingsService = {
             const team = entry.team;
             const stats = {};
             (entry.stats || []).forEach(s => { stats[s.name] = s.value; stats[s.abbreviation] = s.value; });
-            const form = (entry.stats?.find?.(s=>s.name==='form')?.value || '').split('').slice(-5);
+            const formValue = entry.stats?.find?.(s=>s.name==='form')?.value;
+            const form = (typeof formValue === 'string' ? formValue : '').split('').slice(-5);
             return {
                 rank: i + 1,
                 name: team?.displayName || team?.name || '',
@@ -2084,7 +2085,7 @@ const StandingsService = {
                 lost:    stats['losses']        ?? stats['L']   ?? 0,
                 gf:      stats['pointsFor']     ?? stats['GF']  ?? 0,
                 ga:      stats['pointsAgainst'] ?? stats['GA']  ?? 0,
-                gd:      stats['pointDifferential'] ?? (stats['GF']-stats['GA']) ?? 0,
+                gd:      stats['pointDifferential'] ?? ((stats['GF'] ?? 0) - (stats['GA'] ?? 0)),
                 pts:     stats['points']        ?? stats['PTS'] ?? 0,
                 form,
             };
@@ -2204,14 +2205,18 @@ const LiveChat = {
     subscribe() {
         if (this.unsubscribe) this.unsubscribe();
         this.unsubscribe = this.db.collection('liveChat')
-            .orderBy('createdAt', 'asc')
-            .limitToLast(80)
+            .orderBy('createdAt', 'desc')
+            .limit(80)
             .onSnapshot(snap => {
+                // desc로 받아서 화면에 asc 순서로 보여주기 위해 역정렬
+                const docs = [];
+                snap.forEach(doc => docs.push(doc));
+                docs.reverse();
                 const msgs = document.getElementById('chatMessages');
                 if (!msgs) return;
                 if (snap.empty) { msgs.innerHTML = '<div class="chat-empty">첫 메시지를 남겨보세요! 💬</div>'; return; }
                 msgs.innerHTML = '';
-                snap.forEach(doc => {
+                docs.forEach(doc => {
                     const d = doc.data();
                     const isSelf = d.nick === this.myNick;
                     const timeStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '';
@@ -2414,7 +2419,8 @@ const app = {
             this.updateTimestamp('liveUpdateTime');
             this.updateLeagueSidebar(data);
         } catch(e) {
-            wrapper.innerHTML = '<p class="empty-state">데이터를 불러올 수 없습니다</p>';
+            this.updateTimestamp('liveUpdateTime');
+            wrapper.innerHTML = `<p class="empty-state">데이터를 불러올 수 없습니다<br><small style="color:var(--text-muted)">잠시 후 새로고침을 시도해보세요</small></p>`;
         }
     },
 
@@ -2427,7 +2433,8 @@ const app = {
             this.renderUpcomingByDate(wrapper, data);
             this.updateTimestamp('upcomingUpdateTime');
         } catch(e) {
-            wrapper.innerHTML = '<p class="empty-state">데이터를 불러올 수 없습니다</p>';
+            this.updateTimestamp('upcomingUpdateTime');
+            wrapper.innerHTML = `<p class="empty-state">데이터를 불러올 수 없습니다<br><small style="color:var(--text-muted)">잠시 후 새로고침을 시도해보세요</small></p>`;
         }
     },
 
@@ -2464,9 +2471,12 @@ const app = {
                 const mo = rx[1].padStart(2,'0');
                 const dy = rx[2].padStart(2,'0');
                 let yr = now.getFullYear();
-                // 이미 지난 달이면 내년
-                if (parseInt(mo) < now.getMonth()+1 ||
-                    (parseInt(mo) === now.getMonth()+1 && parseInt(dy) < now.getDate())) {
+                // 이미 지난 날짜면 내년으로 처리
+                const currentMonth = now.getMonth() + 1;
+                const moInt = parseInt(mo);
+                const dyInt = parseInt(dy);
+                if (moInt < currentMonth ||
+                    (moInt === currentMonth && dyInt < now.getDate())) {
                     yr += 1;
                 }
                 return `${yr}-${mo}-${dy}`;
@@ -2565,9 +2575,23 @@ const app = {
         }
 
         if (totalMatches === 0) {
-            const msg = mode === 'live'
-                ? '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>'
-                : '예정된 경기가 없습니다.';
+            const sport = this.currentSport;
+            let msg;
+            if (mode === 'live') {
+                if (sport === 'esports') {
+                    msg = '현재 진행 중인 이스포츠 경기가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 실시간 이스포츠 데이터를 볼 수 있습니다.</small>';
+                } else if (sport === 'volleyball') {
+                    msg = '현재 진행 중인 배구 경기가 없습니다.<br><small style="color:var(--text-muted)">V리그 시즌 중 실시간 데이터가 제공됩니다.</small>';
+                } else {
+                    msg = '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>';
+                }
+            } else {
+                if (sport === 'esports') {
+                    msg = '예정된 이스포츠 경기 정보가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 경기 일정을 볼 수 있습니다.</small>';
+                } else {
+                    msg = '예정된 경기가 없습니다.<br><small style="color:var(--text-muted)">API 키를 설정하면 더 많은 경기 일정을 볼 수 있습니다.</small>';
+                }
+            }
             wrapper.innerHTML = `<p class="empty-state">${msg}</p>`;
         }
     },
@@ -3334,7 +3358,7 @@ const Community = {
         try {
             await this.db.collection('posts').add({
                 nickname, title, content, category,
-                likes: 0, views: 0, commentCount: 0,
+                likes: 0, views: 0, commentCount: 0, recommends: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('postTitle').value = '';
