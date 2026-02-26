@@ -319,6 +319,50 @@ img { max-width: 100%; height: auto; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
 .section-title { font-size: var(--text-2xl); display: flex; align-items: center; gap: 0.75rem; }
 .live-indicator { width: 12px; height: 12px; background: var(--color-danger); border-radius: 50%; animation: pulse 2s infinite; }
+
+/* ===== 캘린더 위젯 섹션 ===== */
+.calendar-intro {
+    display: flex; align-items: center; gap: var(--space-2);
+    background: linear-gradient(135deg, rgba(244,162,97,0.1) 0%, rgba(42,157,143,0.1) 100%);
+    border: 1px solid rgba(244,162,97,0.2);
+    border-radius: var(--radius-lg); padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm); color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+.calendar-intro i { color: var(--accent-gold); font-size: 1rem; flex-shrink: 0; }
+.calendar-size-bar {
+    display: flex; align-items: center; gap: var(--space-1);
+    margin-bottom: var(--space-3); flex-wrap: wrap;
+}
+.calendar-size-bar span { font-size: var(--text-xs); color: var(--text-muted); margin-right: 4px; }
+.cal-size-btn {
+    padding: 5px 12px; font-size: var(--text-xs); font-weight: 600;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.06); color: var(--text-secondary);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: var(--transition-fast);
+}
+.cal-size-btn:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+.cal-size-btn.active {
+    background: var(--accent-gold); color: #0A1628;
+    border-color: transparent;
+}
+.calendar-frame-wrap {
+    position: relative; border-radius: var(--radius-xl); overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 8px 40px rgba(0,0,0,0.4);
+    background: #0f1923;
+    transition: height 0.35s ease;
+}
+.calendar-frame-wrap iframe {
+    display: block; width: 100%; border: none;
+    transition: height 0.35s ease;
+}
+.calendar-credit {
+    margin-top: var(--space-2); text-align: right;
+    font-size: var(--text-xs); color: var(--text-muted);
+}
+.calendar-credit a { color: var(--accent-teal); }
+.calendar-credit a:hover { color: var(--accent-gold); }
 .section-actions { display: flex; align-items: center; gap: var(--space-3); }
 .update-time { font-size: var(--text-sm); color: var(--text-muted); }
 
@@ -966,6 +1010,7 @@ img { max-width: 100%; height: auto; }
                 <a href="#" class="nav-link active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
+                <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
             </nav>
             <div class="header-actions">
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
@@ -1104,6 +1149,37 @@ img { max-width: 100%; height: auto; }
                 </section>
 
                 
+
+                <!-- 캘린더 위젯 섹션 -->
+                <section class="content-section" id="calendarSection">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-table"></i> 스포츠 캘린더</h2>
+                    </div>
+                    <div class="calendar-intro">
+                        <i class="fas fa-info-circle"></i>
+                        <span>오늘 경기, 라이브 스코어, 예정 일정을 한눈에 확인하세요. 실시간으로 자동 업데이트됩니다.</span>
+                    </div>
+                    <div class="calendar-size-bar">
+                        <span>크기:</span>
+                        <button class="cal-size-btn" data-h="400">소형</button>
+                        <button class="cal-size-btn active" data-h="520">중형</button>
+                        <button class="cal-size-btn" data-h="660">대형</button>
+                        <button class="cal-size-btn" data-h="800">전체</button>
+                    </div>
+                    <div class="calendar-frame-wrap" id="calendarWrap">
+                        <iframe
+                            id="sportbusyFrame"
+                            src="https://www.sportbusy.com/embed"
+                            width="100%"
+                            height="520"
+                            loading="lazy"
+                            title="SportBusy 스포츠 캘린더"
+                        ></iframe>
+                    </div>
+                    <p class="calendar-credit">
+                        스포츠 데이터 제공: <a href="https://www.sportbusy.com" target="_blank" rel="noopener">SportBusy</a>
+                    </p>
+                </section>
 
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
@@ -1283,6 +1359,7 @@ img { max-width: 100%; height: auto; }
     <a href="#" class="mobile-nav-item active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
+    <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
 </nav>
 
 <div class="modal" id="apiModal">
@@ -1709,7 +1786,7 @@ const ApiService = {
                     awayScore: typeof awayScore === 'number' ? awayScore : undefined,
                 };
             }
-        });
+        }).filter(Boolean);
     },
 
     // BDL 키 없거나 권한 없을 때 → ESPN으로만 fallback (시뮬 없음)
@@ -1957,7 +2034,7 @@ const ApiService = {
                     let matches = await this._fetchLeague(lg, statusFilter);
 
                     // ── 상태 필터 ──
-                    if (statusFilter==='live')     matches = matches.filter(m=>m.status==='live'||m.status==='finished');
+                    if (statusFilter==='live')     matches = matches.filter(m=>m.status==='live');
                     if (statusFilter==='upcoming') matches = matches.filter(m=>m.status==='upcoming');
 
                     // ── 정렬: live → upcoming → finished ──
@@ -2072,7 +2149,8 @@ const StandingsService = {
             const team = entry.team;
             const stats = {};
             (entry.stats || []).forEach(s => { stats[s.name] = s.value; stats[s.abbreviation] = s.value; });
-            const form = (entry.stats?.find?.(s=>s.name==='form')?.value || '').split('').slice(-5);
+            const formValue = entry.stats?.find?.(s=>s.name==='form')?.value;
+            const form = (typeof formValue === 'string' ? formValue : '').split('').slice(-5);
             return {
                 rank: i + 1,
                 name: team?.displayName || team?.name || '',
@@ -2084,7 +2162,7 @@ const StandingsService = {
                 lost:    stats['losses']        ?? stats['L']   ?? 0,
                 gf:      stats['pointsFor']     ?? stats['GF']  ?? 0,
                 ga:      stats['pointsAgainst'] ?? stats['GA']  ?? 0,
-                gd:      stats['pointDifferential'] ?? (stats['GF']-stats['GA']) ?? 0,
+                gd:      stats['pointDifferential'] ?? ((stats['GF'] ?? 0) - (stats['GA'] ?? 0)),
                 pts:     stats['points']        ?? stats['PTS'] ?? 0,
                 form,
             };
@@ -2204,14 +2282,18 @@ const LiveChat = {
     subscribe() {
         if (this.unsubscribe) this.unsubscribe();
         this.unsubscribe = this.db.collection('liveChat')
-            .orderBy('createdAt', 'asc')
-            .limitToLast(80)
+            .orderBy('createdAt', 'desc')
+            .limit(80)
             .onSnapshot(snap => {
+                // desc로 받아서 화면에 asc 순서로 보여주기 위해 역정렬
+                const docs = [];
+                snap.forEach(doc => docs.push(doc));
+                docs.reverse();
                 const msgs = document.getElementById('chatMessages');
                 if (!msgs) return;
                 if (snap.empty) { msgs.innerHTML = '<div class="chat-empty">첫 메시지를 남겨보세요! 💬</div>'; return; }
                 msgs.innerHTML = '';
-                snap.forEach(doc => {
+                docs.forEach(doc => {
                     const d = doc.data();
                     const isSelf = d.nick === this.myNick;
                     const timeStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '';
@@ -2414,7 +2496,8 @@ const app = {
             this.updateTimestamp('liveUpdateTime');
             this.updateLeagueSidebar(data);
         } catch(e) {
-            wrapper.innerHTML = '<p class="empty-state">데이터를 불러올 수 없습니다</p>';
+            this.updateTimestamp('liveUpdateTime');
+            wrapper.innerHTML = `<p class="empty-state">데이터를 불러올 수 없습니다<br><small style="color:var(--text-muted)">잠시 후 새로고침을 시도해보세요</small></p>`;
         }
     },
 
@@ -2427,7 +2510,8 @@ const app = {
             this.renderUpcomingByDate(wrapper, data);
             this.updateTimestamp('upcomingUpdateTime');
         } catch(e) {
-            wrapper.innerHTML = '<p class="empty-state">데이터를 불러올 수 없습니다</p>';
+            this.updateTimestamp('upcomingUpdateTime');
+            wrapper.innerHTML = `<p class="empty-state">데이터를 불러올 수 없습니다<br><small style="color:var(--text-muted)">잠시 후 새로고침을 시도해보세요</small></p>`;
         }
     },
 
@@ -2464,9 +2548,12 @@ const app = {
                 const mo = rx[1].padStart(2,'0');
                 const dy = rx[2].padStart(2,'0');
                 let yr = now.getFullYear();
-                // 이미 지난 달이면 내년
-                if (parseInt(mo) < now.getMonth()+1 ||
-                    (parseInt(mo) === now.getMonth()+1 && parseInt(dy) < now.getDate())) {
+                // 이미 지난 날짜면 내년으로 처리
+                const currentMonth = now.getMonth() + 1;
+                const moInt = parseInt(mo);
+                const dyInt = parseInt(dy);
+                if (moInt < currentMonth ||
+                    (moInt === currentMonth && dyInt < now.getDate())) {
                     yr += 1;
                 }
                 return `${yr}-${mo}-${dy}`;
@@ -2565,9 +2652,23 @@ const app = {
         }
 
         if (totalMatches === 0) {
-            const msg = mode === 'live'
-                ? '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>'
-                : '예정된 경기가 없습니다.';
+            const sport = this.currentSport;
+            let msg;
+            if (mode === 'live') {
+                if (sport === 'esports') {
+                    msg = '현재 진행 중인 이스포츠 경기가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 실시간 이스포츠 데이터를 볼 수 있습니다.</small>';
+                } else if (sport === 'volleyball') {
+                    msg = '현재 진행 중인 배구 경기가 없습니다.<br><small style="color:var(--text-muted)">V리그 시즌 중 실시간 데이터가 제공됩니다.</small>';
+                } else {
+                    msg = '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>';
+                }
+            } else {
+                if (sport === 'esports') {
+                    msg = '예정된 이스포츠 경기 정보가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 경기 일정을 볼 수 있습니다.</small>';
+                } else {
+                    msg = '예정된 경기가 없습니다.<br><small style="color:var(--text-muted)">API 키를 설정하면 더 많은 경기 일정을 볼 수 있습니다.</small>';
+                }
+            }
             wrapper.innerHTML = `<p class="empty-state">${msg}</p>`;
         }
     },
@@ -2721,11 +2822,11 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { live:'liveSection', upcoming:'upcomingSection', community:'communitySection' };
+        const sectionMap = { live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection' };
         document.getElementById(sectionMap[view] || 'liveSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='community' || view==='textrelay') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='community' || view==='calendar' || view==='textrelay') ? 'none' : 'flex';
     },
 
     filterSport(sport) {
@@ -2839,6 +2940,17 @@ document.addEventListener('DOMContentLoaded', () => {
         DataCache.clear();
         app.loadAllData();
         window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    // 캘린더 위젯 크기 버튼
+    document.querySelectorAll('.cal-size-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.cal-size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const h = btn.dataset.h;
+            const frame = document.getElementById('sportbusyFrame');
+            if (frame) frame.height = h;
+        });
     });
 });
 
@@ -3334,7 +3446,7 @@ const Community = {
         try {
             await this.db.collection('posts').add({
                 nickname, title, content, category,
-                likes: 0, views: 0, commentCount: 0,
+                likes: 0, views: 0, commentCount: 0, recommends: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('postTitle').value = '';
@@ -3381,15 +3493,17 @@ const Community = {
     }
 };
 
-// switchView에 커뮤니티 연결
+// switchView에 커뮤니티/캘린더 연결
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view) {
     _origSwitchView(view);
     if (view === 'community') {
-        const sectionMap = { live:'liveSection', upcoming:'upcomingSection', odds:'oddsSection', community:'communitySection' };
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
         document.getElementById('communitySection')?.classList.add('active');
         Community.enter();
+    } else if (view === 'calendar') {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('calendarSection')?.classList.add('active');
     }
 };
 
