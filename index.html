@@ -768,25 +768,23 @@ body.view-home .sidebar { display: none !important; }
     border-radius: 999px;
 }
 
-/* ===== 실시간 채팅 패널 ===== */
+/* ===== 실시간 채팅 패널 (사이드바) ===== */
 .live-chat-panel {
-    position: fixed;
-    right: 0; top: 70px; bottom: 0;
-    width: 280px;
-    background: #0d1b2e;
-    border-left: 1px solid rgba(255,255,255,0.08);
+    background: var(--gradient-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    z-index: 800;
-    transition: transform 0.3s ease;
+    height: 480px;
+    overflow: hidden;
+    margin-bottom: var(--space-3);
 }
-.live-chat-panel.collapsed { transform: translateX(280px); }
 .chat-panel-header {
-    padding: 14px 16px;
+    padding: 10px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-shrink: 0;
 }
 .chat-panel-title {
@@ -887,14 +885,6 @@ body.view-home .sidebar { display: none !important; }
     transition: background 0.15s;
 }
 .chat-open-tab:hover { background: #132043; color: #fff; }
-/* 메인 콘텐츠 오른쪽 패딩 (채팅 패널 공간 확보) */
-.main-content { margin-right: 280px; transition: margin-right 0.3s; }
-.main-content.chat-collapsed { margin-right: 0; }
-@media (max-width: 1200px) {
-    .live-chat-panel { display: none; }
-    .main-content { margin-right: 0 !important; }
-    .chat-open-tab { display: none !important; }
-}
 
 /* ===== 순위표 ===== */
 .standings-section { margin-top: 32px; }
@@ -1142,6 +1132,24 @@ body.view-home .sidebar { display: none !important; }
                     <h3 class="sidebar-title"><i class="fas fa-star"></i> 즐겨찾기</h3>
                     <div class="favorites-list" id="favoritesList"><p class="empty-state">즐겨찾기한 팀이 없습니다</p></div>
                 </div>
+                <!-- 실시간 채팅 패널 -->
+                <div class="live-chat-panel" id="liveChatPanel">
+                    <div class="chat-panel-header">
+                        <span class="chat-live-dot"></span>
+                        <span class="sidebar-title" style="margin:0;font-size:var(--text-sm);">실시간 채팅</span>
+                        <span class="chat-online-count" id="chatOnlineCount" style="margin-left:auto;">0명</span>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-empty">채팅에 참여하세요 💬</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input class="chat-nickname-input" id="chatNickname" placeholder="닉네임" maxlength="10">
+                        <div class="chat-msg-row">
+                            <input class="chat-msg-input" id="chatMsgInput" placeholder="메시지 입력..." maxlength="100">
+                            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
             </aside>
 
             <div class="content-main">
@@ -1374,35 +1382,6 @@ body.view-home .sidebar { display: none !important; }
     </div>
 </main>
 
-<!-- ── 실시간 채팅 패널 ── -->
-<div class="live-chat-panel" id="liveChatPanel">
-    <div class="chat-panel-header">
-        <div class="chat-panel-title">
-            <span class="chat-live-dot"></span>
-            <span>실시간 채팅</span>
-            <span class="chat-online-count" id="chatOnlineCount">0명</span>
-        </div>
-        <button class="chat-toggle-btn" id="chatToggleBtn" title="채팅 접기">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-        <div class="chat-empty">채팅에 참여하세요 💬</div>
-    </div>
-    <div class="chat-input-area">
-        <input class="chat-nickname-input" id="chatNickname" placeholder="닉네임" maxlength="10">
-        <div class="chat-msg-row">
-            <input class="chat-msg-input" id="chatMsgInput" placeholder="메시지 입력..." maxlength="100">
-            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-</div>
-
-<!-- 채팅 열기 탭 (닫혔을 때) -->
-<button class="chat-open-tab" id="chatOpenTab" style="display:none;">
-    <i class="fas fa-comments"></i>
-    <span>채팅</span>
-</button>
 
 <footer class="footer">
     <div class="container">
