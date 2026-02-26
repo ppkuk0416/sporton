@@ -370,6 +370,10 @@ body.view-home .sidebar { display: none !important; }
     margin-bottom: var(--space-3);
 }
 .calendar-intro i { color: var(--accent-gold); font-size: 1rem; flex-shrink: 0; }
+.calendar-unavailable { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 24px; background: var(--gradient-card); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); }
+.calendar-unavailable i { font-size: 2.5rem; color: rgba(255,200,80,0.6); }
+.calendar-unavailable p { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin: 0; }
+.calendar-unavailable span { font-size: var(--text-sm); line-height: 1.6; }
 .calendar-size-bar {
     display: flex; align-items: center; gap: var(--space-1);
     margin-bottom: var(--space-3); flex-wrap: wrap;
@@ -1248,26 +1252,11 @@ body.view-home .sidebar { display: none !important; }
                         <i class="fas fa-info-circle"></i>
                         <span>오늘 경기, 라이브 스코어, 예정 일정을 한눈에 확인하세요. 실시간으로 자동 업데이트됩니다.</span>
                     </div>
-                    <div class="calendar-size-bar">
-                        <span>크기:</span>
-                        <button class="cal-size-btn" data-h="400">소형</button>
-                        <button class="cal-size-btn active" data-h="520">중형</button>
-                        <button class="cal-size-btn" data-h="660">대형</button>
-                        <button class="cal-size-btn" data-h="800">전체</button>
+                    <div class="calendar-unavailable">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>현재 캘린더 서비스를 이용할 수 없습니다.</p>
+                        <span>데이터 제공 서비스(SportBusy)가 일시적으로 중단되어 있습니다.<br>경기 일정은 <strong>예정</strong> 탭에서 확인하세요.</span>
                     </div>
-                    <div class="calendar-frame-wrap" id="calendarWrap">
-                        <iframe
-                            id="sportbusyFrame"
-                            src="https://www.sportbusy.com/embed"
-                            width="100%"
-                            height="520"
-                            loading="lazy"
-                            title="SportBusy 스포츠 캘린더"
-                        ></iframe>
-                    </div>
-                    <p class="calendar-credit">
-                        스포츠 데이터 제공: <a href="https://www.sportbusy.com" target="_blank" rel="noopener">SportBusy</a>
-                    </p>
                 </section>
 
                 <!-- 커뮤니티 섹션 -->
@@ -3005,14 +2994,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({top:0, behavior:'smooth'});
     });
 
-    // 캘린더 위젯 크기 버튼
+    // 캘린더 위젯 크기 버튼 (비활성 - 서비스 중단)
     document.querySelectorAll('.cal-size-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.cal-size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const h = btn.dataset.h;
-            const frame = document.getElementById('sportbusyFrame');
-            if (frame) frame.height = h;
+            // sportbusy 서비스 중단으로 비활성화
         });
     });
 });
