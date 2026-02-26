@@ -317,6 +317,45 @@ img { max-width: 100%; height: auto; }
 .content-section { display: none; }
 .content-section.active { display: block; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+/* ===== 홈 대시보드 ===== */
+body.view-home .hero { display: none !important; }
+body.view-home .sport-tabs { display: none !important; }
+.home-dashboard { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+.home-sports-feed { min-width: 0; }
+.home-feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.home-feed-header h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 8px; margin: 0; }
+.home-feed-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
+.home-live-count { background: rgba(255,59,59,0.15); color: #ff5252; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; display: none; }
+.home-sport-group { margin-bottom: 14px; background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); overflow: hidden; }
+.home-sport-group-header { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; font-weight: 700; color: var(--text-primary); }
+.home-game-row { display: flex; align-items: center; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 10px; transition: background 0.15s; cursor: default; }
+.home-game-row:last-child { border-bottom: none; }
+.home-game-row:hover { background: rgba(255,255,255,0.03); }
+.home-game-row.live-game { background: rgba(255,59,59,0.05); border-left: 2px solid rgba(255,59,59,0.4); }
+.home-game-status { width: 50px; text-align: center; flex-shrink: 0; }
+.live-badge { background: rgba(255,59,59,0.2); color: #ff5252; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; animation: pulse 1.5s infinite; display: inline-block; }
+.finished-badge { font-size: 10px; color: var(--text-muted); }
+.time-text { font-size: 10px; color: var(--text-muted); line-height: 1.3; white-space: nowrap; }
+.home-game-teams { flex: 1; min-width: 0; }
+.home-game-team { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
+.home-game-team.winner { font-weight: 700; color: var(--text-primary); }
+.home-team-logo { width: 15px; height: 15px; object-fit: contain; flex-shrink: 0; }
+.home-team-name { overflow: hidden; text-overflow: ellipsis; }
+.home-game-score { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; text-align: right; min-width: 28px; color: var(--text-primary); line-height: 1.6; flex-shrink: 0; }
+.home-game-league { font-size: 9px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+/* 홈 임베드 채팅 */
+.home-chat-embed { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); display: flex; flex-direction: column; height: calc(100vh - 160px); max-height: 720px; min-height: 480px; position: sticky; top: 76px; overflow: hidden; }
+.home-chat-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.home-chat-online { margin-left: auto; font-size: 10px; background: rgba(0,255,136,0.1); color: #00ff88; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.home-chat-messages { flex: 1; overflow-y: auto; padding: 10px 12px; scroll-behavior: smooth; }
+.home-chat-messages::-webkit-scrollbar { width: 3px; }
+.home-chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+.home-chat-input { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+@media (max-width: 900px) {
+    .home-dashboard { grid-template-columns: 1fr; }
+    .home-chat-embed { position: static; height: 380px; max-height: 380px; min-height: 380px; }
+}
 .section-title { font-size: var(--text-2xl); display: flex; align-items: center; gap: 0.75rem; }
 .live-indicator { width: 12px; height: 12px; background: var(--color-danger); border-radius: 50%; animation: pulse 2s infinite; }
 
@@ -1007,7 +1046,8 @@ img { max-width: 100%; height: auto; }
                 <span>SPORTON</span>
             </div>
             <nav class="nav">
-                <a href="#" class="nav-link active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
+                <a href="#" class="nav-link active" data-view="home"><i class="fas fa-home"></i><span>홈</span></a>
+                <a href="#" class="nav-link" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
                 <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
@@ -1114,7 +1154,47 @@ img { max-width: 100%; height: auto; }
                     <button class="sport-tab" data-sport="esports"><span>🎮</span><span>e스포츠</span></button>
                     <button class="sport-tab" data-sport="volleyball"><span>🏐</span><span>배구</span></button>
                 </div>
-                <section class="content-section active" id="liveSection">
+                <!-- ===== 홈 대시보드 섹션 ===== -->
+                <section class="content-section active" id="homeSection">
+                    <div class="home-dashboard">
+                        <!-- 왼쪽: 오늘의 경기 피드 -->
+                        <div class="home-sports-feed">
+                            <div class="home-feed-header">
+                                <h2><span class="live-indicator"></span> 오늘의 경기</h2>
+                                <div class="home-feed-meta">
+                                    <span class="home-live-count" id="homeLiveCount"></span>
+                                    <span>업데이트: <span id="homeUpdateTime">-</span></span>
+                                    <button class="btn-refresh" id="homeRefreshBtn" title="새로고침"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                            </div>
+                            <div id="homeGamesContainer">
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                            </div>
+                        </div>
+                        <!-- 오른쪽: 임베드 채팅 -->
+                        <div class="home-chat-embed">
+                            <div class="home-chat-header">
+                                <span class="chat-live-dot"></span>
+                                <span>실시간 채팅</span>
+                                <span class="home-chat-online" id="homeChatOnline">0명</span>
+                            </div>
+                            <div class="home-chat-messages" id="homeChatMessages">
+                                <div class="chat-empty">채팅에 참여하세요 💬</div>
+                            </div>
+                            <div class="home-chat-input">
+                                <input class="chat-nickname-input" id="homeChatNick" placeholder="닉네임" maxlength="10" style="margin-bottom:6px;">
+                                <div class="chat-msg-row">
+                                    <input class="chat-msg-input" id="homeChatMsgInput" placeholder="메시지 입력..." maxlength="100">
+                                    <button class="chat-send-btn" id="homeChatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-section" id="liveSection">
                     <div class="section-header">
                         <h2 class="section-title"><span class="live-indicator"></span> 라이브 경기</h2>
                         <div class="section-actions">
@@ -1356,7 +1436,8 @@ img { max-width: 100%; height: auto; }
 </footer>
 
 <nav class="mobile-nav">
-    <a href="#" class="mobile-nav-item active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
+    <a href="#" class="mobile-nav-item active" data-view="home"><i class="fas fa-home"></i><span>홈</span></a>
+    <a href="#" class="mobile-nav-item" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
     <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
@@ -2822,11 +2903,13 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection' };
-        document.getElementById(sectionMap[view] || 'liveSection')?.classList.add('active');
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection' };
+        document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='community' || view==='calendar' || view==='textrelay') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay') ? 'none' : 'flex';
+        // 홈 뷰 body 클래스 (hero 숨기기 등)
+        document.body.classList.toggle('view-home', view === 'home');
     },
 
     filterSport(sport) {
@@ -2932,9 +3015,9 @@ document.addEventListener('DOMContentLoaded', () => {
         app.openApiModal();
     });
 
-    // 로고 클릭 → 홈(라이브) 화면
+    // 로고 클릭 → 홈 화면
     document.getElementById('logoHome')?.addEventListener('click', () => {
-        app.switchView('live');
+        app.switchView('home');
         app.currentSport = 'all';
         document.querySelectorAll('.sport-tab').forEach(t => t.classList.toggle('active', t.dataset.sport==='all'));
         DataCache.clear();
@@ -3493,20 +3576,254 @@ const Community = {
     }
 };
 
-// switchView에 커뮤니티/캘린더 연결
+// ===== 홈 대시보드 =====
+const HomeDashboard = {
+    refreshTimer: null,
+    myNick: '',
+    chatDb: null,
+    chatUnsub: null,
+    initialized: false,
+
+    ESPN_FEEDS: [
+        { id:'nba',            url:'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard',       sport:'농구',   icon:'🏀', league:'NBA' },
+        { id:'nfl',            url:'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard',         sport:'미식축구', icon:'🏈', league:'NFL' },
+        { id:'mlb',            url:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard',         sport:'야구',   icon:'⚾', league:'MLB' },
+        { id:'nhl',            url:'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard',           sport:'하키',   icon:'🏒', league:'NHL' },
+        { id:'eng.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',         sport:'축구',   icon:'⚽', league:'EPL' },
+        { id:'esp.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard',         sport:'축구',   icon:'⚽', league:'라리가' },
+        { id:'ger.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard',         sport:'축구',   icon:'⚽', league:'분데스리가' },
+        { id:'ita.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard',         sport:'축구',   icon:'⚽', league:'세리에A' },
+        { id:'fra.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard',         sport:'축구',   icon:'⚽', league:'리그앙' },
+        { id:'uefa.champions', url:'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard',sport:'축구',   icon:'🏆', league:'챔피언스리그' },
+        { id:'mls',            url:'https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard',         sport:'축구',   icon:'⚽', league:'MLS' },
+    ],
+
+    async init() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.myNick = localStorage.getItem('sportsLive_chatNick') || '';
+        const nickEl = document.getElementById('homeChatNick');
+        if (nickEl && this.myNick) nickEl.value = this.myNick;
+        this.bindEvents();
+        await this.fetchAndRender();
+        this.startAutoRefresh();
+        this.initChat();
+    },
+
+    async fetchAndRender() {
+        const container = document.getElementById('homeGamesContainer');
+        if (!container) return;
+        const results = await Promise.allSettled(
+            this.ESPN_FEEDS.map(feed =>
+                fetch(feed.url, { signal: AbortSignal.timeout(8000) })
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => data ? { ...feed, events: data.events || [] } : null)
+                    .catch(() => null)
+            )
+        );
+        const feeds = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+        this.renderSportsFeed(container, feeds);
+        const timeEl = document.getElementById('homeUpdateTime');
+        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' });
+    },
+
+    renderSportsFeed(container, feeds) {
+        const sportGroups = {};
+        let totalLive = 0;
+
+        feeds.forEach(feed => {
+            if (!feed.events.length) return;
+            if (!sportGroups[feed.sport]) sportGroups[feed.sport] = { icon: feed.icon, sport: feed.sport, games: [] };
+            feed.events.forEach(ev => {
+                const comp = ev.competitions?.[0];
+                const home = comp?.competitors?.find(c => c.homeAway === 'home');
+                const away = comp?.competitors?.find(c => c.homeAway === 'away');
+                if (!home || !away) return;
+                const st = ev.status?.type?.name;
+                let status = 'upcoming', timeStr = '';
+                if (st === 'STATUS_IN_PROGRESS') {
+                    status = 'live'; totalLive++;
+                    const period = ev.status?.period, clock = ev.status?.displayClock;
+                    if (['nba','nhl'].includes(feed.id)) timeStr = `Q${period} ${clock}`;
+                    else if (feed.id === 'mlb') timeStr = `${period}회`;
+                    else timeStr = clock || 'LIVE';
+                } else if (st === 'STATUS_FINAL') {
+                    status = 'finished'; timeStr = '종료';
+                } else {
+                    const d = new Date(ev.date);
+                    timeStr = d.toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Seoul' });
+                }
+                sportGroups[feed.sport].games.push({
+                    homeTeam: home.team?.shortDisplayName || home.team?.displayName || '',
+                    awayTeam: away.team?.shortDisplayName || away.team?.displayName || '',
+                    homeLogo: home.team?.logo || '', awayLogo: away.team?.logo || '',
+                    homeScore: home.score != null ? home.score : null,
+                    awayScore: away.score != null ? away.score : null,
+                    status, timeStr, league: feed.league,
+                });
+            });
+        });
+
+        const countEl = document.getElementById('homeLiveCount');
+        if (countEl) { countEl.textContent = `🔴 LIVE ${totalLive}`; countEl.style.display = totalLive > 0 ? 'inline-block' : 'none'; }
+
+        const sportOrder = ['축구','농구','야구','하키','미식축구'];
+        const sorted = Object.values(sportGroups).sort((a, b) => {
+            const ai = sportOrder.indexOf(a.sport), bi = sportOrder.indexOf(b.sport);
+            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+        });
+
+        if (!sorted.length) {
+            container.innerHTML = '<div class="empty-state" style="padding:40px 20px;text-align:center;opacity:0.5;"><i class="fas fa-moon" style="font-size:2rem;display:block;margin-bottom:10px;"></i>오늘은 예정된 경기가 없습니다</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        sorted.forEach(group => {
+            const games = [...group.games].sort((a, b) => {
+                const o = { live:0, upcoming:1, finished:2 };
+                return (o[a.status] ?? 1) - (o[b.status] ?? 1);
+            });
+            const groupEl = document.createElement('div');
+            groupEl.className = 'home-sport-group';
+            groupEl.innerHTML = `<div class="home-sport-group-header"><span>${group.icon}</span><span>${group.sport}</span><span style="margin-left:auto;font-size:10px;color:var(--text-muted);">${games.length}경기</span></div>`;
+            games.forEach(game => {
+                const isLive = game.status === 'live';
+                const hasScore = game.homeScore != null && game.awayScore != null;
+                const homeWin = hasScore && Number(game.homeScore) > Number(game.awayScore);
+                const awayWin = hasScore && Number(game.awayScore) > Number(game.homeScore);
+                const row = document.createElement('div');
+                row.className = `home-game-row${isLive ? ' live-game' : ''}`;
+                row.innerHTML = `
+                    <div class="home-game-status">
+                        ${isLive ? `<span class="live-badge">LIVE</span><div class="time-text" style="margin-top:2px;">${this._esc(game.timeStr)}</div>` : `<span class="${game.status==='finished'?'finished-badge':'time-text'}">${this._esc(game.timeStr)}</span>`}
+                    </div>
+                    <div class="home-game-teams">
+                        <div class="home-game-team${homeWin?' winner':''}">
+                            ${game.homeLogo?`<img class="home-team-logo" src="${game.homeLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                            <span class="home-team-name">${this._esc(game.homeTeam)}</span>
+                        </div>
+                        <div class="home-game-team${awayWin?' winner':''}">
+                            ${game.awayLogo?`<img class="home-team-logo" src="${game.awayLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                            <span class="home-team-name">${this._esc(game.awayTeam)}</span>
+                        </div>
+                    </div>
+                    ${hasScore ? `<div class="home-game-score">${game.homeScore}<br>${game.awayScore}</div>` : ''}
+                    <div class="home-game-league">${this._esc(game.league)}</div>`;
+                groupEl.appendChild(row);
+            });
+            container.appendChild(groupEl);
+        });
+    },
+
+    startAutoRefresh() {
+        if (this.refreshTimer) clearInterval(this.refreshTimer);
+        this.refreshTimer = setInterval(() => this.fetchAndRender(), 30000);
+    },
+
+    stopAutoRefresh() {
+        if (this.refreshTimer) { clearInterval(this.refreshTimer); this.refreshTimer = null; }
+    },
+
+    initChat() {
+        try { this.chatDb = firebase.apps.length ? firebase.firestore() : null; } catch(e) { this.chatDb = null; }
+        const msgs = document.getElementById('homeChatMessages');
+        if (!this.chatDb) {
+            if (msgs) msgs.innerHTML = '<div class="chat-empty" style="font-size:12px;padding:16px;text-align:center;">Firebase 설정 후 채팅 가능합니다<br><small style="opacity:0.5">상단 API 키 설정에서 Firebase 탭 선택</small></div>';
+            return;
+        }
+        this.subscribeChat();
+        this.trackChatOnline();
+    },
+
+    subscribeChat() {
+        if (this.chatUnsub) this.chatUnsub();
+        this.chatUnsub = this.chatDb.collection('liveChat')
+            .orderBy('createdAt', 'asc').limitToLast(80)
+            .onSnapshot(snap => {
+                const msgs = document.getElementById('homeChatMessages');
+                if (!msgs) return;
+                if (snap.empty) { msgs.innerHTML = '<div class="chat-empty">첫 메시지를 남겨보세요! 💬</div>'; return; }
+                msgs.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data(), isSelf = d.nick === this.myNick;
+                    const t = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) : '';
+                    const item = document.createElement('div');
+                    item.className = `chat-msg-item${isSelf?' self':''}`;
+                    item.innerHTML = `<div class="chat-msg-nick${isSelf?' self':''}">${this._esc(d.nick)}</div><div class="chat-msg-text">${this._esc(d.text)}</div><div class="chat-msg-time">${t}</div>`;
+                    msgs.appendChild(item);
+                });
+                msgs.scrollTop = msgs.scrollHeight;
+            });
+    },
+
+    trackChatOnline() {
+        if (!this.chatDb) return;
+        this.chatDb.collection('chatPresence').onSnapshot(snap => {
+            const now = Date.now(); let count = 0;
+            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
+            const el = document.getElementById('homeChatOnline');
+            if (el) el.textContent = count + '명 접속중';
+        });
+    },
+
+    async sendMsg() {
+        if (!this.chatDb) { alert('Firebase 연결이 필요합니다. API 키 설정에서 Firebase를 설정해주세요.'); return; }
+        const nickEl = document.getElementById('homeChatNick');
+        const msgEl  = document.getElementById('homeChatMsgInput');
+        const nick = (nickEl?.value || '').trim() || '익명';
+        const text = (msgEl?.value || '').trim();
+        if (!text) return;
+        this.myNick = nick;
+        localStorage.setItem('sportsLive_chatNick', nick);
+        // 기존 채팅 패널 닉네임도 동기화
+        const otherNick = document.getElementById('chatNickname');
+        if (otherNick) otherNick.value = nick;
+        msgEl.value = '';
+        try {
+            await this.chatDb.collection('liveChat').add({ nick, text, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } catch(e) { console.error('chat send:', e); }
+    },
+
+    bindEvents() {
+        document.getElementById('homeRefreshBtn')?.addEventListener('click', () => this.fetchAndRender());
+        document.getElementById('homeChatSendBtn')?.addEventListener('click', () => this.sendMsg());
+        document.getElementById('homeChatMsgInput')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMsg(); }
+        });
+        document.getElementById('homeChatNick')?.addEventListener('input', e => {
+            localStorage.setItem('sportsLive_chatNick', e.target.value);
+            this.myNick = e.target.value;
+        });
+    },
+
+    _esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+};
+
+// switchView에 커뮤니티/캘린더/홈 연결
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view) {
     _origSwitchView(view);
-    if (view === 'community') {
+    if (view === 'home') {
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('communitySection')?.classList.add('active');
-        Community.enter();
-    } else if (view === 'calendar') {
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('calendarSection')?.classList.add('active');
+        document.getElementById('homeSection')?.classList.add('active');
+        HomeDashboard.init();
+        HomeDashboard.startAutoRefresh();
+    } else {
+        HomeDashboard.stopAutoRefresh();
+        if (view === 'community') {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('communitySection')?.classList.add('active');
+            Community.enter();
+        } else if (view === 'calendar') {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('calendarSection')?.classList.add('active');
+        }
     }
 };
 
+// 초기 홈 뷰 진입
+app.switchView('home');
 
 Community.init();
 MatchComments.init();
