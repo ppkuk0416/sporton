@@ -374,6 +374,90 @@ body.view-home .sidebar { display: none !important; }
 .calendar-unavailable i { font-size: 2.5rem; color: rgba(255,200,80,0.6); }
 .calendar-unavailable p { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin: 0; }
 .calendar-unavailable span { font-size: var(--text-sm); line-height: 1.6; }
+
+/* ── NBA O/U Calculator ─────────────────────────────── */
+.nbaou-wrap { display: grid; grid-template-columns: 380px 1fr; gap: var(--space-4); align-items: start; }
+@media (max-width: 900px) { .nbaou-wrap { grid-template-columns: 1fr; } }
+
+.nbaou-input-card, .nbaou-result-card, .nbaou-guide {
+    background: var(--gradient-card); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg); padding: var(--space-4); }
+
+/* 입력 카드 */
+.nbaou-field-group { margin-bottom: var(--space-3); }
+.nbaou-label { display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.nbaou-hint { font-weight: 400; color: var(--text-muted); margin-left: 6px; }
+.nbaou-input {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-md); padding: 10px 14px; color: var(--text-primary);
+    font-size: var(--text-base); font-family: var(--font-body); transition: border-color 0.2s; box-sizing: border-box; }
+.nbaou-input:focus { outline: none; border-color: var(--accent-gold); background: rgba(255,255,255,0.09); }
+.nbaou-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+.nbaou-mode-row { display: flex; gap: 8px; }
+.nbaou-mode-btn { flex: 1; padding: 10px 8px; border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-size: var(--text-sm); font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.nbaou-mode-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+.nbaou-mode-btn.active { background: var(--gradient-accent); border-color: transparent; color: white; }
+
+.nbaou-time-toggle { display: flex; gap: 8px; }
+.nbaou-radio-label { flex: 1; cursor: pointer; }
+.nbaou-radio-label input { display: none; }
+.nbaou-radio-btn { display: block; text-align: center; padding: 9px; border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-size: var(--text-sm); font-weight: 600; transition: all 0.2s; }
+.nbaou-radio-label input:checked + .nbaou-radio-btn { background: rgba(42,157,143,0.25); border-color: var(--accent-teal); color: var(--accent-teal); }
+
+.nbaou-time-row { display: flex; align-items: center; gap: 8px; }
+.nbaou-time-input-wrap { position: relative; flex: 1; }
+.nbaou-time-digit { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; }
+.nbaou-time-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: var(--text-xs); color: var(--text-muted); pointer-events: none; }
+.nbaou-colon { font-size: 1.4rem; font-weight: 900; color: var(--text-muted); flex-shrink: 0; }
+
+.nbaou-score-row { display: flex; align-items: center; gap: var(--space-2); }
+.nbaou-score-block { flex: 1; }
+.nbaou-score-label { display: block; font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 4px; text-align: center; }
+.nbaou-score-input { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; }
+.nbaou-vs { font-size: var(--text-sm); font-weight: 900; color: var(--text-muted); flex-shrink: 0; text-align: center; }
+.nbaou-calc-btn { width: 100%; justify-content: center; margin-top: var(--space-1); font-size: var(--text-base); padding: 14px; }
+
+/* 결과 카드 */
+.nbaou-pace-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-4); }
+.nbaou-pace-item { background: rgba(255,255,255,0.04); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; }
+.nbaou-pace-label { display: block; font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 6px; }
+.nbaou-pace-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--text-primary); }
+.nbaou-pace-val.accent { color: var(--accent-gold); }
+
+.nbaou-prob-section { margin-bottom: var(--space-4); }
+.nbaou-prob-bar-wrap { display: flex; margin-bottom: 10px; }
+.nbaou-prob-over-side { flex: 1; display: flex; align-items: baseline; gap: 8px; }
+.nbaou-prob-under-side { flex: 1; display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; }
+.nbaou-prob-pct { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 900; }
+.nbaou-prob-over-side .nbaou-prob-pct { color: #4ade80; }
+.nbaou-prob-under-side .nbaou-prob-pct { color: #f87171; }
+.nbaou-prob-tag { font-size: var(--text-sm); font-weight: 700; color: var(--text-secondary); }
+.nbaou-prob-track { height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.nbaou-prob-fill-over { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 999px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+
+.nbaou-confidence { margin-bottom: var(--space-3); }
+.nbaou-conf-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.nbaou-conf-val { font-size: var(--text-sm); font-weight: 700; color: var(--accent-cyan); }
+.nbaou-conf-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+.nbaou-conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent-teal), var(--accent-cyan)); border-radius: 999px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+.nbaou-conf-desc { font-size: var(--text-xs); color: var(--text-muted); margin: 0; }
+
+.nbaou-detail { background: rgba(255,255,255,0.03); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); }
+.nbaou-detail-title { font-size: var(--text-sm); font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.nbaou-detail-title i { color: var(--accent-gold); }
+.nbaou-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.nbaou-detail-row { display: flex; justify-content: space-between; font-size: var(--text-xs); }
+.nbaou-detail-key { color: var(--text-muted); }
+.nbaou-detail-val { color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; }
+
+/* 초기 안내 */
+.nbaou-guide { text-align: center; }
+.nbaou-guide-icon { font-size: 3rem; color: rgba(244,162,97,0.4); margin-bottom: var(--space-2); display: block; }
+.nbaou-guide-title { font-size: var(--text-lg); font-weight: 700; color: var(--text-secondary); margin-bottom: var(--space-3); }
+.nbaou-guide-list { list-style: none; padding: 0; margin: 0; text-align: left; display: flex; flex-direction: column; gap: 10px; }
+.nbaou-guide-list li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--text-sm); color: var(--text-muted); }
+.nbaou-guide-list i { color: var(--accent-teal); margin-top: 2px; flex-shrink: 0; }
 .calendar-size-bar {
     display: flex; align-items: center; gap: var(--space-1);
     margin-bottom: var(--space-3); flex-wrap: wrap;
@@ -1046,6 +1130,7 @@ body.view-home .sidebar { display: none !important; }
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
                 <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
+                <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
             </nav>
             <div class="header-actions">
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
@@ -1259,6 +1344,170 @@ body.view-home .sidebar { display: none !important; }
                     </div>
                 </section>
 
+                <!-- NBA O/U 계산기 섹션 -->
+                <section class="content-section" id="nbaCalcSection">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-basketball-ball"></i> NBA 오버/언더 계산기</h2>
+                    </div>
+
+                    <div class="nbaou-wrap">
+                        <!-- 입력 패널 -->
+                        <div class="nbaou-input-card">
+
+                            <!-- 모드 선택 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">계산 모드</label>
+                                <div class="nbaou-mode-row">
+                                    <button class="nbaou-mode-btn active" data-mode="1q">
+                                        <i class="fas fa-stopwatch"></i> 1쿼터 기준
+                                    </button>
+                                    <button class="nbaou-mode-btn" data-mode="full">
+                                        <i class="fas fa-layer-group"></i> 전체 경기 기준
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 기준점 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label" for="nbaLine">
+                                    기준점 (O/U Line)
+                                    <span class="nbaou-hint" id="nbaLineHint">예: 59.5 (1쿼터)</span>
+                                </label>
+                                <input class="nbaou-input" id="nbaLine" type="number" step="0.5" min="0" placeholder="59.5">
+                            </div>
+
+                            <!-- 현재 쿼터 (전체 모드만) -->
+                            <div class="nbaou-field-group" id="nbaQuarterRow" style="display:none">
+                                <label class="nbaou-label" for="nbaQuarter">현재 쿼터</label>
+                                <select class="nbaou-input nbaou-select" id="nbaQuarter">
+                                    <option value="1">1쿼터</option>
+                                    <option value="2">2쿼터</option>
+                                    <option value="3">3쿼터</option>
+                                    <option value="4">4쿼터</option>
+                                </select>
+                            </div>
+
+                            <!-- 시간 입력 방식 토글 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">시간 입력 방식</label>
+                                <div class="nbaou-time-toggle">
+                                    <label class="nbaou-radio-label">
+                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="remaining" checked>
+                                        <span class="nbaou-radio-btn">남은 시간</span>
+                                    </label>
+                                    <label class="nbaou-radio-label">
+                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="elapsed">
+                                        <span class="nbaou-radio-btn">경과 시간</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 분:초 입력 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label" id="nbaTimeLabel">남은 시간 (현재 쿼터)</label>
+                                <div class="nbaou-time-row">
+                                    <div class="nbaou-time-input-wrap">
+                                        <input class="nbaou-input nbaou-time-digit" id="nbaMinutes" type="number" min="0" max="11" placeholder="9">
+                                        <span class="nbaou-time-unit">분</span>
+                                    </div>
+                                    <span class="nbaou-colon">:</span>
+                                    <div class="nbaou-time-input-wrap">
+                                        <input class="nbaou-input nbaou-time-digit" id="nbaSeconds" type="number" min="0" max="59" placeholder="33">
+                                        <span class="nbaou-time-unit">초</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 점수 입력 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">현재 점수</label>
+                                <div class="nbaou-score-row">
+                                    <div class="nbaou-score-block">
+                                        <label class="nbaou-score-label">홈팀</label>
+                                        <input class="nbaou-input nbaou-score-input" id="nbaHome" type="number" min="0" placeholder="12">
+                                    </div>
+                                    <div class="nbaou-vs">VS</div>
+                                    <div class="nbaou-score-block">
+                                        <label class="nbaou-score-label">어웨이</label>
+                                        <input class="nbaou-input nbaou-score-input" id="nbaAway" type="number" min="0" placeholder="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary nbaou-calc-btn" id="nbaCalcBtn">
+                                <i class="fas fa-chart-bar"></i> 확률 계산하기
+                            </button>
+                        </div>
+
+                        <!-- 결과 패널 -->
+                        <div class="nbaou-result-card" id="nbaResult" style="display:none">
+
+                            <!-- 현재 페이스 -->
+                            <div class="nbaou-pace-row">
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">현재 총점</span>
+                                    <span class="nbaou-pace-val" id="resCurrentTotal">—</span>
+                                </div>
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">예상 최종 총점</span>
+                                    <span class="nbaou-pace-val accent" id="resProjected">—</span>
+                                </div>
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">기준점 대비</span>
+                                    <span class="nbaou-pace-val" id="resDiff">—</span>
+                                </div>
+                            </div>
+
+                            <!-- 오버/언더 확률 바 -->
+                            <div class="nbaou-prob-section">
+                                <div class="nbaou-prob-bar-wrap">
+                                    <div class="nbaou-prob-over-side" id="resOverBar">
+                                        <span class="nbaou-prob-pct" id="resOverPct">—%</span>
+                                        <span class="nbaou-prob-tag">오버 ▲</span>
+                                    </div>
+                                    <div class="nbaou-prob-under-side" id="resUnderBar">
+                                        <span class="nbaou-prob-tag">언더 ▼</span>
+                                        <span class="nbaou-prob-pct" id="resUnderPct">—%</span>
+                                    </div>
+                                </div>
+                                <div class="nbaou-prob-track">
+                                    <div class="nbaou-prob-fill-over" id="resProbFill" style="width:50%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 신뢰도 -->
+                            <div class="nbaou-confidence">
+                                <div class="nbaou-conf-label-row">
+                                    <span class="nbaou-label">신뢰도</span>
+                                    <span class="nbaou-conf-val" id="resConfidence">—</span>
+                                </div>
+                                <div class="nbaou-conf-track">
+                                    <div class="nbaou-conf-fill" id="resConfFill" style="width:0%"></div>
+                                </div>
+                                <p class="nbaou-conf-desc" id="resConfDesc"></p>
+                            </div>
+
+                            <!-- 상세 계산 근거 -->
+                            <div class="nbaou-detail">
+                                <div class="nbaou-detail-title"><i class="fas fa-info-circle"></i> 계산 근거</div>
+                                <div class="nbaou-detail-grid" id="resDetailGrid"></div>
+                            </div>
+                        </div>
+
+                        <!-- 초기 안내 -->
+                        <div class="nbaou-guide" id="nbaGuide">
+                            <i class="fas fa-basketball-ball nbaou-guide-icon"></i>
+                            <p class="nbaou-guide-title">NBA 오버/언더 확률 계산기</p>
+                            <ul class="nbaou-guide-list">
+                                <li><i class="fas fa-check-circle"></i> 기준점(라인)과 현재 점수를 입력하면 오버/언더 확률을 계산합니다</li>
+                                <li><i class="fas fa-check-circle"></i> 현재 페이스 기반 정규분포로 확률을 산출합니다</li>
+                                <li><i class="fas fa-check-circle"></i> 경기 초반일수록 불확실성이 높아 확률 범위가 넓어집니다</li>
+                                <li><i class="fas fa-check-circle"></i> 1쿼터 12분, 전체 4쿼터 48분 기준으로 계산합니다</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
                     <div class="section-header">
@@ -1410,6 +1659,7 @@ body.view-home .sidebar { display: none !important; }
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
     <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
+    <a href="#" class="mobile-nav-item" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
 </nav>
 
 <div class="modal" id="apiModal">
@@ -2872,11 +3122,11 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection' };
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection', nbacalc:'nbaCalcSection' };
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
     },
@@ -3792,6 +4042,182 @@ app.switchView('home');
 
 Community.init();
 MatchComments.init();
+
+// ──────────────────────────────────────────────
+// NBA Over/Under 계산기
+// ──────────────────────────────────────────────
+const NBACalc = {
+    mode: '1q',       // '1q' | 'full'
+    timeMode: 'remaining', // 'remaining' | 'elapsed'
+
+    // 정규분포 누적함수 (Abramowitz & Stegun 근사)
+    erf(x) {
+        const sign = x < 0 ? -1 : 1;
+        x = Math.abs(x);
+        const t = 1 / (1 + 0.3275911 * x);
+        const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+        return sign * y;
+    },
+    normalCDF(z) {
+        return 0.5 * (1 + this.erf(z / Math.SQRT2));
+    },
+
+    init() {
+        // 모드 버튼
+        document.querySelectorAll('.nbaou-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nbaou-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.mode = btn.dataset.mode;
+                const quarterRow = document.getElementById('nbaQuarterRow');
+                const lineHint   = document.getElementById('nbaLineHint');
+                if (this.mode === 'full') {
+                    quarterRow.style.display = 'flex';
+                    lineHint.textContent = '예: 220.5 (전체 경기)';
+                } else {
+                    quarterRow.style.display = 'none';
+                    lineHint.textContent = '예: 59.5 (1쿼터)';
+                }
+                this.calculate();
+            });
+        });
+
+        // 시간 모드 라디오
+        document.querySelectorAll('.nbaou-time-mode').forEach(radio => {
+            radio.addEventListener('change', () => {
+                this.timeMode = document.querySelector('.nbaou-time-mode:checked').value;
+                const label = document.getElementById('nbaTimeLabel');
+                label.textContent = this.timeMode === 'remaining' ? '남은 시간 (현재 쿼터)' : '경과 시간 (현재 쿼터)';
+                this.calculate();
+            });
+        });
+
+        // 입력값 변경 시 자동 계산
+        ['nbaLine','nbaQuarter','nbaMinutes','nbaSeconds','nbaHome','nbaAway'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.calculate());
+        });
+
+        // 계산 버튼
+        document.getElementById('nbaCalcBtn')?.addEventListener('click', () => this.calculate());
+    },
+
+    calculate() {
+        const line    = parseFloat(document.getElementById('nbaLine').value);
+        const mins    = parseInt(document.getElementById('nbaMinutes').value) || 0;
+        const secs    = parseInt(document.getElementById('nbaSeconds').value) || 0;
+        const home    = parseInt(document.getElementById('nbaHome').value) || 0;
+        const away    = parseInt(document.getElementById('nbaAway').value) || 0;
+        const quarter = parseInt(document.getElementById('nbaQuarter').value) || 1;
+
+        if (isNaN(line) || (mins === 0 && secs === 0) || (home === 0 && away === 0)) {
+            return; // 아직 입력 부족
+        }
+
+        const Q_SEC   = 720;  // 12분 = 720초
+        const GAME_SEC = 2880; // 48분
+        const totalSec = this.mode === '1q' ? Q_SEC : GAME_SEC;
+
+        // 현재 쿼터 내 경과 시간(초)
+        const inputSec = mins * 60 + secs;
+        let elapsedInQ;
+        if (this.timeMode === 'remaining') {
+            elapsedInQ = Q_SEC - Math.min(inputSec, Q_SEC);
+        } else {
+            elapsedInQ = Math.min(inputSec, Q_SEC);
+        }
+
+        // 전체 경과 시간(초)
+        const totalElapsed = this.mode === '1q'
+            ? elapsedInQ
+            : (quarter - 1) * Q_SEC + elapsedInQ;
+
+        if (totalElapsed <= 0) return;
+
+        const currentTotal  = home + away;
+        const rate          = currentTotal / totalElapsed;       // 점/초
+        const projected     = rate * totalSec;                   // 예상 최종 총점
+        const remaining     = totalSec - totalElapsed;
+        const remainFrac    = remaining / totalSec;
+
+        // 불확실성 표준편차 (페이스 기반 정규분포)
+        // 기준 SD: 1쿼터 ≈ 7.5점, 전체 경기 ≈ 15점
+        const baseSD = this.mode === '1q' ? 7.5 : 15.0;
+        const sd     = baseSD * Math.sqrt(remainFrac);
+
+        // 오버/언더 확률
+        let pOver, pUnder;
+        if (sd < 0.01) {
+            // 경기 종료 직전 → 결정적
+            pOver  = projected > line ? 1 : 0;
+            pUnder = projected < line ? 1 : 0;
+        } else {
+            const z = (line - projected) / sd;
+            pOver  = 1 - this.normalCDF(z);
+            pUnder = this.normalCDF(z);
+        }
+
+        // 신뢰도: 경과 시간 비율 (많이 진행될수록 신뢰도 높음)
+        const confidence = (totalElapsed / totalSec) * 100;
+        const confLabel  = confidence < 25 ? '낮음' : confidence < 55 ? '보통' : confidence < 80 ? '높음' : '매우 높음';
+
+        this.renderResult({
+            line, currentTotal, projected, remaining, remainFrac,
+            pOver, pUnder, confidence, confLabel,
+            rate, sd, totalElapsed, totalSec, quarter
+        });
+    },
+
+    renderResult(d) {
+        const resultEl = document.getElementById('nbaResult');
+        const guideEl  = document.getElementById('nbaGuide');
+
+        resultEl.style.display = 'block';
+        guideEl.style.display  = 'none';
+
+        // 현재 페이스
+        document.getElementById('resCurrentTotal').textContent = d.currentTotal + '점';
+        document.getElementById('resProjected').textContent    = d.projected.toFixed(1) + '점';
+
+        const diff = d.projected - d.line;
+        const diffEl = document.getElementById('resDiff');
+        diffEl.textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '점';
+        diffEl.style.color = diff >= 0 ? '#4ade80' : '#f87171';
+
+        // 확률 표시
+        const overPct  = Math.round(d.pOver  * 100);
+        const underPct = Math.round(d.pUnder * 100);
+        document.getElementById('resOverPct').textContent  = overPct + '%';
+        document.getElementById('resUnderPct').textContent = underPct + '%';
+        document.getElementById('resProbFill').style.width = overPct + '%';
+
+        // 신뢰도
+        document.getElementById('resConfidence').textContent = `${Math.round(d.confidence)}% (${d.confLabel})`;
+        document.getElementById('resConfFill').style.width   = d.confidence + '%';
+        const timePlayedMin = Math.floor(d.totalElapsed / 60);
+        const timePlayedSec = Math.floor(d.totalElapsed % 60);
+        const remainMin     = Math.floor(d.remaining / 60);
+        const remainSec     = Math.floor(d.remaining % 60);
+        document.getElementById('resConfDesc').textContent =
+            `경과 ${timePlayedMin}분 ${timePlayedSec}초 | 남은 시간 ${remainMin}분 ${remainSec}초`;
+
+        // 계산 근거 상세
+        const ratePerMin = (d.rate * 60).toFixed(2);
+        const details = [
+            ['득점 페이스', `${ratePerMin}점/분`],
+            ['기준점 (라인)', `${d.line}점`],
+            ['예상 최종 총점', `${d.projected.toFixed(1)}점`],
+            ['표준편차 (SD)', `±${d.sd.toFixed(2)}점`],
+            ['오버 확률', `${(d.pOver * 100).toFixed(1)}%`],
+            ['언더 확률', `${(d.pUnder * 100).toFixed(1)}%`],
+        ];
+        const grid = document.getElementById('resDetailGrid');
+        grid.innerHTML = details.map(([k, v]) =>
+            `<div class="nbaou-detail-row"><span class="nbaou-detail-key">${k}</span><span class="nbaou-detail-val">${v}</span></div>`
+        ).join('');
+    }
+};
+
+NBACalc.init();
 </script>
 </body>
 </html>
