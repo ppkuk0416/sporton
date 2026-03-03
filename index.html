@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="실시간 스포츠 라이브스코어 및 배당률 정보">
-    <title>SPORTON — 실시간 스포츠 데이터의 새로운 기준</title>
+    <title>SPORTON</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,22 +16,22 @@
 
 <style>
 :root {
-    --bg-primary: #0A1628;
-    --bg-secondary: #132043;
-    --bg-card: #1e293b;
-    --bg-hover: #2d3748;
+    --bg-primary: #F0F4F8;
+    --bg-secondary: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-hover: #E8EEF5;
     --accent-gold: #F4A261;
     --accent-teal: #2A9D8F;
-    --accent-cyan: #00D9FF;
+    --accent-cyan: #2563EB;
     --color-success: #06D6A0;
-    --color-warning: #FFD700;
+    --color-warning: #D97706;
     --color-danger: #EF476F;
     --color-info: #118AB2;
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
+    --text-primary: #1A202C;
+    --text-secondary: #4A5568;
+    --text-muted: #718096;
     --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-card: linear-gradient(145deg, #132043 0%, #1a2744 100%);
+    --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     --gradient-accent: linear-gradient(90deg, #F4A261 0%, #E76F51 100%);
     --font-heading: 'Poppins', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -1118,6 +1118,90 @@ body.view-home .sidebar { display: none !important; }
     .toast-container { left: var(--space-2); right: var(--space-2); }
     .toast { min-width: auto; width:100%; }
 }
+
+/* ===== LIGHT THEME OVERRIDES ===== */
+.header { background: rgba(255,255,255,0.92) !important; border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+.header.scrolled { background: rgba(255,255,255,0.98) !important; box-shadow: 0 1px 8px rgba(0,0,0,0.07) !important; }
+.logo span { background: linear-gradient(90deg, #1E293B 0%, #3B82F6 100%) !important; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-link { color: #64748B !important; }
+.nav-link:hover, .nav-link.active { color: #1E293B !important; background: rgba(0,0,0,0.04) !important; }
+.icon-btn { background: rgba(0,0,0,0.04) !important; color: #64748B !important; }
+.icon-btn:hover { background: rgba(0,0,0,0.08) !important; color: #1E293B !important; }
+.api-status { background: rgba(0,0,0,0.04) !important; }
+.sidebar-section { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.07) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important; }
+.sport-chip { background: #F8FAFC !important; color: #475569 !important; }
+.sport-chip:hover { background: #E2E8F0 !important; color: #1E293B !important; }
+.league-item { color: #64748B !important; }
+.league-item:hover { background: rgba(0,0,0,0.04) !important; color: #1E293B !important; }
+.league-item.active { background: rgba(244,162,97,0.12) !important; color: #D97706 !important; }
+.league-group-name { color: #1E293B !important; }
+.league-group-count { color: #94A3B8 !important; background: rgba(0,0,0,0.05) !important; }
+.match-card { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.match-card:hover { background: #F8FAFC !important; border-color: rgba(59,130,246,0.25) !important; }
+.match-time { color: rgba(0,0,0,0.35) !important; }
+.match-status.finished { background: rgba(0,0,0,0.05) !important; color: #94A3B8 !important; }
+.team-name { color: #1E293B !important; }
+.team-score { color: #1E293B !important; }
+.match-league { color: #64748B !important; }
+.sport-tab { background: #F8FAFC !important; color: #475569 !important; border-color: rgba(0,0,0,0.07) !important; }
+.sport-tab:hover { background: #E2E8F0 !important; color: #1E293B !important; }
+.sport-tab.active { background: var(--gradient-accent) !important; color: #fff !important; border-color: transparent !important; }
+.form-card { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.form-input, .form-textarea, .form-select { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
+.form-input:focus, .form-textarea:focus { border-color: var(--accent-gold) !important; }
+.form-label { color: #475569 !important; }
+.category-chip { background: #F8FAFC !important; color: #475569 !important; }
+.category-chip:hover { background: #E2E8F0 !important; color: #1E293B !important; }
+.post-item { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.post-item:hover { border-color: rgba(244,162,97,0.3) !important; }
+.post-title { color: #1E293B !important; }
+.post-meta { color: #94A3B8 !important; }
+.mobile-nav { background: rgba(255,255,255,0.97) !important; border-top: 1px solid rgba(0,0,0,0.08) !important; }
+.mobile-nav-item { color: #94A3B8 !important; }
+.mobile-nav-item.active { color: var(--accent-gold) !important; }
+.match-comment-panel { background: #FFFFFF !important; border-left: 1px solid rgba(0,0,0,0.08) !important; }
+.comment-panel-header { border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+.comment-panel-match-title { color: #1E293B !important; }
+.comment-panel-match-meta { color: #94A3B8 !important; }
+.comment-panel-close { color: #94A3B8 !important; }
+.comment-panel-close:hover { color: #1E293B !important; background: rgba(0,0,0,0.05) !important; }
+.comment-item { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.06) !important; }
+.comment-author { color: #2563EB !important; }
+.comment-time { color: #94A3B8 !important; }
+.comment-text { color: #475569 !important; }
+.comment-input-area { border-top: 1px solid rgba(0,0,0,0.07) !important; }
+.comment-nickname-input, .comment-textarea { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
+.comment-nickname-input:focus, .comment-textarea:focus { border-color: var(--accent-gold) !important; }
+.firebase-banner { background: rgba(244,162,97,0.08) !important; border: 1px solid rgba(244,162,97,0.25) !important; }
+.btn-secondary { background: rgba(0,0,0,0.06) !important; color: #1E293B !important; }
+.btn-secondary:hover { background: rgba(0,0,0,0.10) !important; }
+.btn-refresh { color: #64748B !important; }
+.btn-refresh:hover { color: #1E293B !important; background: rgba(0,0,0,0.05) !important; }
+.empty-state { color: #94A3B8 !important; }
+.toast { background: #FFFFFF !important; color: #1E293B !important; box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; }
+.firebase-modal .modal-content { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.10) !important; }
+.config-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
+.standings-table th { color: #94A3B8 !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
+.standings-table td { color: #1E293B !important; border-bottom: 1px solid rgba(0,0,0,0.04) !important; }
+.standings-table tr:hover td { background: rgba(0,0,0,0.02) !important; }
+.standings-tab { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.07) !important; color: #64748B !important; }
+.standings-tab.active { background: rgba(37,99,235,0.10) !important; border-color: rgba(37,99,235,0.3) !important; color: #2563EB !important; }
+.cal-size-btn { background: rgba(0,0,0,0.04) !important; color: #475569 !important; border-color: rgba(0,0,0,0.07) !important; }
+.cal-size-btn:hover { background: rgba(0,0,0,0.08) !important; color: #1E293B !important; }
+.league-group-header { border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
+.section-title, .sidebar-title { color: #1E293B !important; }
+.update-time { color: #94A3B8 !important; }
+.footer { background: #FFFFFF !important; border-top: 1px solid rgba(0,0,0,0.07) !important; }
+.footer-section p, .footer-section a, .footer-section li { color: #64748B !important; }
+.footer-bottom p { color: #94A3B8 !important; }
+.api-tab { background: rgba(0,0,0,0.04) !important; border: 1px solid rgba(0,0,0,0.07) !important; color: #64748B !important; }
+.api-tab.active { background: rgba(244,162,97,0.10) !important; border-color: rgba(244,162,97,0.3) !important; color: #D97706 !important; }
+.firebase-steps li::before { background: var(--gradient-accent) !important; }
+.source-badge.espn { background: rgba(239,71,111,0.10) !important; }
+.source-badge.apisports { background: rgba(6,214,160,0.10) !important; }
+.source-badge.sofascore { background: rgba(96,165,250,0.10) !important; }
+.source-badge.pandascore { background: rgba(167,139,250,0.10) !important; }
+.hero { display: none; }
 </style>
 </head>
 <body>
