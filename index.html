@@ -2178,10 +2178,19 @@ const ApiService = {
             } else {
                 // 일반 스포츠 (NBA, MLB, NHL, soccer)
                 const st = g.status;
-                if (st === 'in_progress' || st === 'live' || st === '1H' || st === '2H' || st === 'HT') {
+                // BDL 실제 라이브 status값:
+                // NBA: "1st Qtr", "2nd Qtr", "Halftime", "3rd Qtr", "4th Qtr", "OT"
+                // NHL: "In Progress", "1st Period", "2nd Period", "3rd Period"
+                // MLB: "In Progress"
+                // 기타 API 호환: "in_progress", "live", "1H", "2H", "HT"
+                const isLiveBDL = st === 'in_progress' || st === 'live' || st === 'In Progress' ||
+                    st === '1H' || st === '2H' || st === 'HT' ||
+                    st === 'Halftime' || /^OT\d*$/i.test(st) || st === 'Overtime' ||
+                    /^(1st|2nd|3rd|4th)\s+(Qtr|Quarter|Period)$/i.test(st);
+                if (isLiveBDL) {
                     status = 'live';
-                    time = g.time || g.period_time || 'LIVE';
-                } else if (st === 'final' || st === 'Final' || st === 'completed' || st === 'FT') {
+                    time = (g.time && g.time.trim()) ? g.time.trim() : (st || 'LIVE');
+                } else if (st === 'final' || st === 'Final' || st === 'completed' || st === 'FT' || /^Final/.test(st)) {
                     status = 'finished';
                     time = '종료';
                 } else {
