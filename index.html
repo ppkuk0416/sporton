@@ -1341,8 +1341,7 @@ body.view-home .sidebar { display: none !important; }
                 <span title="농구"><i class="fas fa-basketball-ball"></i></span>
                 <span title="야구"><i class="fas fa-baseball-ball"></i></span>
                 <span title="하키"><i class="fas fa-hockey-puck"></i></span>
-                <span title="e스포츠"><i class="fas fa-gamepad"></i></span>
-                <span title="배구"><i class="fas fa-volleyball-ball"></i></span>
+                <span title="미식축구"><i class="fas fa-football-ball"></i></span>
             </div>
 
             <!-- 통계 -->
@@ -1402,8 +1401,7 @@ body.view-home .sidebar { display: none !important; }
                     <button class="sport-tab" data-sport="basketball"><span>🏀</span><span>농구</span></button>
                     <button class="sport-tab" data-sport="baseball"><span>⚾</span><span>야구</span></button>
                     <button class="sport-tab" data-sport="hockey"><span>🏒</span><span>하키</span></button>
-                    <button class="sport-tab" data-sport="esports"><span>🎮</span><span>e스포츠</span></button>
-                    <button class="sport-tab" data-sport="volleyball"><span>🏐</span><span>배구</span></button>
+                    <button class="sport-tab" data-sport="football"><span>🏈</span><span>NFL</span></button>
                 </div>
                 <!-- ===== 홈 대시보드 섹션 ===== -->
                 <section class="content-section active" id="homeSection">
@@ -1824,67 +1822,12 @@ body.view-home .sidebar { display: none !important; }
         </div>
         <div class="modal-body">
             <div class="api-tabs">
-                <button class="api-tab active" data-api="bdl">BallDontLie ⭐</button>
-                <button class="api-tab" data-api="football">API-Sports</button>
-                <button class="api-tab" data-api="pandascore">PandaScore</button>
-                <button class="api-tab" data-api="odds">The Odds API</button>
+                <button class="api-tab active" data-api="odds">The Odds API</button>
                 <button class="api-tab" data-api="firebase">Firebase 🔥</button>
             </div>
 
-            <!-- BallDontLie -->
-            <div class="api-tab-content active" data-content="bdl">
-                <div class="api-info" style="border-left:3px solid var(--accent-gold);padding-left:12px;">
-                    <h3>🏀⚽🎮 BallDontLie <span style="background:var(--accent-gold);color:#000;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">추천</span></h3>
-                    <p>NBA·NFL·MLB·NHL·EPL·LoL·CS2·Dota2 등 20개 이상 종목 한 번에</p>
-                    <ul>
-                        <li>✅ 무료: 분당 5회 (기본 데이터)</li>
-                        <li>✅ CORS 완전 지원 (브라우저 직접 호출 가능)</li>
-                        <li>✅ 신용카드 불필요</li>
-                    </ul>
-                    <div style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);border-radius:8px;padding:10px;margin:10px 0;font-size:13px;">
-                        💡 <b>가입:</b> app.balldontlie.io → Sign Up → 이메일 인증 → API Keys 탭에서 키 복사
-                    </div>
-                    <a href="https://app.balldontlie.io/signup" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> 무료 가입 & 키 발급</a>
-                </div>
-                <div class="form-group">
-                    <label for="bdlApiKey">API 키</label>
-                    <input type="text" id="bdlApiKey" placeholder="BallDontLie API 키 입력" class="form-input">
-                </div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.6;">
-                    📌 커버: NBA · NFL · MLB · NHL · EPL · La Liga · Serie A · UCL · 분데스리가 · 리그앙 · MLS · WC2026 · MMA · LoL · CS2 · Dota2 · F1 · PGA · ATP · WTA
-                </div>
-            </div>
-
-            <!-- API-Sports -->
-            <div class="api-tab-content" data-content="football">
-                <div class="api-info">
-                    <h3>⚽⚾ API-Sports</h3>
-                    <p>K리그·KBO·J리그 전용 (BDL이 지원 안 하는 리그)</p>
-                    <ul>
-                        <li>✅ 무료: 하루 100회 (영구 무료)</li>
-                        <li>✅ K리그1·2, KBO, J리그 지원</li>
-                    </ul>
-                    <a href="https://dashboard.api-football.com/register" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> 무료 가입 & 키 발급</a>
-                </div>
-                <div class="form-group"><label for="footballApiKey">API 키</label><input type="text" id="footballApiKey" placeholder="API 키를 입력하세요" class="form-input"></div>
-            </div>
-
-            <!-- PandaScore -->
-            <div class="api-tab-content" data-content="pandascore">
-                <div class="api-info">
-                    <h3>🎮 PandaScore</h3>
-                    <p>발로란트·레인보우6 추가 지원</p>
-                    <ul>
-                        <li>✅ 무료: 월 1,000회</li>
-                        <li>✅ 발로란트, R6 Siege 등 BDL 미지원 종목</li>
-                    </ul>
-                    <a href="https://pandascore.co/" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> 무료 가입 & 키 발급</a>
-                </div>
-                <div class="form-group"><label for="pandaScoreKey">API 키</label><input type="text" id="pandaScoreKey" placeholder="API 키를 입력하세요" class="form-input"></div>
-            </div>
-
             <!-- The Odds API -->
-            <div class="api-tab-content" data-content="odds">
+            <div class="api-tab-content active" data-content="odds">
                 <div class="api-info">
                     <h3>📊 The Odds API</h3>
                     <p>배당률 보조 데이터</p>
@@ -1998,29 +1941,21 @@ body.view-home .sidebar { display: none !important; }
 // ===== API Config =====
 const ApiConfig = {
     endpoints: {
-        oddsApi: 'https://api.the-odds-api.com/v4',
-        footballApi: 'https://v3.football.api-sports.io',
-        rapidApi: 'https://livescore-sports.p.rapidapi.com'
+        oddsApi: 'https://api.the-odds-api.com/v4'
     },
     saveApiKeys(keys) {
         try {
-            if (keys.oddsApi)     localStorage.setItem('sportsLive_oddsApiKey',    keys.oddsApi.trim());
-            if (keys.footballApi) localStorage.setItem('sportsLive_footballApiKey', keys.footballApi.trim());
-            if (keys.pandaScore)  localStorage.setItem('sportsLive_pandaScoreKey',  keys.pandaScore.trim());
-            if (keys.bdl)         localStorage.setItem('sportsLive_bdlKey',         keys.bdl.trim());
+            if (keys.oddsApi) localStorage.setItem('sportsLive_oddsApiKey', keys.oddsApi.trim());
             return true;
         } catch(e) { return false; }
     },
     loadApiKeys() {
         return {
-            oddsApi:     localStorage.getItem('sportsLive_oddsApiKey')    || '',
-            footballApi: localStorage.getItem('sportsLive_footballApiKey') || '',
-            pandaScore:  localStorage.getItem('sportsLive_pandaScoreKey') || '',
-            bdl:         localStorage.getItem('sportsLive_bdlKey')        || ''
+            oddsApi: localStorage.getItem('sportsLive_oddsApiKey') || ''
         };
     },
-    hasApiKey() { const k = this.loadApiKeys(); return k.oddsApi || k.footballApi || k.pandaScore || k.bdl; },
-    clearApiKeys() { ['oddsApi','footballApi','pandaScore','bdl'].forEach(k => localStorage.removeItem('sportsLive_'+k+'Key')); },
+    hasApiKey() { return !!this.loadApiKeys().oddsApi; },
+    clearApiKeys() { localStorage.removeItem('sportsLive_oddsApiKey'); },
     isDemoMode() { return localStorage.getItem('sportsLive_demoMode') === 'true'; },
     setDemoMode(enabled) { enabled ? localStorage.setItem('sportsLive_demoMode','true') : localStorage.removeItem('sportsLive_demoMode'); }
 };
@@ -2042,19 +1977,12 @@ const DataCache = {
 const ApiService = {
 
     // ───────────────────────────────────────────
-    //  스포츠별 리그 정의
-    //  source 종류:
-    //    espn      → ESPN hidden API (무료·키 불필요)
-    //    apisports → API-Sports (footballApi 키, 하루 100회)
-    //    sofascore → Sofascore 비공식 API (무료·키 불필요, 불안정)
-    //    pandascore→ PandaScore (pandaScore 키, e스포츠 전용)
-    //    sim       → 시뮬레이션 fallback
+    //  스포츠별 리그 정의 (ESPN API, 키 불필요)
     // ───────────────────────────────────────────
     sportConfig: {
         soccer: {
             name:'축구', icon:'⚽',
             leagues:[
-                // ESPN: 키 불필요, 즉시 사용 가능
                 { id:'epl',        name:'EPL',          icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', source:'espn', espnId:'eng.1'          },
                 { id:'laliga',     name:'La Liga',      icon:'🇪🇸', source:'espn', espnId:'esp.1'          },
                 { id:'bundesliga', name:'분데스리가',   icon:'🇩🇪', source:'espn', espnId:'ger.1'          },
@@ -2062,214 +1990,32 @@ const ApiService = {
                 { id:'ligue1',     name:'리그앙',       icon:'🇫🇷', source:'espn', espnId:'fra.1'          },
                 { id:'ucl',        name:'챔피언스리그', icon:'🏆', source:'espn', espnId:'uefa.champions' },
                 { id:'mls',        name:'MLS',          icon:'🇺🇸', source:'espn', espnId:'usa.1'          },
-                // API-Sports: K리그·J리그 (키 필요)
-                { id:'kleague1',   name:'K리그1',       icon:'🇰🇷', source:'apisports', apisId:292          },
-                { id:'kleague2',   name:'K리그2',       icon:'🇰🇷', source:'apisports', apisId:293          },
-                { id:'jleague',    name:'J리그',        icon:'🇯🇵', source:'apisports', apisId:98           },
             ]
         },
         basketball: {
             name:'농구', icon:'🏀',
             leagues:[
-                { id:'nba',  name:'NBA',     icon:'🇺🇸', source:'bdl',        bdlPath:'v1/games',  bdlSport:'basketball' },
-                { id:'kbl',  name:'KBL',     icon:'🇰🇷', source:'sofascore',  sofaId:116          },
-                { id:'wkbl', name:'WKBL',    icon:'🇰🇷', source:'sofascore',  sofaId:3108         },
-                { id:'euro', name:'유로리그', icon:'🇪🇺', source:'sofascore',  sofaId:141          },
+                { id:'nba', name:'NBA', icon:'🇺🇸', source:'espn', espnId:'nba' },
             ]
         },
         baseball: {
             name:'야구', icon:'⚾',
             leagues:[
-                { id:'mlb',  name:'MLB',  icon:'🇺🇸', source:'bdl',       bdlPath:'mlb/v1/games'  },
-                { id:'kbo',  name:'KBO',  icon:'🇰🇷', source:'apisports', apisId:6,  apisType:'baseball' },
-                { id:'npb',  name:'NPB',  icon:'🇯🇵', source:'apisports', apisId:7,  apisType:'baseball' },
+                { id:'mlb', name:'MLB', icon:'🇺🇸', source:'espn', espnId:'mlb' },
             ]
         },
         hockey: {
             name:'하키', icon:'🏒',
             leagues:[
-                { id:'nhl', name:'NHL', icon:'🇺🇸', source:'bdl', bdlPath:'nhl/v1/games' },
+                { id:'nhl', name:'NHL', icon:'🇺🇸', source:'espn', espnId:'nhl' },
             ]
         },
-        esports: {
-            name:'e스포츠', icon:'🎮',
+        football: {
+            name:'미식축구', icon:'🏈',
             leagues:[
-                // BDL: League of Legends (LCK/LPL/LEC 포함)
-                { id:'lol',  name:'LoL',       icon:'🎮', source:'bdl',        bdlPath:'lol/v1/matches',  bdlSport:'lol'   },
-                // BDL: CS2
-                { id:'cs2',  name:'CS2',       icon:'🔫', source:'bdl',        bdlPath:'cs/v1/matches',   bdlSport:'cs2'   },
-                // BDL: Dota2
-                { id:'dota', name:'Dota 2',    icon:'⚔️', source:'bdl',        bdlPath:'dota2/v1/matches', bdlSport:'dota2' },
-                // PandaScore fallback: 발로란트, 레인보우6 (BDL 미지원)
-                { id:'valo', name:'발로란트',  icon:'💥', source:'pandascore', pandaGame:'valorant', pandaLeague:''      },
-                { id:'r6',   name:'레인보우6', icon:'🛡️', source:'pandascore', pandaGame:'r6siege',  pandaLeague:''      },
+                { id:'nfl', name:'NFL', icon:'🇺🇸', source:'espn', espnId:'nfl' },
             ]
         },
-        volleyball: {
-            name:'배구', icon:'🏐',
-            leagues:[
-                { id:'vleague_m', name:'V리그 남자', icon:'🇰🇷', source:'sofascore', sofaId:3320 },
-                { id:'vleague_w', name:'V리그 여자', icon:'🇰🇷', source:'sofascore', sofaId:3321 },
-            ]
-        }
-    },
-
-    // ─── BallDontLie (CORS 완전 지원) ─────────────
-    async fetchBDL(lg, statusFilter) {
-        const keys = ApiConfig.loadApiKeys();
-        const apiKey = keys.bdl;
-        if (!apiKey) return this._bdlFallback(lg);
-
-        // 날짜 범위 생성: 오늘 기준 과거2일 + 미래7일
-        const dates = [];
-        for (let i = -2; i <= 7; i++) {
-            const d = new Date(Date.now() + i * 86400000);
-            dates.push(d.toISOString().split('T')[0]);
-        }
-        const dateParams = dates.map(d => `dates[]=${d}`).join('&');
-        const url = `https://api.balldontlie.io/${lg.bdlPath}?${dateParams}&per_page=100`;
-
-        const res = await fetch(url, {
-            headers: { 'Authorization': apiKey }
-        });
-
-        if (!res.ok) {
-            // 401: 키 오류, 403: 플랜 부족 → fallback
-            if (res.status === 401 || res.status === 403) {
-                console.warn(`BDL ${lg.name}: 권한 없음 (${res.status}) → ESPN fallback`);
-                return this._bdlFallback(lg);
-            }
-            throw new Error('BDL ' + res.status);
-        }
-
-        const data = await res.json();
-        return this._parseBDL(data.data || [], lg);
-    },
-
-    _parseBDL(games, lg) {
-        // 팀명 없는 경기 제거 (거짓 정보 금지)
-        games = games.filter(g => {
-            const home = g.home_team || g.homeTeam || g.team1 || {};
-            const away = g.visitor_team || g.away_team || g.awayTeam || g.team2 || {};
-            const homeName = home.full_name || home.name || home.display_name || home.short_name || '';
-            const awayName = away.full_name || away.name || away.display_name || away.short_name || '';
-            return homeName && awayName && homeName !== '홈팀' && awayName !== '원정팀';
-        });
-
-        const sportMap = {
-            'v1/games': 'basketball',
-            'mlb/v1/games': 'baseball',
-            'nhl/v1/games': 'hockey',
-            'epl/v1/games': 'soccer',
-            'laliga/v1/games': 'soccer',
-            'bundesliga/v1/games': 'soccer',
-            'seriea/v1/games': 'soccer',
-            'ligue1/v1/games': 'soccer',
-            'ucl/v1/games': 'soccer',
-            'mls/v1/games': 'soccer',
-            'lol/v1/matches': 'esports',
-            'cs/v1/matches': 'esports',
-            'dota2/v1/matches': 'esports',
-        };
-        const sport = sportMap[lg.bdlPath] || 'unknown';
-        const isEsports = lg.bdlPath.includes('matches');
-
-        return games.map(g => {
-            let status = 'upcoming', time = '';
-
-            if (isEsports) {
-                // LoL/CS2/Dota2 매치 구조
-                const st = g.status;
-                if (st === 'running') { status = 'live'; time = 'LIVE'; }
-                else if (st === 'finished') { status = 'finished'; time = '종료'; }
-                else {
-                    status = 'upcoming';
-                    if (g.start_time) {
-                        const d = new Date(g.start_time);
-                        time = d.toLocaleString('ko-KR', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'});
-                    }
-                }
-                const t1 = g.team1 || g.opponents?.[0]?.opponent || {};
-                const t2 = g.team2 || g.opponents?.[1]?.opponent || {};
-                return {
-                    id: 'bdl_' + g.id,
-                    sport,
-                    league: lg.name,
-                    leagueId: lg.id,
-                    status, time,
-                    homeTeam: t1.name || t1.short_name || '팀A',
-                    awayTeam: t2.name || t2.short_name || '팀B',
-                    homeScore: g.team1_score ?? g.results?.[0]?.score,
-                    awayScore: g.team2_score ?? g.results?.[1]?.score,
-                };
-            } else {
-                // 일반 스포츠 (NBA, MLB, NHL, soccer)
-                const st = g.status;
-                // BDL 실제 라이브 status값:
-                // NBA: "1st Qtr", "2nd Qtr", "Halftime", "3rd Qtr", "4th Qtr", "OT"
-                // NHL: "In Progress", "1st Period", "2nd Period", "3rd Period"
-                // MLB: "In Progress"
-                // 기타 API 호환: "in_progress", "live", "1H", "2H", "HT"
-                const isLiveBDL = st === 'in_progress' || st === 'live' || st === 'In Progress' ||
-                    st === '1H' || st === '2H' || st === 'HT' ||
-                    st === 'Halftime' || /^OT\d*$/i.test(st) || st === 'Overtime' ||
-                    /^(1st|2nd|3rd|4th)\s+(Qtr|Quarter|Period)$/i.test(st);
-                if (isLiveBDL) {
-                    status = 'live';
-                    time = (g.time && g.time.trim()) ? g.time.trim() : (st || 'LIVE');
-                } else if (st === 'final' || st === 'Final' || st === 'completed' || st === 'FT' || /^Final/.test(st)) {
-                    status = 'finished';
-                    time = '종료';
-                } else {
-                    status = 'upcoming';
-                    const d = new Date(g.date || g.commence_time || g.start_time || g.datetime);
-                    time = isNaN(d) ? '' : d.toLocaleString('ko-KR', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'});
-                }
-
-                // 홈/어웨이 팀 (스포츠마다 필드명이 약간 다름)
-                const home = g.home_team || g.homeTeam || {};
-                const away = g.visitor_team || g.away_team || g.awayTeam || {};
-                const homeScore = g.home_team_score ?? g.scores?.home?.total ?? g.home_score;
-                const awayScore = g.visitor_team_score ?? g.away_team_score ?? g.scores?.away?.total ?? g.away_score;
-
-                const homeTeam2 = home.full_name || home.name || home.display_name || '';
-                const awayTeam2 = away.full_name || away.name || away.display_name || '';
-                if (!homeTeam2 || !awayTeam2) return null;
-                const rawDate2 = (g.date || g.commence_time || g.start_time || g.datetime || '').split('T')[0];
-                return {
-                    id: 'bdl_' + g.id,
-                    sport,
-                    league: lg.name,
-                    leagueId: lg.id,
-                    status, time, rawDate: rawDate2,
-                    homeTeam: homeTeam2,
-                    awayTeam: awayTeam2,
-                    homeScore: typeof homeScore === 'number' ? homeScore : undefined,
-                    awayScore: typeof awayScore === 'number' ? awayScore : undefined,
-                    period: g.period || 0,
-                    clock: (g.time && g.time.trim()) ? g.time.trim() : '',
-                };
-            }
-        }).filter(Boolean);
-    },
-
-    // BDL 키 없거나 권한 없을 때 → ESPN으로만 fallback (시뮬 없음)
-    _bdlFallback(lg) {
-        const espnMap = {
-            'v1/games':           'nba',
-            'mlb/v1/games':       'mlb',
-            'nhl/v1/games':       'nhl',
-            'epl/v1/games':       'eng.1',
-            'laliga/v1/games':    'esp.1',
-            'bundesliga/v1/games':'ger.1',
-            'seriea/v1/games':    'ita.1',
-            'ligue1/v1/games':    'fra.1',
-            'ucl/v1/games':       'uefa.champions',
-        };
-        const espnId = espnMap[lg.bdlPath];
-        if (espnId) return this.fetchESPN(espnId);
-        // 데이터 없음 → 빈 배열 (거짓 정보 금지)
-        return Promise.resolve([]);
     },
 
     // ─── ESPN (무료·키 불필요) ──────────────────
@@ -2315,167 +2061,6 @@ const ApiService = {
                 venue:comp?.venue?.fullName, period:period||0, clock:clock||'' };
         }).filter(Boolean);
     },
-
-    // ─── API-Sports (축구=v3.football, 야구=v1.baseball) ──
-    async fetchApiSports(lg) {
-        const keys = ApiConfig.loadApiKeys();
-        const apiKey = keys.footballApi;
-        if (!apiKey) return [];
-
-        const isBaseball = lg.apisType === 'baseball';
-        const baseUrl = isBaseball
-            ? `https://v1.baseball.api-sports.io`
-            : `https://v3.football.api-sports.io`;
-
-        const today = new Date().toISOString().split('T')[0];
-        const in7 = new Date(Date.now()+7*86400000).toISOString().split('T')[0];
-        const url = isBaseball
-            ? `${baseUrl}/games?league=${lg.apisId}&season=2025&date=${today}`
-            : `${baseUrl}/fixtures?league=${lg.apisId}&season=2025&from=${today}&to=${in7}`;
-
-        const res = await fetch(url, { headers:{ 'x-apisports-key': apiKey } });
-        if (!res.ok) throw new Error('API-Sports ' + res.status);
-        const data = await res.json();
-
-        if (isBaseball) {
-            return (data.response||[]).map(g => {
-                const st = g.status?.long;
-                let status='upcoming', time='';
-                if (st==='In Progress') { status='live'; time=`${g.status?.inning||''}회`; }
-                else if (st==='Finished') { status='finished'; time='종료'; }
-                else { const d=new Date(g.date); time=d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'}); }
-                const homeTeam = g.teams?.home?.name || '';
-                const awayTeam = g.teams?.away?.name || '';
-                if (!homeTeam || !awayTeam) return null;
-                const rawDate = g.date ? g.date.split('T')[0] : '';
-                return { id:'apisb_'+g.id, sport:'baseball', league:lg.name, leagueId:lg.id, status, time, rawDate,
-                    homeTeam, awayTeam,
-                    homeScore:g.scores?.home?.total, awayScore:g.scores?.away?.total };
-            }).filter(Boolean);
-        } else {
-            return (data.response||[]).map(f => {
-                const st = f.fixture?.status?.short;
-                let status='upcoming', time='';
-                if (['1H','2H','HT','ET','P'].includes(st)) { status='live'; time=`${f.fixture?.status?.elapsed||0}'`; }
-                else if (['FT','AET','PEN'].includes(st)) { status='finished'; time='종료'; }
-                else { const d=new Date(f.fixture?.date); time=d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'}); }
-                const homeTeam = f.teams?.home?.name || '';
-                const awayTeam = f.teams?.away?.name || '';
-                if (!homeTeam || !awayTeam) return null;
-                const rawDate = f.fixture?.date ? f.fixture.date.split('T')[0] : '';
-                return { id:'apisf_'+f.fixture?.id, sport:'soccer', league:lg.name, leagueId:lg.id, status, time, rawDate,
-                    homeTeam, awayTeam,
-                    homeScore:f.goals?.home, awayScore:f.goals?.away,
-                    fixtureId: f.fixture?.id };
-            }).filter(Boolean);
-        }
-    },
-
-    // ─── Sofascore 비공식 API (KBL, WKBL, V리그) ──
-    async fetchSofascore(lg) {
-        const today = new Date().toISOString().split('T')[0];
-        const url = `https://api.sofascore.com/api/v1/unique-tournament/${lg.sofaId}/events/next/0`;
-        const res = await fetch(url, { headers:{ 'User-Agent':'Mozilla/5.0' } });
-        if (!res.ok) {
-            // next 없으면 last 시도
-            const r2 = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${lg.sofaId}/events/last/0`, { headers:{ 'User-Agent':'Mozilla/5.0' } });
-            if (!r2.ok) throw new Error('Sofascore ' + r2.status);
-            const d2 = await r2.json();
-            return this._parseSofascore(d2.events||[], lg);
-        }
-        const data = await res.json();
-        return this._parseSofascore(data.events||[], lg);
-    },
-
-    _parseSofascore(events, lg) {
-        const sportMap = { 116:'basketball', 3108:'basketball', 141:'basketball', 3320:'volleyball', 3321:'volleyball' };
-        return events.slice(0,20).map(ev => {
-            const homeTeam = ev.homeTeam?.name || '';
-            const awayTeam = ev.awayTeam?.name || '';
-            if (!homeTeam || !awayTeam) return null;
-            const st = ev.status?.type;
-            let status='upcoming', time='';
-            if (st==='inprogress') { status='live'; time=`${ev.status?.description||'LIVE'}`; }
-            else if (st==='finished') { status='finished'; time='종료'; }
-            else { const d=new Date(ev.startTimestamp*1000); time=d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'}); }
-            const rawDate = ev.startTimestamp ? new Date(ev.startTimestamp*1000).toISOString().split('T')[0] : '';
-            return { id:'sofa_'+ev.id, sport:sportMap[lg.sofaId]||'basketball', league:lg.name, leagueId:lg.id, status, time, rawDate,
-                homeTeam, awayTeam,
-                homeScore:ev.homeScore?.current, awayScore:ev.awayScore?.current };
-        }).filter(Boolean);
-    },
-
-    // ─── PandaScore (e스포츠 전용) ─ CORS 프록시 경유 ──
-    async fetchPandaScore(lg) {
-        const keys = ApiConfig.loadApiKeys();
-        const apiKey = keys.pandaScore;
-        if (!apiKey) return this._getEsportsSim(lg);
-
-        // PandaScore 올바른 URL 형식:
-        // https://api.pandascore.co/{game}/matches/running?token=KEY&filter[league_slug]=lck
-        const proxy   = 'https://corsproxy.io/?url=';
-        const base    = `https://api.pandascore.co/${lg.pandaGame}/matches`;
-        const league  = lg.pandaLeague ? `&filter[league_slug]=${lg.pandaLeague}` : '';
-        const token   = `token=${apiKey}&per_page=10`;
-
-        const makeUrl = (type) =>
-            proxy + encodeURIComponent(`${base}/${type}?${token}${league}`);
-
-        try {
-            const [liveRes, pastRes, upRes] = await Promise.allSettled([
-                fetch(makeUrl('running')),
-                fetch(makeUrl('past')),
-                fetch(makeUrl('upcoming')),
-            ]);
-
-            const parseRes = async (settled, defaultStatus) => {
-                if (settled.status !== 'fulfilled' || !settled.value.ok) return [];
-                const arr = await settled.value.json();
-                return (Array.isArray(arr) ? arr : []).map(m => {
-                    let time = defaultStatus === 'live' ? 'LIVE'
-                             : defaultStatus === 'finished' ? '종료' : '';
-                    if (!time && m.begin_at) {
-                        const d = new Date(m.begin_at);
-                        time = d.toLocaleString('ko-KR', {
-                            month:'numeric', day:'numeric',
-                            hour:'2-digit', minute:'2-digit',
-                            timeZone:'Asia/Seoul'
-                        });
-                    }
-                    return {
-                        id: 'panda_' + m.id,
-                        sport: 'esports',
-                        league: lg.name,
-                        leagueId: lg.id,
-                        status: defaultStatus,
-                        time,
-                        homeTeam: m.opponents?.[0]?.opponent?.name || '팀A',
-                        awayTeam: m.opponents?.[1]?.opponent?.name || '팀B',
-                        homeScore: m.results?.[0]?.score,
-                        awayScore: m.results?.[1]?.score,
-                    };
-                });
-            };
-
-            const [liveData, pastData, upData] = await Promise.all([
-                parseRes(liveRes, 'live'),
-                parseRes(pastRes, 'finished'),
-                parseRes(upRes,   'upcoming'),
-            ]);
-
-            const all = [...liveData, ...pastData.slice(0,3), ...upData.slice(0,5)];
-            return all; // 없으면 그냥 빈 배열 (시뮬 금지)
-
-        } catch(e) {
-            console.warn('PandaScore 실패:', lg.name, e.message);
-            return []; // 거짓 정보 금지
-        }
-    },
-
-    _getEsportsSim(lg) { return []; }, // 시뮬레이션 비활성화
-
-    // ─── 배구 시뮬 fallback ─────────────────────
-    _getVolleySim(lg) { return []; }, // 시뮬레이션 비활성화
 
     // ─── 메인 로더 ──────────────────────────────
     async getMatchesBySport(sportKey, statusFilter) {
@@ -2525,14 +2110,7 @@ const ApiService = {
     },
 
     async _fetchLeague(lg, statusFilter) {
-        switch(lg.source) {
-            case 'bdl':        return await this.fetchBDL(lg, statusFilter);
-            case 'espn':       return await this.fetchESPN(lg.espnId);
-            case 'apisports':  return await this.fetchApiSports(lg);
-            case 'sofascore':  try { return await this.fetchSofascore(lg); } catch(e) { return []; } // 실패 시 빈 배열
-            case 'pandascore': return await this.fetchPandaScore(lg);
-            default:           return [];
-        }
+        return await this.fetchESPN(lg.espnId);
     },
 
     getDemoOdds() { return []; }
@@ -3085,13 +2663,7 @@ const app = {
                 if (!lg.matches || lg.matches.length === 0) continue;
                 totalMatches += lg.matches.length;
 
-                const sourceBadge = {
-                    espn: '<span class="source-badge espn">ESPN</span>',
-                    apisports: '<span class="source-badge apisports">API-Sports</span>',
-                    sofascore: '<span class="source-badge sofascore">Sofascore</span>',
-                    pandascore: '<span class="source-badge pandascore">PandaScore</span>',
-                    sim: '<span class="source-badge sim">시뮬레이션</span>',
-                }[lg.source] || '';
+                const sourceBadge = '<span class="source-badge espn">ESPN</span>';
 
                 const group = document.createElement('div');
                 group.className = 'league-group';
@@ -3119,19 +2691,9 @@ const app = {
             const sport = this.currentSport;
             let msg;
             if (mode === 'live') {
-                if (sport === 'esports') {
-                    msg = '현재 진행 중인 이스포츠 경기가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 실시간 이스포츠 데이터를 볼 수 있습니다.</small>';
-                } else if (sport === 'volleyball') {
-                    msg = '현재 진행 중인 배구 경기가 없습니다.<br><small style="color:var(--text-muted)">V리그 시즌 중 실시간 데이터가 제공됩니다.</small>';
-                } else {
-                    msg = '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>';
-                }
+                msg = '현재 진행 중인 라이브 경기가 없습니다.<br><small style="color:var(--text-muted)">경기가 시작되면 자동으로 표시됩니다.</small>';
             } else {
-                if (sport === 'esports') {
-                    msg = '예정된 이스포츠 경기 정보가 없습니다.<br><small style="color:var(--text-muted)">PandaScore API 키를 설정하면 경기 일정을 볼 수 있습니다.</small>';
-                } else {
-                    msg = '예정된 경기가 없습니다.<br><small style="color:var(--text-muted)">API 키를 설정하면 더 많은 경기 일정을 볼 수 있습니다.</small>';
-                }
+                msg = '예정된 경기가 없습니다.<br><small style="color:var(--text-muted)">잠시 후 다시 확인해보세요.</small>';
             }
             wrapper.innerHTML = `<p class="empty-state">${msg}</p>`;
         }
@@ -3377,10 +2939,7 @@ const app = {
     openApiModal() {
         document.getElementById('apiModal')?.classList.add('show');
         const keys = ApiConfig.loadApiKeys();
-        if (document.getElementById('bdlApiKey'))      document.getElementById('bdlApiKey').value      = keys.bdl        || '';
-        if (document.getElementById('footballApiKey')) document.getElementById('footballApiKey').value = keys.footballApi || '';
-        if (document.getElementById('pandaScoreKey'))  document.getElementById('pandaScoreKey').value  = keys.pandaScore  || '';
-        if (document.getElementById('oddsApiKey'))     document.getElementById('oddsApiKey').value     = keys.oddsApi     || '';
+        if (document.getElementById('oddsApiKey')) document.getElementById('oddsApiKey').value = keys.oddsApi || '';
         // Firebase config
         const fbSaved = localStorage.getItem('sportsLive_firebaseConfig') || '';
         if (document.getElementById('firebaseConfigInModal')) document.getElementById('firebaseConfigInModal').value = fbSaved;
@@ -3401,10 +2960,7 @@ const app = {
             catch(e) { Animations.showToast('Firebase JSON 형식 오류', 'error'); return; }
         }
         const keys = {
-            bdl:         document.getElementById('bdlApiKey')?.value       || '',
-            oddsApi:     document.getElementById('oddsApiKey')?.value      || '',
-            footballApi: document.getElementById('footballApiKey')?.value  || '',
-            pandaScore:  document.getElementById('pandaScoreKey')?.value   || ''
+            oddsApi: document.getElementById('oddsApiKey')?.value || ''
         };
         if (ApiConfig.saveApiKeys(keys)) {
             ApiConfig.setDemoMode(false); this.closeApiModal(); this.checkApiConfig();
