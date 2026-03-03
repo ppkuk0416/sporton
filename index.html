@@ -1202,6 +1202,43 @@ body.view-home .sidebar { display: none !important; }
 .source-badge.sofascore { background: rgba(96,165,250,0.10) !important; }
 .source-badge.pandascore { background: rgba(167,139,250,0.10) !important; }
 .hero { display: none; }
+
+/* ===== LIGHT THEME: 흰 배경에서 invisible border/bg 수정 ===== */
+/* 홈 대시보드 */
+.home-sport-group { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important; }
+.home-sport-group-header { background: #F8FAFC !important; border-bottom: 1px solid rgba(0,0,0,0.07) !important; color: #1A202C !important; }
+.home-game-row { border-bottom: 1px solid rgba(0,0,0,0.05) !important; }
+.home-game-row:hover { background: rgba(0,0,0,0.02) !important; }
+.home-game-row.live-game { background: rgba(255,59,59,0.04) !important; border-left: 2px solid rgba(255,59,59,0.35) !important; }
+.home-game-league { background: rgba(0,0,0,0.05) !important; color: #94A3B8 !important; }
+.home-game-team { color: #4A5568 !important; }
+.home-game-team.winner { color: #1A202C !important; }
+.home-game-score { color: #1A202C !important; }
+.home-chat-embed { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important; }
+.home-chat-header { border-bottom: 1px solid rgba(0,0,0,0.07) !important; color: #1A202C !important; }
+.home-chat-input { border-top: 1px solid rgba(0,0,0,0.07) !important; }
+/* NBA O/U 계산기 */
+.nbaou-input-card, .nbaou-result-card, .nbaou-guide { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.nbaou-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1A202C !important; }
+.nbaou-input:focus { border-color: var(--accent-gold) !important; background: #fff !important; }
+.nbaou-mode-btn { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.08) !important; color: #4A5568 !important; }
+.nbaou-mode-btn:hover, .nbaou-mode-btn.active { background: var(--gradient-accent) !important; color: #fff !important; border-color: transparent !important; }
+.nbaou-prob-track, .nbaou-conf-track { background: rgba(0,0,0,0.08) !important; }
+.nbaou-detail { background: rgba(0,0,0,0.03) !important; }
+.nbaou-label { color: #4A5568 !important; }
+.nbaou-detail-key { color: #94A3B8 !important; }
+.nbaou-detail-val { color: #4A5568 !important; }
+/* 캘린더 */
+.calendar-unavailable { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; color: #94A3B8 !important; }
+.calendar-frame-wrap { box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.10) !important; background: #f8fafc !important; }
+.cal-size-btn.active { background: var(--accent-gold) !important; color: #fff !important; }
+/* 커뮤니티 상세 */
+.post-detail-card { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.post-comment-item { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.06) !important; }
+/* 로고 텍스트 */
+.logo span { background: none !important; -webkit-text-fill-color: #1E293B !important; color: #1E293B !important; font-weight: 900; }
+/* 섹션 카드 border 일괄 수정 */
+[style*="border: 1px solid rgba(255,255,255"] { border-color: rgba(0,0,0,0.08) !important; }
 </style>
 </head>
 <body>
