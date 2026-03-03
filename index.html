@@ -1385,6 +1385,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                         <span class="chat-live-dot"></span>
                         <span class="sidebar-title" style="margin:0;font-size:var(--text-sm);">실시간 채팅</span>
                         <span class="chat-online-count" id="chatOnlineCount" style="margin-left:auto;">0명</span>
+                        <button class="icon-btn" id="chatToggleBtn" title="채팅 접기" style="margin-left:6px;padding:4px 8px;font-size:12px;"><i class="fas fa-chevron-right"></i></button>
                     </div>
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-empty">채팅에 참여하세요 💬</div>
@@ -1893,12 +1894,12 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
         </div>
         <button class="comment-panel-close" id="commentPanelClose"><i class="fas fa-times"></i></button>
     </div>
-    <div class="comment-list" id="commentList">
+    <div class="comment-list" id="matchCommentList">
         <div class="comment-empty">첫 번째 댓글을 남겨보세요! 💬</div>
     </div>
     <div class="comment-input-area">
         <div class="comment-nickname-row">
-            <input class="comment-nickname-input" id="commentNickname" placeholder="닉네임 (익명)" maxlength="12">
+            <input class="comment-nickname-input" id="matchCommentNickname" placeholder="닉네임 (익명)" maxlength="12">
         </div>
         <div class="comment-text-row">
             <textarea class="comment-textarea" id="commentText" placeholder="이 경기에 대한 생각을 남겨주세요..." maxlength="200"></textarea>
@@ -2962,8 +2963,18 @@ const app = {
         // Firebase config 저장 (모달 내 탭)
         const fbVal = document.getElementById('firebaseConfigInModal')?.value?.trim();
         if (fbVal) {
-            try { JSON.parse(fbVal); localStorage.setItem('sportsLive_firebaseConfig', fbVal); }
-            catch(e) { Animations.showToast('Firebase JSON 형식 오류', 'error'); return; }
+            try {
+                const fbConfig = JSON.parse(fbVal);
+                localStorage.setItem('sportsLive_firebaseConfig', fbVal);
+                // 현재 세션에도 즉시 반영 (페이지 새로고침 없이 적용)
+                if (!firebase.apps.length) firebase.initializeApp(fbConfig);
+                if (!Community.db) {
+                    Community.db = firebase.firestore();
+                    document.getElementById('firebaseBanner')?.classList.add('hidden');
+                    Community.loadPosts();
+                }
+            }
+            catch(e) { Animations.showToast('Firebase JSON 형식 오류: ' + e.message, 'error'); return; }
         }
         const keys = {
             oddsApi: document.getElementById('oddsApiKey')?.value || ''
@@ -3037,7 +3048,7 @@ const MatchComments = {
 
         // 닉네임 localStorage 복원
         const saved = localStorage.getItem('sportsLive_commentNick');
-        if (saved) document.getElementById('commentNickname').value = saved;
+        if (saved) document.getElementById('matchCommentNickname').value = saved;
 
         // Enter → 제출 (Shift+Enter는 줄바꿈)
         document.getElementById('commentText')?.addEventListener('keydown', (e) => {
@@ -3080,7 +3091,7 @@ const MatchComments = {
             this.subscribeComments(match.id);
         } else {
             // Firebase 미연결 → 안내 메시지
-            document.getElementById('commentList').innerHTML = `
+            document.getElementById('matchCommentList').innerHTML = `
                 <div class="comment-empty">
                     <i class="fas fa-database" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
                     댓글 기능을 사용하려면<br>Firebase를 연결해주세요
@@ -3109,7 +3120,7 @@ const MatchComments = {
         // 기존 구독 해제
         if (this.unsubscribe) this.unsubscribe();
 
-        const listEl = document.getElementById('commentList');
+        const listEl = document.getElementById('matchCommentList');
         listEl.innerHTML = '<div class="comment-empty" style="padding:var(--space-4)"><i class="fas fa-spinner fa-spin"></i></div>';
 
         this.unsubscribe = db
@@ -3153,7 +3164,7 @@ const MatchComments = {
         const db = this.getDb();
         if (!db || !this.currentMatchId) return;
 
-        const nicknameEl = document.getElementById('commentNickname');
+        const nicknameEl = document.getElementById('matchCommentNickname');
         const textEl     = document.getElementById('commentText');
         const submitBtn  = document.getElementById('commentSubmitBtn');
 
@@ -3224,6 +3235,8 @@ const Community = {
             document.getElementById('postForm').style.display = 'block';
             document.getElementById('postList').style.display = 'none';
             document.getElementById('categoryFilters').style.display = 'none';
+            document.getElementById('hotSection').style.display = 'none';
+            document.getElementById('postForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
         document.getElementById('cancelPostBtn')?.addEventListener('click', () => this.showList());
