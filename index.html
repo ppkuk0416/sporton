@@ -4092,16 +4092,16 @@ const NBACalc = {
             });
         });
 
-        // 입력값 변경 시 자동 계산
+        // 입력값 변경 시 자동 계산 (에러 메시지/스크롤 없이)
         ['nbaLine','nbaQuarter','nbaMinutes','nbaSeconds','nbaHome','nbaAway'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => this.calculate());
+            document.getElementById(id)?.addEventListener('input', () => this.calculate(false));
         });
 
-        // 계산 버튼
-        document.getElementById('nbaCalcBtn')?.addEventListener('click', () => this.calculate());
+        // 계산 버튼 (에러 메시지 + 스크롤 활성)
+        document.getElementById('nbaCalcBtn')?.addEventListener('click', () => this.calculate(true));
     },
 
-    calculate() {
+    calculate(showError = false) {
         const line    = parseFloat(document.getElementById('nbaLine').value);
         const mins    = parseInt(document.getElementById('nbaMinutes').value) || 0;
         const secs    = parseInt(document.getElementById('nbaSeconds').value) || 0;
@@ -4109,8 +4109,9 @@ const NBACalc = {
         const away    = parseInt(document.getElementById('nbaAway').value) || 0;
         const quarter = parseInt(document.getElementById('nbaQuarter').value) || 1;
 
-        if (isNaN(line) || (mins === 0 && secs === 0) || (home === 0 && away === 0)) {
-            return; // 아직 입력 부족
+        if (isNaN(line)) {
+            if (showError) this._showError('기준점(O/U Line)을 입력해주세요.');
+            return;
         }
 
         const Q_SEC   = 720;  // 12분 = 720초
@@ -4131,7 +4132,10 @@ const NBACalc = {
             ? elapsedInQ
             : (quarter - 1) * Q_SEC + elapsedInQ;
 
-        if (totalElapsed <= 0) return;
+        if (totalElapsed <= 0) {
+            if (showError) this._showError('경과 시간이 0입니다. 시간을 확인해주세요.');
+            return;
+        }
 
         const currentTotal  = home + away;
         const rate          = currentTotal / totalElapsed;       // 점/초
@@ -4164,15 +4168,33 @@ const NBACalc = {
             line, currentTotal, projected, remaining, remainFrac,
             pOver, pUnder, confidence, confLabel,
             rate, sd, totalElapsed, totalSec, quarter
-        });
+        }, showError);
     },
 
-    renderResult(d) {
+    _showError(msg) {
+        const btn = document.getElementById('nbaCalcBtn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
+        btn.style.background = 'linear-gradient(90deg,#f87171,#ef4444)';
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.style.background = '';
+        }, 2200);
+    },
+
+    renderResult(d, scroll = false) {
         const resultEl = document.getElementById('nbaResult');
         const guideEl  = document.getElementById('nbaGuide');
 
         resultEl.style.display = 'block';
         guideEl.style.display  = 'none';
+
+        // 모바일에서 결과 패널로 자동 스크롤 (버튼 클릭 시만)
+        if (scroll) {
+            setTimeout(() => {
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 80);
+        }
 
         // 현재 페이스
         document.getElementById('resCurrentTotal').textContent = d.currentTotal + '점';
