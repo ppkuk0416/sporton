@@ -1212,6 +1212,26 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .btn-refresh:hover { color: #1E293B !important; background: rgba(0,0,0,0.05) !important; }
 .empty-state { color: #94A3B8 !important; }
 .toast { background: #FFFFFF !important; color: #1E293B !important; box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; }
+/* 채팅 패널 라이트 테마 */
+.live-chat-panel { border: 1px solid rgba(0,0,0,0.08) !important; }
+.chat-panel-header { border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+.chat-messages { scrollbar-color: rgba(0,0,0,0.1) transparent !important; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1) !important; }
+.chat-msg-text { color: #1E293B !important; background: rgba(0,0,0,0.04) !important; }
+.chat-msg-item.self .chat-msg-text { background: rgba(244,162,97,0.12) !important; }
+.chat-msg-nick { color: #2563EB !important; }
+.chat-msg-nick.self { color: #D97706 !important; }
+.chat-msg-time { color: #94A3B8 !important; }
+.chat-empty { color: #94A3B8 !important; }
+.chat-system-msg { color: var(--accent-teal) !important; }
+.chat-nickname-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
+.chat-nickname-input::placeholder { color: #94A3B8 !important; }
+.chat-msg-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
+.chat-msg-input::placeholder { color: #94A3B8 !important; }
+.chat-input-area { border-top: 1px solid rgba(0,0,0,0.07) !important; }
+.home-chat-header { border-bottom: 1px solid rgba(0,0,0,0.07) !important; color: #1E293B !important; }
+.home-chat-online { color: #2A9D8F !important; background: rgba(42,157,143,0.1) !important; }
+.home-chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1) !important; }
 .firebase-modal .modal-content { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.10) !important; }
 .config-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
 .standings-table th { color: #94A3B8 !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
@@ -3231,7 +3251,6 @@ const Community = {
     setupEvents() {
         // 글쓰기 버튼
         document.getElementById('writePostBtn')?.addEventListener('click', () => {
-            if (!this.db) { Animations.showToast('Firebase를 먼저 설정해주세요', 'error'); return; }
             document.getElementById('postForm').style.display = 'block';
             document.getElementById('postList').style.display = 'none';
             document.getElementById('categoryFilters').style.display = 'none';
@@ -3512,6 +3531,7 @@ const Community = {
     },
 
     async submitPost() {
+        if (!this.db) { Animations.showToast('Firebase를 먼저 설정해주세요. 화면 위 설정하기 버튼을 눌러주세요.', 'error'); return; }
         const nickname = document.getElementById('postNickname').value.trim();
         const title = document.getElementById('postTitle').value.trim();
         const content = document.getElementById('postContent').value.trim();
