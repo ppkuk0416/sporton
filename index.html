@@ -553,6 +553,33 @@ body.view-home .sidebar { display: none !important; }
     background: rgba(139,92,246,0.2);
     color: #a78bfa;
 }
+/* NBA 라이브 O/U 미니 위젯 */
+.nba-ou-mini {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 11px;
+}
+.nba-ou-mini-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+.nba-ou-mini-total { font-weight: 700; color: var(--text-primary); }
+.nba-ou-mini-projected { font-weight: 700; color: var(--accent-gold); }
+.nba-ou-mini-track {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.nba-ou-mini-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-teal), var(--accent-gold));
+    border-radius: 999px;
+}
 
 /* 팀 + 스코어 */
 .match-teams {
@@ -2219,6 +2246,8 @@ const ApiService = {
                     awayTeam: awayTeam2,
                     homeScore: typeof homeScore === 'number' ? homeScore : undefined,
                     awayScore: typeof awayScore === 'number' ? awayScore : undefined,
+                    period: g.period || 0,
+                    clock: (g.time && g.time.trim()) ? g.time.trim() : '',
                 };
             }
         }).filter(Boolean);
@@ -2283,7 +2312,7 @@ const ApiService = {
                 homeLogoUrl: home?.team?.logo || '',
                 awayLogoUrl: away?.team?.logo || '',
                 homeScore:home?.score!=null?parseInt(home.score):undefined, awayScore:away?.score!=null?parseInt(away.score):undefined,
-                venue:comp?.venue?.fullName };
+                venue:comp?.venue?.fullName, period:period||0, clock:clock||'' };
         }).filter(Boolean);
     },
 
@@ -3141,6 +3170,23 @@ const app = {
         matches.forEach((match, i) => { const card = this.createMatchCard(match); container.appendChild(card); Animations.animateCard(card, i*100); });
     },
 
+    // NBA 라이브 경기 O/U 예상 계산 (쿼터 + 남은 시간 기반)
+    calcNBALiveOU(match) {
+        const Q_SEC = 720, GAME_SEC = 2880;
+        const period = match.period || 0;
+        if (period < 1 || period > 4) return null;
+        const m = (match.clock || '').match(/^(\d+):(\d{2})$/);
+        const remainInQ = m ? parseInt(m[1]) * 60 + parseInt(m[2]) : Q_SEC;
+        const elapsedInQ = Q_SEC - Math.min(remainInQ, Q_SEC);
+        const totalElapsed = (period - 1) * Q_SEC + elapsedInQ;
+        if (totalElapsed < 30) return null;  // 데이터 부족
+        const currentTotal = (match.homeScore || 0) + (match.awayScore || 0);
+        if (currentTotal <= 0) return null;
+        const projected = (currentTotal / totalElapsed) * GAME_SEC;
+        const progress = Math.min(Math.round((totalElapsed / GAME_SEC) * 100), 100);
+        return { currentTotal, projected: projected.toFixed(1), progress };
+    },
+
     createMatchCard(match) {
         const card = document.createElement('div');
         card.className = 'match-card';
@@ -3203,12 +3249,34 @@ const app = {
                 </div>`;
         }
 
+        // 농구 라이브 경기: O/U 미니 위젯
+        let ouHtml = '';
+        if (match.sport === 'basketball' && match.status === 'live') {
+            const ou = this.calcNBALiveOU(match);
+            if (ou) {
+                ouHtml = `
+                <div class="nba-ou-mini">
+                    <div class="nba-ou-mini-row">
+                        <span>총점</span>
+                        <span class="nba-ou-mini-total">${ou.currentTotal}</span>
+                        <span>→ 예상</span>
+                        <span class="nba-ou-mini-projected">${ou.projected}점</span>
+                        <span style="margin-left:auto">${ou.progress}% 경과</span>
+                    </div>
+                    <div class="nba-ou-mini-track">
+                        <div class="nba-ou-mini-fill" style="width:${ou.progress}%"></div>
+                    </div>
+                </div>`;
+            }
+        }
+
         card.innerHTML = `
             <div class="match-header">
                 <span class="match-time">${match.time || ''}</span>
                 <span class="match-status ${statusClass}">${statusLiveIcon}${statusText}</span>
             </div>
             ${teamsHtml}
+            ${ouHtml}
             <div class="match-footer">
                 <span class="match-league"><i class="fas ${sportIcon}"></i> ${match.league}</span>
                 <button class="favorite-btn" data-match-id="${match.id}"><i class="far fa-heart"></i></button>
