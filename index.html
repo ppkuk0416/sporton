@@ -1707,6 +1707,12 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                     <div class="post-form" id="postForm" style="display:none">
                         <div class="form-card">
                             <h3><i class="fas fa-pen"></i> 새 글 작성</h3>
+                            <!-- Firebase 미연결 경고 -->
+                            <div id="postFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Firebase가 연결되지 않았습니다. 등록하려면 먼저 Firebase를 연결해주세요.</span>
+                                <button onclick="document.getElementById('firebaseSetupBtn').click()" style="margin-left:auto; background:var(--gradient-accent); border:none; color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; white-space:nowrap;">지금 연결하기</button>
+                            </div>
                             <div class="form-group">
                                 <label>닉네임</label>
                                 <input type="text" id="postNickname" class="form-input" placeholder="닉네임을 입력하세요" maxlength="20">
@@ -2991,6 +2997,7 @@ const app = {
                 if (!Community.db) {
                     Community.db = firebase.firestore();
                     document.getElementById('firebaseBanner')?.classList.add('hidden');
+                    document.getElementById('postFormFirebaseWarning')?.style && (document.getElementById('postFormFirebaseWarning').style.display = 'none');
                     Community.loadPosts();
                 }
             }
@@ -3255,6 +3262,9 @@ const Community = {
             document.getElementById('postList').style.display = 'none';
             document.getElementById('categoryFilters').style.display = 'none';
             document.getElementById('hotSection').style.display = 'none';
+            // Firebase 미연결 시 폼 내부에 경고 배너 표시
+            const warning = document.getElementById('postFormFirebaseWarning');
+            if (warning) warning.style.display = this.db ? 'none' : 'flex';
             document.getElementById('postForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
@@ -3316,6 +3326,8 @@ const Community = {
             if (!firebase.apps.length) firebase.initializeApp(config);
             this.db = firebase.firestore();
             document.getElementById('firebaseBanner')?.classList.add('hidden');
+            const w = document.getElementById('postFormFirebaseWarning');
+            if (w) w.style.display = 'none';
             document.getElementById('firebaseModal').classList.remove('show');
             Animations.showToast('Firebase 연결 완료! 🎉', 'success');
             this.loadPosts();
@@ -3531,7 +3543,12 @@ const Community = {
     },
 
     async submitPost() {
-        if (!this.db) { Animations.showToast('Firebase를 먼저 설정해주세요. 화면 위 설정하기 버튼을 눌러주세요.', 'error'); return; }
+        if (!this.db) {
+            const warning = document.getElementById('postFormFirebaseWarning');
+            if (warning) warning.style.display = 'flex';
+            Animations.showToast('Firebase를 먼저 연결해주세요', 'error');
+            return;
+        }
         const nickname = document.getElementById('postNickname').value.trim();
         const title = document.getElementById('postTitle').value.trim();
         const content = document.getElementById('postContent').value.trim();
