@@ -317,6 +317,46 @@ img { max-width: 100%; height: auto; }
 .content-section { display: none; }
 .content-section.active { display: block; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+/* ===== 홈 대시보드 ===== */
+body.view-home .hero { display: none !important; }
+body.view-home .sport-tabs { display: none !important; }
+body.view-home .sidebar { display: none !important; }
+.home-dashboard { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; }
+.home-sports-feed { min-width: 0; }
+.home-feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.home-feed-header h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 8px; margin: 0; }
+.home-feed-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
+.home-live-count { background: rgba(255,59,59,0.15); color: #ff5252; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; display: none; }
+.home-sport-group { margin-bottom: 14px; background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); overflow: hidden; }
+.home-sport-group-header { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; font-weight: 700; color: var(--text-primary); }
+.home-game-row { display: flex; align-items: center; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 10px; transition: background 0.15s; cursor: default; }
+.home-game-row:last-child { border-bottom: none; }
+.home-game-row:hover { background: rgba(255,255,255,0.03); }
+.home-game-row.live-game { background: rgba(255,59,59,0.05); border-left: 2px solid rgba(255,59,59,0.4); }
+.home-game-status { width: 50px; text-align: center; flex-shrink: 0; }
+.live-badge { background: rgba(255,59,59,0.2); color: #ff5252; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; animation: pulse 1.5s infinite; display: inline-block; }
+.finished-badge { font-size: 10px; color: var(--text-muted); }
+.time-text { font-size: 10px; color: var(--text-muted); line-height: 1.3; white-space: nowrap; }
+.home-game-teams { flex: 1; min-width: 0; }
+.home-game-team { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
+.home-game-team.winner { font-weight: 700; color: var(--text-primary); }
+.home-team-logo { width: 15px; height: 15px; object-fit: contain; flex-shrink: 0; }
+.home-team-name { overflow: hidden; text-overflow: ellipsis; }
+.home-game-score { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; text-align: right; min-width: 28px; color: var(--text-primary); line-height: 1.6; flex-shrink: 0; }
+.home-game-league { font-size: 9px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+/* 홈 임베드 채팅 */
+.home-chat-embed { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); display: flex; flex-direction: column; height: 480px; position: sticky; top: 76px; overflow: hidden; }
+.home-chat-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.home-chat-online { margin-left: auto; font-size: 10px; background: rgba(0,255,136,0.1); color: #00ff88; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+.home-chat-messages { flex: 1; overflow-y: auto; padding: 8px 10px; scroll-behavior: smooth; }
+.home-chat-messages::-webkit-scrollbar { width: 3px; }
+.home-chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+.home-chat-input { padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+@media (max-width: 860px) {
+    .home-dashboard { grid-template-columns: 1fr; }
+    .home-chat-embed { position: static; height: 340px; }
+}
 .section-title { font-size: var(--text-2xl); display: flex; align-items: center; gap: 0.75rem; }
 .live-indicator { width: 12px; height: 12px; background: var(--color-danger); border-radius: 50%; animation: pulse 2s infinite; }
 
@@ -330,6 +370,94 @@ img { max-width: 100%; height: auto; }
     margin-bottom: var(--space-3);
 }
 .calendar-intro i { color: var(--accent-gold); font-size: 1rem; flex-shrink: 0; }
+.calendar-unavailable { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 24px; background: var(--gradient-card); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); }
+.calendar-unavailable i { font-size: 2.5rem; color: rgba(255,200,80,0.6); }
+.calendar-unavailable p { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin: 0; }
+.calendar-unavailable span { font-size: var(--text-sm); line-height: 1.6; }
+
+/* ── NBA O/U Calculator ─────────────────────────────── */
+.nbaou-wrap { display: grid; grid-template-columns: 380px 1fr; gap: var(--space-4); align-items: start; }
+@media (max-width: 900px) { .nbaou-wrap { grid-template-columns: 1fr; } }
+
+.nbaou-input-card, .nbaou-result-card, .nbaou-guide {
+    background: var(--gradient-card); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg); padding: var(--space-4); }
+
+/* 입력 카드 */
+.nbaou-field-group { margin-bottom: var(--space-3); }
+.nbaou-label { display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.nbaou-hint { font-weight: 400; color: var(--text-muted); margin-left: 6px; }
+.nbaou-input {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-md); padding: 10px 14px; color: var(--text-primary);
+    font-size: var(--text-base); font-family: var(--font-body); transition: border-color 0.2s; box-sizing: border-box; }
+.nbaou-input:focus { outline: none; border-color: var(--accent-gold); background: rgba(255,255,255,0.09); }
+.nbaou-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+.nbaou-mode-row { display: flex; gap: 8px; }
+.nbaou-mode-btn { flex: 1; padding: 10px 8px; border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-size: var(--text-sm); font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.nbaou-mode-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+.nbaou-mode-btn.active { background: var(--gradient-accent); border-color: transparent; color: white; }
+
+.nbaou-time-toggle { display: flex; gap: 8px; }
+.nbaou-radio-label { flex: 1; cursor: pointer; }
+.nbaou-radio-label input { display: none; }
+.nbaou-radio-btn { display: block; text-align: center; padding: 9px; border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-size: var(--text-sm); font-weight: 600; transition: all 0.2s; }
+.nbaou-radio-label input:checked + .nbaou-radio-btn { background: rgba(42,157,143,0.25); border-color: var(--accent-teal); color: var(--accent-teal); }
+
+.nbaou-time-row { display: flex; align-items: center; gap: 8px; }
+.nbaou-time-input-wrap { position: relative; flex: 1; }
+.nbaou-time-digit { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; }
+.nbaou-time-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: var(--text-xs); color: var(--text-muted); pointer-events: none; }
+.nbaou-colon { font-size: 1.4rem; font-weight: 900; color: var(--text-muted); flex-shrink: 0; }
+
+.nbaou-score-row { display: flex; align-items: center; gap: var(--space-2); }
+.nbaou-score-block { flex: 1; }
+.nbaou-score-label { display: block; font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 4px; text-align: center; }
+.nbaou-score-input { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; }
+.nbaou-vs { font-size: var(--text-sm); font-weight: 900; color: var(--text-muted); flex-shrink: 0; text-align: center; }
+.nbaou-calc-btn { width: 100%; justify-content: center; margin-top: var(--space-1); font-size: var(--text-base); padding: 14px; }
+
+/* 결과 카드 */
+.nbaou-pace-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-4); }
+.nbaou-pace-item { background: rgba(255,255,255,0.04); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; }
+.nbaou-pace-label { display: block; font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 6px; }
+.nbaou-pace-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--text-primary); }
+.nbaou-pace-val.accent { color: var(--accent-gold); }
+
+.nbaou-prob-section { margin-bottom: var(--space-4); }
+.nbaou-prob-bar-wrap { display: flex; margin-bottom: 10px; }
+.nbaou-prob-over-side { flex: 1; display: flex; align-items: baseline; gap: 8px; }
+.nbaou-prob-under-side { flex: 1; display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; }
+.nbaou-prob-pct { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 900; }
+.nbaou-prob-over-side .nbaou-prob-pct { color: #4ade80; }
+.nbaou-prob-under-side .nbaou-prob-pct { color: #f87171; }
+.nbaou-prob-tag { font-size: var(--text-sm); font-weight: 700; color: var(--text-secondary); }
+.nbaou-prob-track { height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.nbaou-prob-fill-over { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 999px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+
+.nbaou-confidence { margin-bottom: var(--space-3); }
+.nbaou-conf-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.nbaou-conf-val { font-size: var(--text-sm); font-weight: 700; color: var(--accent-cyan); }
+.nbaou-conf-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+.nbaou-conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent-teal), var(--accent-cyan)); border-radius: 999px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+.nbaou-conf-desc { font-size: var(--text-xs); color: var(--text-muted); margin: 0; }
+
+.nbaou-detail { background: rgba(255,255,255,0.03); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); }
+.nbaou-detail-title { font-size: var(--text-sm); font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.nbaou-detail-title i { color: var(--accent-gold); }
+.nbaou-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.nbaou-detail-row { display: flex; justify-content: space-between; font-size: var(--text-xs); }
+.nbaou-detail-key { color: var(--text-muted); }
+.nbaou-detail-val { color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; }
+
+/* 초기 안내 */
+.nbaou-guide { text-align: center; }
+.nbaou-guide-icon { font-size: 3rem; color: rgba(244,162,97,0.4); margin-bottom: var(--space-2); display: block; }
+.nbaou-guide-title { font-size: var(--text-lg); font-weight: 700; color: var(--text-secondary); margin-bottom: var(--space-3); }
+.nbaou-guide-list { list-style: none; padding: 0; margin: 0; text-align: left; display: flex; flex-direction: column; gap: 10px; }
+.nbaou-guide-list li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--text-sm); color: var(--text-muted); }
+.nbaou-guide-list i { color: var(--accent-teal); margin-top: 2px; flex-shrink: 0; }
 .calendar-size-bar {
     display: flex; align-items: center; gap: var(--space-1);
     margin-bottom: var(--space-3); flex-wrap: wrap;
@@ -728,25 +856,23 @@ img { max-width: 100%; height: auto; }
     border-radius: 999px;
 }
 
-/* ===== 실시간 채팅 패널 ===== */
+/* ===== 실시간 채팅 패널 (사이드바) ===== */
 .live-chat-panel {
-    position: fixed;
-    right: 0; top: 70px; bottom: 0;
-    width: 280px;
-    background: #0d1b2e;
-    border-left: 1px solid rgba(255,255,255,0.08);
+    background: var(--gradient-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    z-index: 800;
-    transition: transform 0.3s ease;
+    height: 480px;
+    overflow: hidden;
+    margin-bottom: var(--space-3);
 }
-.live-chat-panel.collapsed { transform: translateX(280px); }
 .chat-panel-header {
-    padding: 14px 16px;
+    padding: 10px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-shrink: 0;
 }
 .chat-panel-title {
@@ -847,14 +973,6 @@ img { max-width: 100%; height: auto; }
     transition: background 0.15s;
 }
 .chat-open-tab:hover { background: #132043; color: #fff; }
-/* 메인 콘텐츠 오른쪽 패딩 (채팅 패널 공간 확보) */
-.main-content { margin-right: 280px; transition: margin-right 0.3s; }
-.main-content.chat-collapsed { margin-right: 0; }
-@media (max-width: 1200px) {
-    .live-chat-panel { display: none; }
-    .main-content { margin-right: 0 !important; }
-    .chat-open-tab { display: none !important; }
-}
 
 /* ===== 순위표 ===== */
 .standings-section { margin-top: 32px; }
@@ -1007,10 +1125,12 @@ img { max-width: 100%; height: auto; }
                 <span>SPORTON</span>
             </div>
             <nav class="nav">
-                <a href="#" class="nav-link active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
+                <a href="#" class="nav-link active" data-view="home"><i class="fas fa-home"></i><span>홈</span></a>
+                <a href="#" class="nav-link" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
                 <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
+                <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
             </nav>
             <div class="header-actions">
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
@@ -1101,6 +1221,24 @@ img { max-width: 100%; height: auto; }
                     <h3 class="sidebar-title"><i class="fas fa-star"></i> 즐겨찾기</h3>
                     <div class="favorites-list" id="favoritesList"><p class="empty-state">즐겨찾기한 팀이 없습니다</p></div>
                 </div>
+                <!-- 실시간 채팅 패널 -->
+                <div class="live-chat-panel" id="liveChatPanel">
+                    <div class="chat-panel-header">
+                        <span class="chat-live-dot"></span>
+                        <span class="sidebar-title" style="margin:0;font-size:var(--text-sm);">실시간 채팅</span>
+                        <span class="chat-online-count" id="chatOnlineCount" style="margin-left:auto;">0명</span>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-empty">채팅에 참여하세요 💬</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input class="chat-nickname-input" id="chatNickname" placeholder="닉네임" maxlength="10">
+                        <div class="chat-msg-row">
+                            <input class="chat-msg-input" id="chatMsgInput" placeholder="메시지 입력..." maxlength="100">
+                            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
             </aside>
 
             <div class="content-main">
@@ -1114,7 +1252,47 @@ img { max-width: 100%; height: auto; }
                     <button class="sport-tab" data-sport="esports"><span>🎮</span><span>e스포츠</span></button>
                     <button class="sport-tab" data-sport="volleyball"><span>🏐</span><span>배구</span></button>
                 </div>
-                <section class="content-section active" id="liveSection">
+                <!-- ===== 홈 대시보드 섹션 ===== -->
+                <section class="content-section active" id="homeSection">
+                    <div class="home-dashboard">
+                        <!-- 왼쪽: 오늘의 경기 피드 -->
+                        <div class="home-sports-feed">
+                            <div class="home-feed-header">
+                                <h2><span class="live-indicator"></span> 오늘의 경기</h2>
+                                <div class="home-feed-meta">
+                                    <span class="home-live-count" id="homeLiveCount"></span>
+                                    <span>업데이트: <span id="homeUpdateTime">-</span></span>
+                                    <button class="btn-refresh" id="homeRefreshBtn" title="새로고침"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                            </div>
+                            <div id="homeGamesContainer">
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                            </div>
+                        </div>
+                        <!-- 오른쪽: 실시간 채팅 -->
+                        <div class="home-chat-embed">
+                            <div class="home-chat-header">
+                                <span class="chat-live-dot"></span>
+                                <span>실시간 채팅</span>
+                                <span class="home-chat-online" id="homeChatOnline">0명</span>
+                            </div>
+                            <div class="home-chat-messages" id="homeChatMessages">
+                                <div class="chat-empty">채팅에 참여하세요 💬</div>
+                            </div>
+                            <div class="home-chat-input">
+                                <input class="chat-nickname-input" id="homeChatNick" placeholder="닉네임" maxlength="10" style="margin-bottom:5px;font-size:11px;padding:5px 8px;">
+                                <div class="chat-msg-row">
+                                    <input class="chat-msg-input" id="homeChatMsgInput" placeholder="메시지..." maxlength="100" style="font-size:11px;padding:5px 8px;">
+                                    <button class="chat-send-btn" id="homeChatSendBtn" style="padding:0 10px;"><i class="fas fa-paper-plane" style="font-size:11px;"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-section" id="liveSection">
                     <div class="section-header">
                         <h2 class="section-title"><span class="live-indicator"></span> 라이브 경기</h2>
                         <div class="section-actions">
@@ -1159,26 +1337,175 @@ img { max-width: 100%; height: auto; }
                         <i class="fas fa-info-circle"></i>
                         <span>오늘 경기, 라이브 스코어, 예정 일정을 한눈에 확인하세요. 실시간으로 자동 업데이트됩니다.</span>
                     </div>
-                    <div class="calendar-size-bar">
-                        <span>크기:</span>
-                        <button class="cal-size-btn" data-h="400">소형</button>
-                        <button class="cal-size-btn active" data-h="520">중형</button>
-                        <button class="cal-size-btn" data-h="660">대형</button>
-                        <button class="cal-size-btn" data-h="800">전체</button>
+                    <div class="calendar-unavailable">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>현재 캘린더 서비스를 이용할 수 없습니다.</p>
+                        <span>데이터 제공 서비스(SportBusy)가 일시적으로 중단되어 있습니다.<br>경기 일정은 <strong>예정</strong> 탭에서 확인하세요.</span>
                     </div>
-                    <div class="calendar-frame-wrap" id="calendarWrap">
-                        <iframe
-                            id="sportbusyFrame"
-                            src="https://www.sportbusy.com/embed"
-                            width="100%"
-                            height="520"
-                            loading="lazy"
-                            title="SportBusy 스포츠 캘린더"
-                        ></iframe>
+                </section>
+
+                <!-- NBA O/U 계산기 섹션 -->
+                <section class="content-section" id="nbaCalcSection">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-basketball-ball"></i> NBA 오버/언더 계산기</h2>
                     </div>
-                    <p class="calendar-credit">
-                        스포츠 데이터 제공: <a href="https://www.sportbusy.com" target="_blank" rel="noopener">SportBusy</a>
-                    </p>
+
+                    <div class="nbaou-wrap">
+                        <!-- 입력 패널 -->
+                        <div class="nbaou-input-card">
+
+                            <!-- 모드 선택 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">계산 모드</label>
+                                <div class="nbaou-mode-row">
+                                    <button class="nbaou-mode-btn active" data-mode="1q">
+                                        <i class="fas fa-stopwatch"></i> 1쿼터 기준
+                                    </button>
+                                    <button class="nbaou-mode-btn" data-mode="full">
+                                        <i class="fas fa-layer-group"></i> 전체 경기 기준
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 기준점 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label" for="nbaLine">
+                                    기준점 (O/U Line)
+                                    <span class="nbaou-hint" id="nbaLineHint">예: 59.5 (1쿼터)</span>
+                                </label>
+                                <input class="nbaou-input" id="nbaLine" type="number" step="0.5" min="0" placeholder="59.5">
+                            </div>
+
+                            <!-- 현재 쿼터 (전체 모드만) -->
+                            <div class="nbaou-field-group" id="nbaQuarterRow" style="display:none">
+                                <label class="nbaou-label" for="nbaQuarter">현재 쿼터</label>
+                                <select class="nbaou-input nbaou-select" id="nbaQuarter">
+                                    <option value="1">1쿼터</option>
+                                    <option value="2">2쿼터</option>
+                                    <option value="3">3쿼터</option>
+                                    <option value="4">4쿼터</option>
+                                </select>
+                            </div>
+
+                            <!-- 시간 입력 방식 토글 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">시간 입력 방식</label>
+                                <div class="nbaou-time-toggle">
+                                    <label class="nbaou-radio-label">
+                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="remaining" checked>
+                                        <span class="nbaou-radio-btn">남은 시간</span>
+                                    </label>
+                                    <label class="nbaou-radio-label">
+                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="elapsed">
+                                        <span class="nbaou-radio-btn">경과 시간</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 분:초 입력 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label" id="nbaTimeLabel">남은 시간 (현재 쿼터)</label>
+                                <div class="nbaou-time-row">
+                                    <div class="nbaou-time-input-wrap">
+                                        <input class="nbaou-input nbaou-time-digit" id="nbaMinutes" type="number" min="0" max="11" placeholder="9">
+                                        <span class="nbaou-time-unit">분</span>
+                                    </div>
+                                    <span class="nbaou-colon">:</span>
+                                    <div class="nbaou-time-input-wrap">
+                                        <input class="nbaou-input nbaou-time-digit" id="nbaSeconds" type="number" min="0" max="59" placeholder="33">
+                                        <span class="nbaou-time-unit">초</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 점수 입력 -->
+                            <div class="nbaou-field-group">
+                                <label class="nbaou-label">현재 점수</label>
+                                <div class="nbaou-score-row">
+                                    <div class="nbaou-score-block">
+                                        <label class="nbaou-score-label">홈팀</label>
+                                        <input class="nbaou-input nbaou-score-input" id="nbaHome" type="number" min="0" placeholder="12">
+                                    </div>
+                                    <div class="nbaou-vs">VS</div>
+                                    <div class="nbaou-score-block">
+                                        <label class="nbaou-score-label">어웨이</label>
+                                        <input class="nbaou-input nbaou-score-input" id="nbaAway" type="number" min="0" placeholder="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary nbaou-calc-btn" id="nbaCalcBtn">
+                                <i class="fas fa-chart-bar"></i> 확률 계산하기
+                            </button>
+                        </div>
+
+                        <!-- 결과 패널 -->
+                        <div class="nbaou-result-card" id="nbaResult" style="display:none">
+
+                            <!-- 현재 페이스 -->
+                            <div class="nbaou-pace-row">
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">현재 총점</span>
+                                    <span class="nbaou-pace-val" id="resCurrentTotal">—</span>
+                                </div>
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">예상 최종 총점</span>
+                                    <span class="nbaou-pace-val accent" id="resProjected">—</span>
+                                </div>
+                                <div class="nbaou-pace-item">
+                                    <span class="nbaou-pace-label">기준점 대비</span>
+                                    <span class="nbaou-pace-val" id="resDiff">—</span>
+                                </div>
+                            </div>
+
+                            <!-- 오버/언더 확률 바 -->
+                            <div class="nbaou-prob-section">
+                                <div class="nbaou-prob-bar-wrap">
+                                    <div class="nbaou-prob-over-side" id="resOverBar">
+                                        <span class="nbaou-prob-pct" id="resOverPct">—%</span>
+                                        <span class="nbaou-prob-tag">오버 ▲</span>
+                                    </div>
+                                    <div class="nbaou-prob-under-side" id="resUnderBar">
+                                        <span class="nbaou-prob-tag">언더 ▼</span>
+                                        <span class="nbaou-prob-pct" id="resUnderPct">—%</span>
+                                    </div>
+                                </div>
+                                <div class="nbaou-prob-track">
+                                    <div class="nbaou-prob-fill-over" id="resProbFill" style="width:50%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 신뢰도 -->
+                            <div class="nbaou-confidence">
+                                <div class="nbaou-conf-label-row">
+                                    <span class="nbaou-label">신뢰도</span>
+                                    <span class="nbaou-conf-val" id="resConfidence">—</span>
+                                </div>
+                                <div class="nbaou-conf-track">
+                                    <div class="nbaou-conf-fill" id="resConfFill" style="width:0%"></div>
+                                </div>
+                                <p class="nbaou-conf-desc" id="resConfDesc"></p>
+                            </div>
+
+                            <!-- 상세 계산 근거 -->
+                            <div class="nbaou-detail">
+                                <div class="nbaou-detail-title"><i class="fas fa-info-circle"></i> 계산 근거</div>
+                                <div class="nbaou-detail-grid" id="resDetailGrid"></div>
+                            </div>
+                        </div>
+
+                        <!-- 초기 안내 -->
+                        <div class="nbaou-guide" id="nbaGuide">
+                            <i class="fas fa-basketball-ball nbaou-guide-icon"></i>
+                            <p class="nbaou-guide-title">NBA 오버/언더 확률 계산기</p>
+                            <ul class="nbaou-guide-list">
+                                <li><i class="fas fa-check-circle"></i> 기준점(라인)과 현재 점수를 입력하면 오버/언더 확률을 계산합니다</li>
+                                <li><i class="fas fa-check-circle"></i> 현재 페이스 기반 정규분포로 확률을 산출합니다</li>
+                                <li><i class="fas fa-check-circle"></i> 경기 초반일수록 불확실성이 높아 확률 범위가 넓어집니다</li>
+                                <li><i class="fas fa-check-circle"></i> 1쿼터 12분, 전체 4쿼터 48분 기준으로 계산합니다</li>
+                            </ul>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- 커뮤니티 섹션 -->
@@ -1293,35 +1620,6 @@ img { max-width: 100%; height: auto; }
     </div>
 </main>
 
-<!-- ── 실시간 채팅 패널 ── -->
-<div class="live-chat-panel" id="liveChatPanel">
-    <div class="chat-panel-header">
-        <div class="chat-panel-title">
-            <span class="chat-live-dot"></span>
-            <span>실시간 채팅</span>
-            <span class="chat-online-count" id="chatOnlineCount">0명</span>
-        </div>
-        <button class="chat-toggle-btn" id="chatToggleBtn" title="채팅 접기">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-        <div class="chat-empty">채팅에 참여하세요 💬</div>
-    </div>
-    <div class="chat-input-area">
-        <input class="chat-nickname-input" id="chatNickname" placeholder="닉네임" maxlength="10">
-        <div class="chat-msg-row">
-            <input class="chat-msg-input" id="chatMsgInput" placeholder="메시지 입력..." maxlength="100">
-            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-</div>
-
-<!-- 채팅 열기 탭 (닫혔을 때) -->
-<button class="chat-open-tab" id="chatOpenTab" style="display:none;">
-    <i class="fas fa-comments"></i>
-    <span>채팅</span>
-</button>
 
 <footer class="footer">
     <div class="container">
@@ -1356,10 +1654,12 @@ img { max-width: 100%; height: auto; }
 </footer>
 
 <nav class="mobile-nav">
-    <a href="#" class="mobile-nav-item active" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
+    <a href="#" class="mobile-nav-item active" data-view="home"><i class="fas fa-home"></i><span>홈</span></a>
+    <a href="#" class="mobile-nav-item" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
     <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
+    <a href="#" class="mobile-nav-item" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
 </nav>
 
 <div class="modal" id="apiModal">
@@ -2822,11 +3122,13 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection' };
-        document.getElementById(sectionMap[view] || 'liveSection')?.classList.add('active');
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection', nbacalc:'nbaCalcSection' };
+        document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='community' || view==='calendar' || view==='textrelay') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc') ? 'none' : 'flex';
+        // 홈 뷰 body 클래스 (hero 숨기기 등)
+        document.body.classList.toggle('view-home', view === 'home');
     },
 
     filterSport(sport) {
@@ -2932,9 +3234,9 @@ document.addEventListener('DOMContentLoaded', () => {
         app.openApiModal();
     });
 
-    // 로고 클릭 → 홈(라이브) 화면
+    // 로고 클릭 → 홈 화면
     document.getElementById('logoHome')?.addEventListener('click', () => {
-        app.switchView('live');
+        app.switchView('home');
         app.currentSport = 'all';
         document.querySelectorAll('.sport-tab').forEach(t => t.classList.toggle('active', t.dataset.sport==='all'));
         DataCache.clear();
@@ -2942,14 +3244,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({top:0, behavior:'smooth'});
     });
 
-    // 캘린더 위젯 크기 버튼
+    // 캘린더 위젯 크기 버튼 (비활성 - 서비스 중단)
     document.querySelectorAll('.cal-size-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.cal-size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const h = btn.dataset.h;
-            const frame = document.getElementById('sportbusyFrame');
-            if (frame) frame.height = h;
+            // sportbusy 서비스 중단으로 비활성화
         });
     });
 });
@@ -3493,23 +3791,433 @@ const Community = {
     }
 };
 
-// switchView에 커뮤니티/캘린더 연결
+// ===== 홈 대시보드 =====
+const HomeDashboard = {
+    refreshTimer: null,
+    myNick: '',
+    chatDb: null,
+    chatUnsub: null,
+    initialized: false,
+
+    ESPN_FEEDS: [
+        { id:'nba',            url:'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard',       sport:'농구',   icon:'🏀', league:'NBA' },
+        { id:'nfl',            url:'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard',         sport:'미식축구', icon:'🏈', league:'NFL' },
+        { id:'mlb',            url:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard',         sport:'야구',   icon:'⚾', league:'MLB' },
+        { id:'nhl',            url:'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard',           sport:'하키',   icon:'🏒', league:'NHL' },
+        { id:'eng.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',         sport:'축구',   icon:'⚽', league:'EPL' },
+        { id:'esp.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard',         sport:'축구',   icon:'⚽', league:'라리가' },
+        { id:'ger.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard',         sport:'축구',   icon:'⚽', league:'분데스리가' },
+        { id:'ita.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard',         sport:'축구',   icon:'⚽', league:'세리에A' },
+        { id:'fra.1',          url:'https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard',         sport:'축구',   icon:'⚽', league:'리그앙' },
+        { id:'uefa.champions', url:'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard',sport:'축구',   icon:'🏆', league:'챔피언스리그' },
+        { id:'mls',            url:'https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard',         sport:'축구',   icon:'⚽', league:'MLS' },
+    ],
+
+    async init() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.myNick = localStorage.getItem('sportsLive_chatNick') || '';
+        const nickEl = document.getElementById('homeChatNick');
+        if (nickEl && this.myNick) nickEl.value = this.myNick;
+        this.bindEvents();
+        await this.fetchAndRender();
+        this.startAutoRefresh();
+        this.initChat();
+    },
+
+    async fetchAndRender() {
+        const container = document.getElementById('homeGamesContainer');
+        if (!container) return;
+        const results = await Promise.allSettled(
+            this.ESPN_FEEDS.map(feed =>
+                fetch(feed.url, { signal: AbortSignal.timeout(8000) })
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => data ? { ...feed, events: data.events || [] } : null)
+                    .catch(() => null)
+            )
+        );
+        const feeds = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+        this.renderSportsFeed(container, feeds);
+        const timeEl = document.getElementById('homeUpdateTime');
+        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' });
+    },
+
+    renderSportsFeed(container, feeds) {
+        const sportGroups = {};
+        let totalLive = 0;
+
+        feeds.forEach(feed => {
+            if (!feed.events.length) return;
+            if (!sportGroups[feed.sport]) sportGroups[feed.sport] = { icon: feed.icon, sport: feed.sport, games: [] };
+            feed.events.forEach(ev => {
+                const comp = ev.competitions?.[0];
+                const home = comp?.competitors?.find(c => c.homeAway === 'home');
+                const away = comp?.competitors?.find(c => c.homeAway === 'away');
+                if (!home || !away) return;
+                const st = ev.status?.type?.name;
+                let status = 'upcoming', timeStr = '';
+                if (st === 'STATUS_IN_PROGRESS') {
+                    status = 'live'; totalLive++;
+                    const period = ev.status?.period, clock = ev.status?.displayClock;
+                    if (['nba','nhl'].includes(feed.id)) timeStr = `Q${period} ${clock}`;
+                    else if (feed.id === 'mlb') timeStr = `${period}회`;
+                    else timeStr = clock || 'LIVE';
+                } else if (st === 'STATUS_FINAL') {
+                    status = 'finished'; timeStr = '종료';
+                } else {
+                    const d = new Date(ev.date);
+                    timeStr = d.toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Seoul' });
+                }
+                sportGroups[feed.sport].games.push({
+                    homeTeam: home.team?.shortDisplayName || home.team?.displayName || '',
+                    awayTeam: away.team?.shortDisplayName || away.team?.displayName || '',
+                    homeLogo: home.team?.logo || '', awayLogo: away.team?.logo || '',
+                    homeScore: home.score != null ? home.score : null,
+                    awayScore: away.score != null ? away.score : null,
+                    status, timeStr, league: feed.league,
+                });
+            });
+        });
+
+        const countEl = document.getElementById('homeLiveCount');
+        if (countEl) { countEl.textContent = `🔴 LIVE ${totalLive}`; countEl.style.display = totalLive > 0 ? 'inline-block' : 'none'; }
+
+        const sportOrder = ['축구','농구','야구','하키','미식축구'];
+        const sorted = Object.values(sportGroups).sort((a, b) => {
+            const ai = sportOrder.indexOf(a.sport), bi = sportOrder.indexOf(b.sport);
+            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+        });
+
+        if (!sorted.length) {
+            container.innerHTML = '<div class="empty-state" style="padding:40px 20px;text-align:center;opacity:0.5;"><i class="fas fa-moon" style="font-size:2rem;display:block;margin-bottom:10px;"></i>오늘은 예정된 경기가 없습니다</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        sorted.forEach(group => {
+            const games = [...group.games].sort((a, b) => {
+                const o = { live:0, upcoming:1, finished:2 };
+                return (o[a.status] ?? 1) - (o[b.status] ?? 1);
+            });
+            const groupEl = document.createElement('div');
+            groupEl.className = 'home-sport-group';
+            groupEl.innerHTML = `<div class="home-sport-group-header"><span>${group.icon}</span><span>${group.sport}</span><span style="margin-left:auto;font-size:10px;color:var(--text-muted);">${games.length}경기</span></div>`;
+            games.forEach(game => {
+                const isLive = game.status === 'live';
+                const hasScore = game.homeScore != null && game.awayScore != null;
+                const homeWin = hasScore && Number(game.homeScore) > Number(game.awayScore);
+                const awayWin = hasScore && Number(game.awayScore) > Number(game.homeScore);
+                const row = document.createElement('div');
+                row.className = `home-game-row${isLive ? ' live-game' : ''}`;
+                row.innerHTML = `
+                    <div class="home-game-status">
+                        ${isLive ? `<span class="live-badge">LIVE</span><div class="time-text" style="margin-top:2px;">${this._esc(game.timeStr)}</div>` : `<span class="${game.status==='finished'?'finished-badge':'time-text'}">${this._esc(game.timeStr)}</span>`}
+                    </div>
+                    <div class="home-game-teams">
+                        <div class="home-game-team${homeWin?' winner':''}">
+                            ${game.homeLogo?`<img class="home-team-logo" src="${game.homeLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                            <span class="home-team-name">${this._esc(game.homeTeam)}</span>
+                        </div>
+                        <div class="home-game-team${awayWin?' winner':''}">
+                            ${game.awayLogo?`<img class="home-team-logo" src="${game.awayLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                            <span class="home-team-name">${this._esc(game.awayTeam)}</span>
+                        </div>
+                    </div>
+                    ${hasScore ? `<div class="home-game-score">${game.homeScore}<br>${game.awayScore}</div>` : ''}
+                    <div class="home-game-league">${this._esc(game.league)}</div>`;
+                groupEl.appendChild(row);
+            });
+            container.appendChild(groupEl);
+        });
+    },
+
+    startAutoRefresh() {
+        if (this.refreshTimer) clearInterval(this.refreshTimer);
+        this.refreshTimer = setInterval(() => this.fetchAndRender(), 30000);
+    },
+
+    stopAutoRefresh() {
+        if (this.refreshTimer) { clearInterval(this.refreshTimer); this.refreshTimer = null; }
+    },
+
+    initChat() {
+        try { this.chatDb = firebase.apps.length ? firebase.firestore() : null; } catch(e) { this.chatDb = null; }
+        const msgs = document.getElementById('homeChatMessages');
+        if (!this.chatDb) {
+            if (msgs) msgs.innerHTML = '<div class="chat-empty" style="font-size:12px;padding:16px;text-align:center;">Firebase 설정 후 채팅 가능합니다<br><small style="opacity:0.5">상단 API 키 설정에서 Firebase 탭 선택</small></div>';
+            return;
+        }
+        this.subscribeChat();
+        this.trackChatOnline();
+    },
+
+    subscribeChat() {
+        if (this.chatUnsub) this.chatUnsub();
+        this.chatUnsub = this.chatDb.collection('liveChat')
+            .orderBy('createdAt', 'asc').limitToLast(80)
+            .onSnapshot(snap => {
+                const msgs = document.getElementById('homeChatMessages');
+                if (!msgs) return;
+                if (snap.empty) { msgs.innerHTML = '<div class="chat-empty">첫 메시지를 남겨보세요! 💬</div>'; return; }
+                msgs.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data(), isSelf = d.nick === this.myNick;
+                    const t = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) : '';
+                    const item = document.createElement('div');
+                    item.className = `chat-msg-item${isSelf?' self':''}`;
+                    item.innerHTML = `<div class="chat-msg-nick${isSelf?' self':''}">${this._esc(d.nick)}</div><div class="chat-msg-text">${this._esc(d.text)}</div><div class="chat-msg-time">${t}</div>`;
+                    msgs.appendChild(item);
+                });
+                msgs.scrollTop = msgs.scrollHeight;
+            });
+    },
+
+    trackChatOnline() {
+        if (!this.chatDb) return;
+        this.chatDb.collection('chatPresence').onSnapshot(snap => {
+            const now = Date.now(); let count = 0;
+            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
+            const el = document.getElementById('homeChatOnline');
+            if (el) el.textContent = count + '명 접속중';
+        });
+    },
+
+    async sendMsg() {
+        if (!this.chatDb) { alert('Firebase 연결이 필요합니다. API 키 설정에서 Firebase를 설정해주세요.'); return; }
+        const nickEl = document.getElementById('homeChatNick');
+        const msgEl  = document.getElementById('homeChatMsgInput');
+        const nick = (nickEl?.value || '').trim() || '익명';
+        const text = (msgEl?.value || '').trim();
+        if (!text) return;
+        this.myNick = nick;
+        localStorage.setItem('sportsLive_chatNick', nick);
+        // 기존 채팅 패널 닉네임도 동기화
+        const otherNick = document.getElementById('chatNickname');
+        if (otherNick) otherNick.value = nick;
+        msgEl.value = '';
+        try {
+            await this.chatDb.collection('liveChat').add({ nick, text, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } catch(e) { console.error('chat send:', e); }
+    },
+
+    bindEvents() {
+        document.getElementById('homeRefreshBtn')?.addEventListener('click', () => this.fetchAndRender());
+        document.getElementById('homeChatSendBtn')?.addEventListener('click', () => this.sendMsg());
+        document.getElementById('homeChatMsgInput')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMsg(); }
+        });
+        document.getElementById('homeChatNick')?.addEventListener('input', e => {
+            localStorage.setItem('sportsLive_chatNick', e.target.value);
+            this.myNick = e.target.value;
+        });
+    },
+
+    _esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+};
+
+// switchView에 커뮤니티/캘린더/홈 연결
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view) {
     _origSwitchView(view);
-    if (view === 'community') {
+    if (view === 'home') {
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('communitySection')?.classList.add('active');
-        Community.enter();
-    } else if (view === 'calendar') {
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('calendarSection')?.classList.add('active');
+        document.getElementById('homeSection')?.classList.add('active');
+        HomeDashboard.init();
+        HomeDashboard.startAutoRefresh();
+    } else {
+        HomeDashboard.stopAutoRefresh();
+        if (view === 'community') {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('communitySection')?.classList.add('active');
+            Community.enter();
+        } else if (view === 'calendar') {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('calendarSection')?.classList.add('active');
+        }
     }
 };
 
+// 초기 홈 뷰 진입
+app.switchView('home');
 
 Community.init();
 MatchComments.init();
+
+// ──────────────────────────────────────────────
+// NBA Over/Under 계산기
+// ──────────────────────────────────────────────
+const NBACalc = {
+    mode: '1q',       // '1q' | 'full'
+    timeMode: 'remaining', // 'remaining' | 'elapsed'
+
+    // 정규분포 누적함수 (Abramowitz & Stegun 근사)
+    erf(x) {
+        const sign = x < 0 ? -1 : 1;
+        x = Math.abs(x);
+        const t = 1 / (1 + 0.3275911 * x);
+        const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+        return sign * y;
+    },
+    normalCDF(z) {
+        return 0.5 * (1 + this.erf(z / Math.SQRT2));
+    },
+
+    init() {
+        // 모드 버튼
+        document.querySelectorAll('.nbaou-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nbaou-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.mode = btn.dataset.mode;
+                const quarterRow = document.getElementById('nbaQuarterRow');
+                const lineHint   = document.getElementById('nbaLineHint');
+                if (this.mode === 'full') {
+                    quarterRow.style.display = 'flex';
+                    lineHint.textContent = '예: 220.5 (전체 경기)';
+                } else {
+                    quarterRow.style.display = 'none';
+                    lineHint.textContent = '예: 59.5 (1쿼터)';
+                }
+                this.calculate();
+            });
+        });
+
+        // 시간 모드 라디오
+        document.querySelectorAll('.nbaou-time-mode').forEach(radio => {
+            radio.addEventListener('change', () => {
+                this.timeMode = document.querySelector('.nbaou-time-mode:checked').value;
+                const label = document.getElementById('nbaTimeLabel');
+                label.textContent = this.timeMode === 'remaining' ? '남은 시간 (현재 쿼터)' : '경과 시간 (현재 쿼터)';
+                this.calculate();
+            });
+        });
+
+        // 입력값 변경 시 자동 계산
+        ['nbaLine','nbaQuarter','nbaMinutes','nbaSeconds','nbaHome','nbaAway'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => this.calculate());
+        });
+
+        // 계산 버튼
+        document.getElementById('nbaCalcBtn')?.addEventListener('click', () => this.calculate());
+    },
+
+    calculate() {
+        const line    = parseFloat(document.getElementById('nbaLine').value);
+        const mins    = parseInt(document.getElementById('nbaMinutes').value) || 0;
+        const secs    = parseInt(document.getElementById('nbaSeconds').value) || 0;
+        const home    = parseInt(document.getElementById('nbaHome').value) || 0;
+        const away    = parseInt(document.getElementById('nbaAway').value) || 0;
+        const quarter = parseInt(document.getElementById('nbaQuarter').value) || 1;
+
+        if (isNaN(line) || (mins === 0 && secs === 0) || (home === 0 && away === 0)) {
+            return; // 아직 입력 부족
+        }
+
+        const Q_SEC   = 720;  // 12분 = 720초
+        const GAME_SEC = 2880; // 48분
+        const totalSec = this.mode === '1q' ? Q_SEC : GAME_SEC;
+
+        // 현재 쿼터 내 경과 시간(초)
+        const inputSec = mins * 60 + secs;
+        let elapsedInQ;
+        if (this.timeMode === 'remaining') {
+            elapsedInQ = Q_SEC - Math.min(inputSec, Q_SEC);
+        } else {
+            elapsedInQ = Math.min(inputSec, Q_SEC);
+        }
+
+        // 전체 경과 시간(초)
+        const totalElapsed = this.mode === '1q'
+            ? elapsedInQ
+            : (quarter - 1) * Q_SEC + elapsedInQ;
+
+        if (totalElapsed <= 0) return;
+
+        const currentTotal  = home + away;
+        const rate          = currentTotal / totalElapsed;       // 점/초
+        const projected     = rate * totalSec;                   // 예상 최종 총점
+        const remaining     = totalSec - totalElapsed;
+        const remainFrac    = remaining / totalSec;
+
+        // 불확실성 표준편차 (페이스 기반 정규분포)
+        // 기준 SD: 1쿼터 ≈ 7.5점, 전체 경기 ≈ 15점
+        const baseSD = this.mode === '1q' ? 7.5 : 15.0;
+        const sd     = baseSD * Math.sqrt(remainFrac);
+
+        // 오버/언더 확률
+        let pOver, pUnder;
+        if (sd < 0.01) {
+            // 경기 종료 직전 → 결정적
+            pOver  = projected > line ? 1 : 0;
+            pUnder = projected < line ? 1 : 0;
+        } else {
+            const z = (line - projected) / sd;
+            pOver  = 1 - this.normalCDF(z);
+            pUnder = this.normalCDF(z);
+        }
+
+        // 신뢰도: 경과 시간 비율 (많이 진행될수록 신뢰도 높음)
+        const confidence = (totalElapsed / totalSec) * 100;
+        const confLabel  = confidence < 25 ? '낮음' : confidence < 55 ? '보통' : confidence < 80 ? '높음' : '매우 높음';
+
+        this.renderResult({
+            line, currentTotal, projected, remaining, remainFrac,
+            pOver, pUnder, confidence, confLabel,
+            rate, sd, totalElapsed, totalSec, quarter
+        });
+    },
+
+    renderResult(d) {
+        const resultEl = document.getElementById('nbaResult');
+        const guideEl  = document.getElementById('nbaGuide');
+
+        resultEl.style.display = 'block';
+        guideEl.style.display  = 'none';
+
+        // 현재 페이스
+        document.getElementById('resCurrentTotal').textContent = d.currentTotal + '점';
+        document.getElementById('resProjected').textContent    = d.projected.toFixed(1) + '점';
+
+        const diff = d.projected - d.line;
+        const diffEl = document.getElementById('resDiff');
+        diffEl.textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '점';
+        diffEl.style.color = diff >= 0 ? '#4ade80' : '#f87171';
+
+        // 확률 표시
+        const overPct  = Math.round(d.pOver  * 100);
+        const underPct = Math.round(d.pUnder * 100);
+        document.getElementById('resOverPct').textContent  = overPct + '%';
+        document.getElementById('resUnderPct').textContent = underPct + '%';
+        document.getElementById('resProbFill').style.width = overPct + '%';
+
+        // 신뢰도
+        document.getElementById('resConfidence').textContent = `${Math.round(d.confidence)}% (${d.confLabel})`;
+        document.getElementById('resConfFill').style.width   = d.confidence + '%';
+        const timePlayedMin = Math.floor(d.totalElapsed / 60);
+        const timePlayedSec = Math.floor(d.totalElapsed % 60);
+        const remainMin     = Math.floor(d.remaining / 60);
+        const remainSec     = Math.floor(d.remaining % 60);
+        document.getElementById('resConfDesc').textContent =
+            `경과 ${timePlayedMin}분 ${timePlayedSec}초 | 남은 시간 ${remainMin}분 ${remainSec}초`;
+
+        // 계산 근거 상세
+        const ratePerMin = (d.rate * 60).toFixed(2);
+        const details = [
+            ['득점 페이스', `${ratePerMin}점/분`],
+            ['기준점 (라인)', `${d.line}점`],
+            ['예상 최종 총점', `${d.projected.toFixed(1)}점`],
+            ['표준편차 (SD)', `±${d.sd.toFixed(2)}점`],
+            ['오버 확률', `${(d.pOver * 100).toFixed(1)}%`],
+            ['언더 확률', `${(d.pUnder * 100).toFixed(1)}%`],
+        ];
+        const grid = document.getElementById('resDetailGrid');
+        grid.innerHTML = details.map(([k, v]) =>
+            `<div class="nbaou-detail-row"><span class="nbaou-detail-key">${k}</span><span class="nbaou-detail-val">${v}</span></div>`
+        ).join('');
+    }
+};
+
+NBACalc.init();
 </script>
 </body>
 </html>
