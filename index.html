@@ -322,6 +322,7 @@ img { max-width: 100%; height: auto; }
 body.view-home .hero { display: none !important; }
 body.view-home .sport-tabs { display: none !important; }
 body.view-home .sidebar { display: none !important; }
+body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .home-dashboard { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; }
 .home-sports-feed { min-width: 0; }
 .home-feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
@@ -1287,9 +1288,9 @@ body.view-home .sidebar { display: none !important; }
             </nav>
             <div class="header-actions">
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
-                <div class="api-status" id="apiStatus">
+                <div class="api-status connected" id="apiStatus">
                     <span class="status-dot"></span>
-                    <span class="status-text">연결 안됨</span>
+                    <span class="status-text">ESPN</span>
                 </div>
             </div>
         </div>
@@ -1299,10 +1300,10 @@ body.view-home .sidebar { display: none !important; }
 <div class="api-banner" id="apiBanner">
     <div class="container">
         <div class="banner-content">
-            <i class="fas fa-key"></i>
-            <span>BallDontLie API 키를 등록하면 NBA·EPL·LoL 등 20개 리그 실시간 데이터를 바로 볼 수 있습니다</span>
+            <i class="fas fa-satellite-dish"></i>
+            <span>ESPN API로 NBA·NFL·MLB·NHL·EPL 등 실시간 스코어를 제공합니다 (API 키 불필요)</span>
             <div class="banner-actions">
-                <button class="btn btn-primary" id="setupApiBtn"><i class="fas fa-key"></i> 무료 키 설정 (30초)</button>
+                <button class="btn btn-primary" id="setupApiBtn"><i class="fas fa-cog"></i> 설정</button>
             </div>
         </div>
     </div>
@@ -1954,7 +1955,7 @@ const ApiConfig = {
             oddsApi: localStorage.getItem('sportsLive_oddsApiKey') || ''
         };
     },
-    hasApiKey() { return !!this.loadApiKeys().oddsApi; },
+    hasApiKey() { return true; }, // ESPN은 키 없이 항상 사용 가능
     clearApiKeys() { localStorage.removeItem('sportsLive_oddsApiKey'); },
     isDemoMode() { return localStorage.getItem('sportsLive_demoMode') === 'true'; },
     setDemoMode(enabled) { enabled ? localStorage.setItem('sportsLive_demoMode','true') : localStorage.removeItem('sportsLive_demoMode'); }
