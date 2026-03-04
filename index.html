@@ -332,7 +332,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .home-sport-group { margin-bottom: 14px; background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); overflow: hidden; }
 .home-sport-group-header { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; font-weight: 700; color: var(--text-primary); }
 /* ── 홈 경기 행: 4열 그리드 (일자 | 팀 | 스코어 | 리그) ── */
-.home-game-row { display: grid; grid-template-columns: 92px 1fr 38px 56px; align-items: center; padding: 8px 14px; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; cursor: default; }
+.home-game-row { display: grid; grid-template-columns: 92px 1fr 38px 56px; align-items: center; padding: 8px 14px; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; cursor: pointer; }
 .home-game-row:last-child { border-bottom: none; }
 .home-game-row:hover { background: rgba(255,255,255,0.03); }
 .home-game-row.live-game { background: rgba(255,59,59,0.05); border-left: 3px solid rgba(255,59,59,0.5); padding-left: 11px; }
@@ -2178,7 +2178,7 @@ const Animations = {
 // ===== 순위표 서비스 (ESPN API) =====
 const StandingsService = {
     cache: {},
-    leagues: [
+    soccerLeagues: [
         { id:'eng.1',        name:'EPL',          icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
         { id:'esp.1',        name:'La Liga',       icon:'🇪🇸' },
         { id:'ger.1',        name:'분데스리가',    icon:'🇩🇪' },
@@ -2186,6 +2186,11 @@ const StandingsService = {
         { id:'fra.1',        name:'리그앙',        icon:'🇫🇷' },
         { id:'uefa.champions', name:'UCL',         icon:'🏆' },
     ],
+    nonSoccerUrls: {
+        basketball: 'https://site.api.espn.com/apis/v2/sports/basketball/nba/standings',
+        baseball:   'https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings',
+        hockey:     'https://site.api.espn.com/apis/v2/sports/hockey/nhl/standings',
+    },
 
     async fetch(leagueId) {
         if (this.cache[leagueId]) return this.cache[leagueId];
@@ -2284,20 +2289,121 @@ const StandingsService = {
         content.innerHTML = data ? this.renderTable(data, leagueId) : '<div class="standings-loading">순위 데이터를 불러올 수 없습니다</div>';
     },
 
-    init() {
+    async fetchNonSoccer(sport) {
+        const cacheKey = 'ns_' + sport;
+        if (this.cache[cacheKey]) return this.cache[cacheKey];
+        try {
+            const url = this.nonSoccerUrls[sport];
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(res.status);
+            const data = await res.json();
+            const children = data.children || [];
+            const groups = children.map(child => {
+                const entries = (child.standings?.entries || []).map((entry, i) => {
+                    const team = entry.team;
+                    const stats = {};
+                    (entry.stats || []).forEach(s => { stats[s.name] = s.value; stats[s.abbreviation] = s.value; });
+                    return {
+                        rank: i + 1,
+                        name: team?.displayName || team?.name || '',
+                        logo: team?.logos?.[0]?.href || '',
+                        wins:   stats['wins']        ?? stats['W']   ?? 0,
+                        losses: stats['losses']      ?? stats['L']   ?? 0,
+                        pct:    stats['winPercent']  ?? stats['PCT'] ?? 0,
+                        gb:     stats['gamesBehind'] ?? stats['GB']  ?? 0,
+                        gp:     stats['gamesPlayed'] ?? stats['GP']  ?? 0,
+                        otl:    stats['otl']         ?? stats['OTL'] ?? 0,
+                        pts:    stats['points']      ?? stats['PTS'] ?? 0,
+                    };
+                });
+                return { name: child.name || child.abbreviation || '', entries };
+            }).filter(g => g.entries.length > 0);
+            this.cache[cacheKey] = groups;
+            return groups;
+        } catch(e) {
+            console.warn('비축구 순위표 오류:', sport, e.message);
+            return [];
+        }
+    },
+
+    renderWLTable(entries, sport) {
+        if (!entries || !entries.length) return '<p class="standings-loading">데이터 없음</p>';
+        const isHockey = sport === 'hockey';
+        const rows = entries.map((t, i) => {
+            const logoHtml = t.logo
+                ? `<img class="standings-team-logo" src="${t.logo}" alt="${t.name}" onerror="this.style.display='none'">`
+                : '';
+            const pct = typeof t.pct === 'number' ? t.pct.toFixed(3).replace(/^0\./, '.') : '-';
+            const gb  = (t.gb === 0 || t.gb === '-') ? '-' : t.gb;
+            if (isHockey) {
+                return `<tr>
+                    <td class="num">${i + 1}</td>
+                    <td><div class="standings-team-cell">${logoHtml}<span class="standings-team-name">${t.name}</span></div></td>
+                    <td class="num">${t.gp}</td>
+                    <td class="num">${t.wins}</td>
+                    <td class="num">${t.losses}</td>
+                    <td class="num">${t.otl}</td>
+                    <td class="num standings-pts">${t.pts}</td>
+                </tr>`;
+            }
+            return `<tr>
+                <td class="num">${i + 1}</td>
+                <td><div class="standings-team-cell">${logoHtml}<span class="standings-team-name">${t.name}</span></div></td>
+                <td class="num">${t.wins}</td>
+                <td class="num">${t.losses}</td>
+                <td class="num">${pct}</td>
+                <td class="num">${gb}</td>
+            </tr>`;
+        }).join('');
+        const header = isHockey
+            ? `<tr><th class="num">#</th><th>팀</th><th class="num">GP</th><th class="num">W</th><th class="num">L</th><th class="num">OTL</th><th class="num standings-pts">PTS</th></tr>`
+            : `<tr><th class="num">#</th><th>팀</th><th class="num">W</th><th class="num">L</th><th class="num">PCT</th><th class="num">GB</th></tr>`;
+        return `<table class="standings-table"><thead>${header}</thead><tbody>${rows}</tbody></table>`;
+    },
+
+    init(sport) {
+        sport = sport || 'soccer';
         const tabsEl = document.getElementById('standingsTabs');
         if (!tabsEl) return;
-        tabsEl.innerHTML = this.leagues.map((lg, i) =>
-            `<button class="standings-tab ${i===0?'active':''}" data-league="${lg.id}">${lg.icon} ${lg.name}</button>`
-        ).join('');
-        tabsEl.querySelectorAll('.standings-tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabsEl.querySelectorAll('.standings-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.show(btn.dataset.league);
+        if (sport === 'soccer' || sport === 'all') {
+            tabsEl.innerHTML = this.soccerLeagues.map((lg, i) =>
+                `<button class="standings-tab ${i===0?'active':''}" data-league="${lg.id}">${lg.icon} ${lg.name}</button>`
+            ).join('');
+            tabsEl.querySelectorAll('.standings-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabsEl.querySelectorAll('.standings-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.show(btn.dataset.league);
+                });
             });
-        });
-        this.show(this.leagues[0].id);
+            this.show(this.soccerLeagues[0].id);
+        } else if (this.nonSoccerUrls[sport]) {
+            const content = document.getElementById('standingsContent');
+            if (content) content.innerHTML = '<div class="standings-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>';
+            tabsEl.innerHTML = '';
+            this.fetchNonSoccer(sport).then(groups => {
+                if (!groups || !groups.length) {
+                    if (content) content.innerHTML = '<div class="standings-loading">데이터 없음</div>';
+                    return;
+                }
+                tabsEl.innerHTML = groups.map((g, i) =>
+                    `<button class="standings-tab ${i===0?'active':''}" data-idx="${i}">${g.name}</button>`
+                ).join('');
+                const showGroup = (idx) => {
+                    if (content) content.innerHTML = this.renderWLTable(groups[idx].entries, sport);
+                };
+                tabsEl.querySelectorAll('.standings-tab').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        tabsEl.querySelectorAll('.standings-tab').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        showGroup(parseInt(btn.dataset.idx));
+                    });
+                });
+                showGroup(0);
+            }).catch(() => {
+                if (content) content.innerHTML = '<div class="standings-loading">순위 데이터를 불러올 수 없습니다</div>';
+            });
+        }
     }
 };
 
@@ -2920,9 +3026,12 @@ const app = {
         // 라이브/예정 탭에서만 순위표 체크
         const standingsEl = document.getElementById('standingsContainer');
         if (standingsEl && (view === 'live' || view === 'upcoming')) {
-            if (this.currentSport === 'soccer' || this.currentSport === 'all') {
+            const sport = this.currentSport;
+            if (['soccer','all','basketball','baseball','hockey'].includes(sport)) {
                 standingsEl.style.display = '';
-                StandingsService.init();
+                StandingsService.init(sport === 'all' ? 'soccer' : sport);
+            } else {
+                standingsEl.style.display = 'none';
             }
         } else if (standingsEl) {
             standingsEl.style.display = 'none';
@@ -2943,12 +3052,13 @@ const app = {
         document.querySelectorAll('.sport-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.sport===sport));
         DataCache.clear();
         this.loadAllData();
-        // 축구 탭일 때 순위표 표시
+        // 스포츠 탭별 순위표 표시 (라이브/예정 뷰에서만)
         const standingsEl = document.getElementById('standingsContainer');
         if (standingsEl) {
-            if (sport === 'soccer' || sport === 'all') {
+            const onStandingsView = this.currentView === 'live' || this.currentView === 'upcoming';
+            if (onStandingsView && ['soccer','all','basketball','baseball','hockey'].includes(sport)) {
                 standingsEl.style.display = '';
-                StandingsService.init();
+                StandingsService.init(sport === 'all' ? 'soccer' : sport);
             } else {
                 standingsEl.style.display = 'none';
             }
@@ -3690,11 +3800,15 @@ const Community = {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
 
         try {
-            await this.db.collection('posts').add({
+            const addPromise = this.db.collection('posts').add({
                 nickname, title, content, category,
                 likes: 0, views: 0, commentCount: 0, recommends: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('시간 초과. 네트워크를 확인해주세요.')), 10000)
+            );
+            await Promise.race([addPromise, timeoutPromise]);
             document.getElementById('postNickname').value = '';
             document.getElementById('postTitle').value = '';
             document.getElementById('postContent').value = '';
@@ -3822,12 +3936,16 @@ const HomeDashboard = {
                     timeStr = d.toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Seoul' });
                 }
                 sportGroups[feed.sport].games.push({
+                    id: ev.id,
+                    sport: { '축구':'soccer', '농구':'basketball', '야구':'baseball', '하키':'hockey', '미식축구':'football' }[feed.sport] || 'soccer',
+                    leagueId: feed.id,
                     homeTeam: home.team?.shortDisplayName || home.team?.displayName || '',
                     awayTeam: away.team?.shortDisplayName || away.team?.displayName || '',
                     homeLogo: home.team?.logo || '', awayLogo: away.team?.logo || '',
-                    homeScore: home.score != null ? home.score : null,
-                    awayScore: away.score != null ? away.score : null,
-                    status, timeStr, league: feed.league,
+                    homeLogoUrl: home.team?.logo || '', awayLogoUrl: away.team?.logo || '',
+                    homeScore: home.score != null ? parseInt(home.score) || 0 : null,
+                    awayScore: away.score != null ? parseInt(away.score) || 0 : null,
+                    status, time: timeStr, timeStr, league: feed.league,
                 });
             });
         });
@@ -3880,6 +3998,7 @@ const HomeDashboard = {
                     </div>
                     <div class="home-game-score">${hasScore ? `${game.homeScore}<br>${game.awayScore}` : ''}</div>
                     <div class="home-game-league">${this._esc(game.league)}</div>`;
+                row.addEventListener('click', () => app.showGameDetail(game));
                 groupEl.appendChild(row);
             });
             container.appendChild(groupEl);
