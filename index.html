@@ -3155,37 +3155,53 @@ const GameDetailService = {
             basketball: ['MIN','FG','3PT','REB','AST','STL','BLK','PTS','+/-'],
             baseball:   ['AB','R','H','RBI','HR','BB','K'],
             hockey:     ['G','A','PTS','SOG','HIT','TOI'],
-            football:   ['C/ATT','YDS','TD','INT','LNG'],  // QB 우선
+            football:   ['C/ATT','YDS','TD','INT','LNG'],
         }[match.sport];
         if (!showCols) return null;
 
         const result = [];
         for (const teamData of boxPlayers) {
             const teamName = teamData.team?.abbreviation || teamData.team?.shortDisplayName || '';
-            const statsGroup = teamData.statistics?.[0];
-            if (!statsGroup) continue;
 
-            // ESPN은 names 또는 labels 둘 다 쓸 수 있음
-            const allCols = statsGroup.names || statsGroup.labels || [];
-            const athletes = statsGroup.athletes || [];
-            if (!allCols.length || !athletes.length) continue;
+            // ESPN은 statistics가 여러 그룹일 수 있음 (주전/벤치/DNP 별도 배열)
+            // 모든 그룹을 순회해서 전체 선수를 수집
+            const statsGroups = teamData.statistics || [];
+            if (!statsGroups.length) continue;
 
-            const colIndices = showCols.map(c => allCols.indexOf(c));
-            const actualCols = showCols.filter((_, i) => colIndices[i] >= 0);
+            // 컬럼 헤더는 첫 번째 그룹 기준 (모든 그룹 공유)
+            const allCols = statsGroups[0].names || statsGroups[0].labels || [];
+            if (!allCols.length) continue;
+
+            const colIndices  = showCols.map(c => allCols.indexOf(c));
+            const actualCols  = showCols.filter((_, i) => colIndices[i] >= 0);
             const validIndices = colIndices.filter(i => i >= 0);
 
-            const players = athletes
-                .filter(a => !a.didNotPlay && a.active !== false)
-                .map(a => ({
-                    name:    a.athlete?.shortName || a.athlete?.displayName || '?',
-                    jersey:  a.athlete?.jersey || '',
-                    pos:     a.athlete?.position?.abbreviation || '',
-                    starter: a.starter || false,
-                    stats:   validIndices.map(idx => a.stats?.[idx] ?? '-'),
-                }))
-                .filter(p => p.stats.some(s => s !== '-' && s !== '0:00'));
+            // MIN 열 인덱스 (DNP 판별용)
+            const minIdx = allCols.indexOf('MIN');
 
-            if (players.length > 0) result.push({ teamName, players, colLabels: actualCols });
+            // 모든 그룹에서 선수 수집
+            const allAthletes = [];
+            for (const group of statsGroups) {
+                for (const a of (group.athletes || [])) {
+                    // didNotPlay 플래그 또는 MIN 값이 'DNP'/'-'이면 제외
+                    if (a.didNotPlay) continue;
+                    const minVal = minIdx >= 0 ? (a.stats?.[minIdx] ?? '') : '';
+                    if (minVal === 'DNP' || minVal === '-') continue;
+
+                    allAthletes.push({
+                        name:    a.athlete?.shortName || a.athlete?.displayName || '?',
+                        jersey:  a.athlete?.jersey || '',
+                        pos:     a.athlete?.position?.abbreviation || '',
+                        starter: a.starter === true,
+                        stats:   validIndices.map(idx => a.stats?.[idx] ?? '-'),
+                    });
+                }
+            }
+
+            // 주전 먼저, 벤치 나중
+            allAthletes.sort((a, b) => (b.starter ? 1 : 0) - (a.starter ? 1 : 0));
+
+            if (allAthletes.length > 0) result.push({ teamName, players: allAthletes, colLabels: actualCols });
         }
         return result.length > 0 ? result : null;
     },
