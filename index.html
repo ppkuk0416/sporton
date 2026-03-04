@@ -3558,18 +3558,28 @@ const Community = {
         if (!title) { Animations.showToast('제목을 입력해주세요', 'error'); return; }
         if (!content) { Animations.showToast('내용을 입력해주세요', 'error'); return; }
 
+        const btn = document.getElementById('submitPostBtn');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
+
         try {
             await this.db.collection('posts').add({
                 nickname, title, content, category,
                 likes: 0, views: 0, commentCount: 0, recommends: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            document.getElementById('postNickname').value = '';
             document.getElementById('postTitle').value = '';
             document.getElementById('postContent').value = '';
-            Animations.showToast('게시글이 등록되었습니다! 🎉', 'success');
+            Animations.showToast('게시글이 등록되었습니다!', 'success');
             this.showList();
+            this.loadPosts();
         } catch(e) {
             Animations.showToast('등록 실패: ' + e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
         }
     },
 
