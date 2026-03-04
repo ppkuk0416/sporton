@@ -351,6 +351,26 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .home-game-score { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; text-align: center; color: var(--text-primary); line-height: 1.6; }
 /* 열 4: 리그 뱃지 */
 .home-game-league { font-size: 9px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: 4px; white-space: nowrap; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+/* ─── Odds API 배당률 패널 (게임 디테일) ─── */
+.odds-panel { margin-top: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; }
+.odds-panel-header { display: flex; align-items: center; gap: 8px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.odds-source-badge { margin-left: auto; font-size: 10px; font-weight: 600; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 20px; }
+.odds-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.odds-table th { padding: 7px 12px; text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.odds-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.odds-table tr:last-child td { border-bottom: none; }
+.odds-label-col { text-align: left !important; font-size: 11px; font-weight: 700; color: var(--text-muted); width: 78px; }
+.odds-val-main { display: block; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.odds-val-sub { display: block; font-size: 10px; margin-top: 2px; color: var(--text-muted); }
+.odds-pos { color: #4ade80 !important; }
+.odds-neg { color: #f87171 !important; }
+.odds-apply-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: calc(100% - 32px); margin: 10px 16px 14px; padding: 10px 16px; background: var(--gradient-accent); border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.odds-apply-btn:hover { opacity: 0.85; }
+/* 경기 카드 미니 배당 칩 */
+.card-odds-mini { display: flex; gap: 5px; flex-wrap: wrap; padding: 5px 12px 0; }
+.card-odds-chip { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: var(--text-secondary); white-space: nowrap; }
+.card-odds-chip.ou { color: #a78bfa; border-color: rgba(167,139,250,0.3); }
+.card-odds-chip.spread { color: #60a5fa; border-color: rgba(96,165,250,0.3); }
 /* 홈 임베드 채팅 */
 .home-chat-embed { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); display: flex; flex-direction: column; height: 480px; position: sticky; top: 76px; overflow: hidden; }
 .home-chat-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; font-weight: 700; flex-shrink: 0; }
@@ -1319,6 +1339,16 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .post-comment-item { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.06) !important; }
 /* 로고 텍스트 */
 .logo span { background: none !important; -webkit-text-fill-color: #1E293B !important; color: #1E293B !important; font-weight: 900; }
+/* Odds API 패널 라이트모드 */
+.odds-panel { background: #FFFFFF !important; border-color: rgba(0,0,0,0.09) !important; }
+.odds-panel-header { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.odds-table th { border-bottom-color: rgba(0,0,0,0.06) !important; color: #94A3B8 !important; }
+.odds-table td { border-bottom-color: rgba(0,0,0,0.04) !important; }
+.odds-val-main { color: #1A202C !important; }
+.odds-source-badge { background: rgba(0,0,0,0.05) !important; }
+.card-odds-chip { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.12) !important; color: #64748B !important; }
+.card-odds-chip.ou { color: #7c3aed !important; }
+.card-odds-chip.spread { color: #2563eb !important; }
 /* 섹션 카드 border 일괄 수정 */
 [style*="border: 1px solid rgba(255,255,255"] { border-color: rgba(0,0,0,0.08) !important; }
 </style>
@@ -2407,6 +2437,180 @@ const StandingsService = {
     }
 };
 
+// ===== The Odds API 서비스 =====
+const OddsService = {
+    API_KEY: '043ac55ece2cf5b315d2fd7b2b94c364',
+    BASE: 'https://api.the-odds-api.com/v4',
+    CACHE_TTL: 6 * 60 * 60 * 1000, // 6시간 캐시 (크레딧 절약)
+    cache: {},
+
+    // ESPN sport → Odds API sport key
+    SPORT_MAP: {
+        basketball: 'basketball_nba',
+        baseball:   'baseball_mlb',
+        hockey:     'ice_hockey_nhl',
+        football:   'americanfootball_nfl',
+    },
+    // ESPN leagueId(soccer) → Odds API key
+    SOCCER_MAP: {
+        'eng.1':          'soccer_epl',
+        'esp.1':          'soccer_spain_la_liga',
+        'ger.1':          'soccer_germany_bundesliga',
+        'ita.1':          'soccer_italy_serie_a',
+        'fra.1':          'soccer_france_ligue_one',
+        'uefa.champions': 'soccer_uefa_champs_league',
+    },
+
+    _oddsKey(match) {
+        if (match.sport === 'soccer') return this.SOCCER_MAP[match.leagueId] || null;
+        return this.SPORT_MAP[match.sport] || null;
+    },
+
+    async _fetch(key) {
+        if (!key) return null;
+        const c = this.cache[key];
+        if (c && Date.now() - c.ts < this.CACHE_TTL) return c.data;
+        try {
+            const url = `${this.BASE}/sports/${key}/odds/?apiKey=${this.API_KEY}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+            const r = await fetch(url);
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            if (!Array.isArray(data)) return null;
+            this.cache[key] = { data, ts: Date.now() };
+            return data;
+        } catch(e) {
+            console.warn('OddsAPI 오류:', key, e.message);
+            return null;
+        }
+    },
+
+    fetchForMatch(match) { return this._fetch(this._oddsKey(match)); },
+    fetchForSport(sport) { return this._fetch(this.SPORT_MAP[sport] || null); },
+
+    _norm(s) { return (s || '').toLowerCase().replace(/\./g, '').replace(/\s+/g, ' ').trim(); },
+    _last(s) { return this._norm(s).split(' ').pop(); },
+
+    findGame(list, homeTeam, awayTeam) {
+        if (!list?.length) return null;
+        const h = this._last(homeTeam), a = this._last(awayTeam);
+        // 1차: 마지막 단어 일치
+        let g = list.find(x => this._last(x.home_team) === h && this._last(x.away_team) === a);
+        if (g) return g;
+        // 2차: 부분 포함
+        return list.find(x => {
+            const gh = this._last(x.home_team), ga = this._last(x.away_team);
+            return (gh === h || gh.includes(h) || h.includes(gh)) &&
+                   (ga === a || ga.includes(a) || a.includes(ga));
+        }) || null;
+    },
+
+    _extract(game) {
+        if (!game?.bookmakers?.length) return null;
+        const pref = ['draftkings', 'fanduel', 'betmgm', 'williamhill_us', 'bovada', 'betrivers'];
+        const bm = game.bookmakers.find(b => pref.includes(b.key)) || game.bookmakers[0];
+        if (!bm) return null;
+        const r = { bm: bm.title, h2h: null, spread: null, total: null };
+        for (const mkt of (bm.markets || [])) {
+            const homeNorm = this._norm(game.home_team);
+            if (mkt.key === 'h2h') {
+                const ho = mkt.outcomes.find(o => this._norm(o.name) === homeNorm);
+                const ao = mkt.outcomes.find(o => this._norm(o.name) !== homeNorm);
+                if (ho && ao) r.h2h = { home: ho.price, away: ao.price };
+            }
+            if (mkt.key === 'spreads') {
+                const ho = mkt.outcomes.find(o => this._norm(o.name) === homeNorm);
+                const ao = mkt.outcomes.find(o => this._norm(o.name) !== homeNorm);
+                if (ho && ao) r.spread = { home: { pt: ho.point, pr: ho.price }, away: { pt: ao.point, pr: ao.price } };
+            }
+            if (mkt.key === 'totals') {
+                const ov = mkt.outcomes.find(o => o.name === 'Over');
+                const un = mkt.outcomes.find(o => o.name === 'Under');
+                if (ov && un) r.total = { line: ov.point, over: ov.price, under: un.price };
+            }
+        }
+        return r;
+    },
+
+    _fmt(p) { if (p == null) return '-'; const n = Math.round(p); return n > 0 ? `+${n}` : `${n}`; },
+    _cls(p) { return p > 0 ? 'odds-pos' : p < 0 ? 'odds-neg' : ''; },
+    _pt(n)  { return (n > 0 ? '+' : '') + n; },
+
+    renderPanel(match, oddsData) {
+        const game = this.findGame(oddsData, match.homeTeam, match.awayTeam);
+        const o = game ? this._extract(game) : null;
+        if (!o) return '';
+
+        const aN = match.awayTeam.split(' ').pop();
+        const hN = match.homeTeam.split(' ').pop();
+        const rows = [];
+
+        if (o.h2h) rows.push(`
+            <tr>
+                <td class="odds-label-col">승패</td>
+                <td><span class="odds-val-main ${this._cls(o.h2h.away)}">${this._fmt(o.h2h.away)}</span><span class="odds-val-sub">${aN}</span></td>
+                <td style="font-size:11px;color:var(--text-muted)">Moneyline</td>
+                <td><span class="odds-val-main ${this._cls(o.h2h.home)}">${this._fmt(o.h2h.home)}</span><span class="odds-val-sub">${hN}</span></td>
+            </tr>`);
+
+        if (o.spread) rows.push(`
+            <tr>
+                <td class="odds-label-col">스프레드</td>
+                <td><span class="odds-val-main">${this._pt(o.spread.away.pt)}</span><span class="odds-val-sub ${this._cls(o.spread.away.pr)}">${this._fmt(o.spread.away.pr)}</span></td>
+                <td style="font-size:11px;color:var(--text-muted)">Spread</td>
+                <td><span class="odds-val-main">${this._pt(o.spread.home.pt)}</span><span class="odds-val-sub ${this._cls(o.spread.home.pr)}">${this._fmt(o.spread.home.pr)}</span></td>
+            </tr>`);
+
+        if (o.total) rows.push(`
+            <tr>
+                <td class="odds-label-col">오버언더</td>
+                <td><span class="odds-val-main">O ${o.total.line}</span><span class="odds-val-sub ${this._cls(o.total.over)}">${this._fmt(o.total.over)}</span></td>
+                <td style="font-size:11px;color:var(--text-muted)">Total ${o.total.line}</td>
+                <td><span class="odds-val-main">U ${o.total.line}</span><span class="odds-val-sub ${this._cls(o.total.under)}">${this._fmt(o.total.under)}</span></td>
+            </tr>`);
+
+        if (!rows.length) return '';
+
+        const applyBtn = (match.sport === 'basketball' && o.total)
+            ? `<button class="odds-apply-btn" onclick="OddsService.applyToCalc(${o.total.line})">
+                   <i class="fas fa-calculator"></i> O/U ${o.total.line} → NBA 계산기에 적용
+               </button>`
+            : '';
+
+        return `<div class="odds-panel">
+            <div class="odds-panel-header">
+                <i class="fas fa-chart-line" style="color:#a78bfa"></i> 베팅 배당률
+                <span class="odds-source-badge">${o.bm} · The Odds API</span>
+            </div>
+            <table class="odds-table">
+                <thead><tr><th></th><th>${aN}</th><th></th><th>${hN}</th></tr></thead>
+                <tbody>${rows.join('')}</tbody>
+            </table>
+            ${applyBtn}
+        </div>`;
+    },
+
+    miniHtml(match, oddsData) {
+        if (!oddsData || match.status !== 'upcoming') return '';
+        const game = this.findGame(oddsData, match.homeTeam, match.awayTeam);
+        const o = game ? this._extract(game) : null;
+        if (!o) return '';
+        const chips = [];
+        if (o.total)  chips.push(`<span class="card-odds-chip ou">O/U ${o.total.line}</span>`);
+        if (o.spread) chips.push(`<span class="card-odds-chip spread">스프레드 ${this._pt(o.spread.home.pt)}</span>`);
+        return chips.length ? `<div class="card-odds-mini">${chips.join('')}</div>` : '';
+    },
+
+    applyToCalc(line) {
+        const el = document.getElementById('nbaLine');
+        if (el) el.value = line;
+        // 전체 경기 모드로 전환
+        const fullBtn = document.querySelector('[data-mode="full"]');
+        if (fullBtn && !fullBtn.classList.contains('active')) fullBtn.click();
+        app.switchView('nbacalc');
+        Animations.showToast(`O/U 라인 ${line} 이(가) 계산기에 적용됐습니다 ✓`, 'success');
+    },
+};
+
 // ===== 실시간 채팅 =====
 const LiveChat = {
     db: null,
@@ -2596,6 +2800,7 @@ const app = {
     currentSport: 'all',
     autoRefreshInterval: null,
     _prevView: 'live',
+    _currentOdds: null,    // 현재 스포츠의 Odds API 데이터 (캐시)
 
     showGameDetail(match) {
         this._prevView = this.currentView;
@@ -2632,11 +2837,24 @@ const app = {
             sb.style.display = 'none';
         }
 
-        // ESPN summary 로드
+        // ESPN + Odds API 동시 로드
         const body = document.getElementById('gameDetailBody');
         body.innerHTML = '<div class="game-detail-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>';
-        GameDetailService.fetch(match).then(data => {
-            GameDetailService.render(body, data, match);
+        Promise.allSettled([
+            GameDetailService.fetch(match),
+            OddsService.fetchForMatch(match),
+        ]).then(([espnRes, oddsRes]) => {
+            const espnData = espnRes.status === 'fulfilled' ? espnRes.value : null;
+            const oddsData = oddsRes.status === 'fulfilled' ? oddsRes.value : null;
+            GameDetailService.render(body, espnData, match);
+            if (oddsData) {
+                const oddsHtml = OddsService.renderPanel(match, oddsData);
+                if (oddsHtml) {
+                    const tmp = document.createElement('div');
+                    tmp.innerHTML = oddsHtml;
+                    body.appendChild(tmp.firstElementChild);
+                }
+            }
         }).catch(() => {
             body.innerHTML = '<div class="game-detail-error"><i class="fas fa-exclamation-circle"></i><br>데이터를 불러올 수 없습니다</div>';
         });
@@ -2702,7 +2920,13 @@ const app = {
         if (!wrapper) return;
         wrapper.innerHTML = '<div class="matches-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>';
         try {
-            const data = await ApiService.getMatchesBySport(this.currentSport, 'live');
+            const sport = this.currentSport;
+            const hasOdds = Object.keys(OddsService.SPORT_MAP).includes(sport);
+            const [data, oddsData] = await Promise.all([
+                ApiService.getMatchesBySport(sport, 'live'),
+                hasOdds ? OddsService.fetchForSport(sport) : Promise.resolve(null),
+            ]);
+            this._currentOdds = oddsData;
             this.renderByLeague(wrapper, data, 'live');
             this.updateTimestamp('liveUpdateTime');
             this.updateLeagueSidebar(data);
@@ -2717,7 +2941,13 @@ const app = {
         if (!wrapper) return;
         wrapper.innerHTML = '<div class="matches-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>';
         try {
-            const data = await ApiService.getMatchesBySport(this.currentSport, 'upcoming');
+            const sport = this.currentSport;
+            const hasOdds = Object.keys(OddsService.SPORT_MAP).includes(sport);
+            const [data, oddsData] = await Promise.all([
+                ApiService.getMatchesBySport(sport, 'upcoming'),
+                hasOdds ? OddsService.fetchForSport(sport) : Promise.resolve(null),
+            ]);
+            this._currentOdds = oddsData;
             this.renderUpcomingByDate(wrapper, data);
             this.updateTimestamp('upcomingUpdateTime');
         } catch(e) {
@@ -3000,6 +3230,9 @@ const app = {
             }
         }
 
+        // Odds API 미니 배당 칩 (예정 경기만, 크레딧 절약을 위해 캐시된 데이터 사용)
+        const oddsChipsHtml = app._currentOdds ? OddsService.miniHtml(match, app._currentOdds) : '';
+
         card.innerHTML = `
             <div class="match-header">
                 <span class="match-time">${match.time || ''}</span>
@@ -3007,6 +3240,7 @@ const app = {
             </div>
             ${teamsHtml}
             ${ouHtml}
+            ${oddsChipsHtml}
             <div class="match-footer">
                 <span class="match-league"><i class="fas ${sportIcon}"></i> ${match.league}</span>
                 <button class="favorite-btn" data-match-id="${match.id}"><i class="far fa-heart"></i></button>
