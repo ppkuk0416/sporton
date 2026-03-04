@@ -672,20 +672,6 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .card-team-logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
 .card-team-logo-placeholder { width: 20px; height: 20px; flex-shrink: 0; }
 
-/* Odds Cards */
-.odds-grid { display: grid; gap: var(--space-3); }
-.odds-card { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); padding: var(--space-3); transition: var(--transition-base); }
-.odds-card:hover { border-color: rgba(244,162,97,0.3); box-shadow: var(--shadow-lg); }
-.odds-header { margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid rgba(255,255,255,0.1); }
-.odds-match { font-size: var(--text-lg); font-weight: 600; margin-bottom: 0.5rem; }
-.odds-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-.odds-value { text-align: center; padding: var(--space-3); background: rgba(255,255,255,0.05); border-radius: var(--radius-md); transition: var(--transition-fast); }
-.odds-value:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-.odds-label { font-size: var(--text-xs); color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
-.odds-number { font-size: var(--text-2xl); font-weight: 700; font-family: var(--font-mono); color: var(--accent-gold); }
-.odds-change { font-size: var(--text-xs); margin-top: 0.25rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
-.odds-change.up { color: var(--color-success); }
-.odds-change.down { color: var(--color-danger); }
 
 /* Widget Sidebar */
 .widget-sidebar { position: sticky; top: 90px; height: fit-content; }
@@ -710,12 +696,6 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
 .modal-body { padding: var(--space-4); }
 .modal-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-4); border-top: 1px solid rgba(255,255,255,0.1); }
-.api-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); border-bottom: 2px solid rgba(255,255,255,0.1); }
-.api-tab { padding: var(--space-2) var(--space-3); background: none; color: var(--text-secondary); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: var(--transition-fast); }
-.api-tab:hover { color: var(--text-primary); }
-.api-tab.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); }
-.api-tab-content { display: none; }
-.api-tab-content.active { display: block; }
 .api-info { background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-4); }
 .api-info h3 { margin-bottom: 0.5rem; color: var(--accent-gold); }
 .api-info ul { list-style: none; margin: var(--space-2) 0; }
@@ -1105,6 +1085,45 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .comment-submit-btn:disabled { opacity:0.4; cursor:not-allowed; }
 .comment-panel-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:999; display:none; }
 .comment-panel-overlay.show { display:block; }
+/* 패널 탭 */
+.panel-tabs { display:flex; border-bottom:2px solid rgba(255,255,255,0.08); flex-shrink:0; }
+.panel-tab { flex:1; padding:10px 0; background:none; border:none; color:var(--text-muted); font-size:13px; font-weight:600; cursor:pointer; transition:color 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; border-bottom:2px solid transparent; margin-bottom:-2px; }
+.panel-tab:hover { color:var(--text-primary); }
+.panel-tab.active { color:var(--accent-cyan); border-bottom-color:var(--accent-cyan); }
+.panel-tab-content { display:none; flex-direction:column; }
+.panel-tab-content.active { display:flex; flex:1; min-height:0; }
+#panelDetailContent { overflow-y:auto; }
+#panelCommentsContent { flex-direction:column; }
+/* 경기 정보 탭 내용 */
+.game-detail-body { padding:var(--space-3); display:flex; flex-direction:column; gap:var(--space-3); }
+.game-detail-loading { text-align:center; padding:40px 0; color:var(--text-muted); font-size:14px; }
+.game-detail-error { text-align:center; padding:30px 0; color:var(--text-muted); font-size:13px; }
+/* 라인스코어 (쿼터/이닝별 점수) */
+.linescore-table { width:100%; border-collapse:collapse; font-size:12px; }
+.linescore-table th, .linescore-table td { padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06); }
+.linescore-table th { color:var(--text-muted); font-weight:600; font-size:11px; }
+.linescore-table td:first-child { text-align:left; font-weight:600; color:var(--text-primary); min-width:90px; }
+.linescore-table .total-col { font-weight:800; color:var(--accent-gold); font-size:14px; }
+.linescore-table .winner-row td { color:#fff; }
+.linescore-section { background:rgba(255,255,255,0.03); border-radius:var(--radius-md); padding:var(--space-2); border:1px solid rgba(255,255,255,0.06); }
+.linescore-section h4, .players-section h4, .team-stats-section h4 { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--space-2); }
+/* 선수 리더보드 */
+.players-section { background:rgba(255,255,255,0.03); border-radius:var(--radius-md); padding:var(--space-2); border:1px solid rgba(255,255,255,0.06); }
+.player-leader-group { margin-bottom:var(--space-2); }
+.player-leader-label { font-size:10px; color:var(--accent-cyan); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
+.player-leader-row { display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.player-leader-row:last-child { border-bottom:none; }
+.player-leader-num { font-size:18px; font-weight:800; color:var(--accent-gold); font-family:var(--font-mono); min-width:36px; text-align:center; line-height:1; }
+.player-leader-info { flex:1; min-width:0; }
+.player-leader-name { font-size:13px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.player-leader-team { font-size:11px; color:var(--text-muted); }
+/* 팀 스탯 */
+.team-stats-section { background:rgba(255,255,255,0.03); border-radius:var(--radius-md); padding:var(--space-2); border:1px solid rgba(255,255,255,0.06); }
+.team-stat-row { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; }
+.team-stat-row:last-child { border-bottom:none; }
+.team-stat-home { text-align:right; font-weight:600; color:var(--text-primary); }
+.team-stat-away { text-align:left; font-weight:600; color:var(--text-primary); }
+.team-stat-label { text-align:center; color:var(--text-muted); font-size:11px; }
 .match-card { cursor:pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .match-card:hover { border-color:rgba(0,212,255,0.3) !important; }
 .comment-badge { display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--text-muted); margin-left:auto; }
@@ -1194,6 +1213,18 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .mobile-nav-item.active { color: var(--accent-gold) !important; }
 .match-comment-panel { background: #FFFFFF !important; border-left: 1px solid rgba(0,0,0,0.08) !important; }
 .comment-panel-header { border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+.panel-tabs { border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+.panel-tab { color: #94A3B8 !important; }
+.panel-tab.active { color: #2563EB !important; border-bottom-color: #2563EB !important; }
+.linescore-section, .players-section, .team-stats-section { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.06) !important; }
+.linescore-table th { color: #94A3B8 !important; }
+.linescore-table td { color: #1E293B !important; border-bottom-color: rgba(0,0,0,0.05) !important; }
+.player-leader-name { color: #1E293B !important; }
+.player-leader-team { color: #94A3B8 !important; }
+.team-stat-home, .team-stat-away { color: #1E293B !important; }
+.team-stat-label { color: #94A3B8 !important; }
+.team-stat-row { border-bottom-color: rgba(0,0,0,0.05) !important; }
+.game-detail-error, .game-detail-loading { color: #94A3B8 !important; }
 .comment-panel-match-title { color: #1E293B !important; }
 .comment-panel-match-meta { color: #94A3B8 !important; }
 .comment-panel-close { color: #94A3B8 !important; }
@@ -1247,8 +1278,6 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .footer { background: #FFFFFF !important; border-top: 1px solid rgba(0,0,0,0.07) !important; }
 .footer-section p, .footer-section a, .footer-section li { color: #64748B !important; }
 .footer-bottom p { color: #94A3B8 !important; }
-.api-tab { background: rgba(0,0,0,0.04) !important; border: 1px solid rgba(0,0,0,0.07) !important; color: #64748B !important; }
-.api-tab.active { background: rgba(244,162,97,0.10) !important; border-color: rgba(244,162,97,0.3) !important; color: #D97706 !important; }
 .firebase-steps li::before { background: var(--gradient-accent) !important; }
 .source-badge.espn { background: rgba(239,71,111,0.10) !important; }
 .source-badge.apisports { background: rgba(6,214,160,0.10) !important; }
@@ -1854,41 +1883,22 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
             <button class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <div class="api-tabs">
-                <button class="api-tab active" data-api="odds">The Odds API</button>
-                <button class="api-tab" data-api="firebase">Firebase 🔥</button>
-            </div>
-
-            <!-- The Odds API -->
-            <div class="api-tab-content active" data-content="odds">
-                <div class="api-info">
-                    <h3>📊 The Odds API</h3>
-                    <p>배당률 보조 데이터</p>
-                    <ul>
-                        <li>✅ 무료: 월 500회</li>
-                    </ul>
-                    <a href="https://the-odds-api.com/" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> API 키 발급받기</a>
-                </div>
-                <div class="form-group"><label for="oddsApiKey">API 키</label><input type="text" id="oddsApiKey" placeholder="API 키를 입력하세요" class="form-input"></div>
-            </div>
-
             <!-- Firebase -->
-            <div class="api-tab-content" data-content="firebase">
-                <div class="api-info" style="border-left:3px solid #ff6d00;padding-left:12px;">
-                    <h3>🔥 Firebase 설정</h3>
-                    <p>실시간 채팅 · 경기 댓글 · 커뮤니티 기능</p>
-                    <ul>
-                        <li>✅ 무료 Spark 플랜으로 충분</li>
-                        <li>✅ 실시간 채팅 · 댓글 · 게시판 한번에</li>
-                    </ul>
-                    <div style="background:rgba(255,109,0,0.08);border:1px solid rgba(255,109,0,0.2);border-radius:8px;padding:10px;margin:10px 0;font-size:13px;">
-                        💡 console.firebase.google.com → 프로젝트 설정 → 내 앱 → SDK 구성 복사
-                    </div>
-                    <a href="https://console.firebase.google.com/" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> Firebase 콘솔 열기</a>
+            <div class="api-info" style="border-left:3px solid #ff6d00;padding-left:12px;">
+                <h3>🔥 Firebase 설정</h3>
+                <p>실시간 채팅 · 경기 댓글 · 커뮤니티 기능</p>
+                <ul>
+                    <li>✅ 무료 Spark 플랜으로 충분</li>
+                    <li>✅ 실시간 채팅 · 댓글 · 게시판 한번에</li>
+                </ul>
+                <div style="background:rgba(255,109,0,0.08);border:1px solid rgba(255,109,0,0.2);border-radius:8px;padding:10px;margin:10px 0;font-size:13px;">
+                    💡 console.firebase.google.com → 프로젝트 설정 → 내 앱 → SDK 구성 복사
                 </div>
-                <div class="form-group">
-                    <label for="firebaseConfigInModal">Firebase Config (JSON)</label>
-                    <textarea id="firebaseConfigInModal" class="config-input" rows="7" placeholder='{
+                <a href="https://console.firebase.google.com/" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> Firebase 콘솔 열기</a>
+            </div>
+            <div class="form-group">
+                <label for="firebaseConfigInModal">Firebase Config (JSON)</label>
+                <textarea id="firebaseConfigInModal" class="config-input" rows="7" placeholder='{
   "apiKey": "...",
   "authDomain": "...",
   "projectId": "...",
@@ -1896,7 +1906,6 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
   "messagingSenderId": "...",
   "appId": "..."
 }'></textarea>
-                </div>
             </div>
         </div>
 
@@ -1915,21 +1924,35 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 <div class="match-comment-panel" id="matchCommentPanel">
     <div class="comment-panel-header">
         <div class="comment-panel-match">
-            <div class="comment-panel-match-title" id="commentPanelTitle">경기 댓글</div>
+            <div class="comment-panel-match-title" id="commentPanelTitle">경기 정보</div>
             <div class="comment-panel-match-meta" id="commentPanelMeta"></div>
         </div>
         <button class="comment-panel-close" id="commentPanelClose"><i class="fas fa-times"></i></button>
     </div>
-    <div class="comment-list" id="matchCommentList">
-        <div class="comment-empty">첫 번째 댓글을 남겨보세요! 💬</div>
+    <!-- 패널 탭 -->
+    <div class="panel-tabs">
+        <button class="panel-tab active" data-panel="detail"><i class="fas fa-chart-bar"></i> 경기 정보</button>
+        <button class="panel-tab" data-panel="comments"><i class="fas fa-comments"></i> 댓글</button>
     </div>
-    <div class="comment-input-area">
-        <div class="comment-nickname-row">
-            <input class="comment-nickname-input" id="matchCommentNickname" placeholder="닉네임 (익명)" maxlength="12">
+    <!-- 경기 정보 탭 -->
+    <div class="panel-tab-content active" id="panelDetailContent">
+        <div class="game-detail-body" id="gameDetailBody">
+            <div class="game-detail-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>
         </div>
-        <div class="comment-text-row">
-            <textarea class="comment-textarea" id="commentText" placeholder="이 경기에 대한 생각을 남겨주세요..." maxlength="200"></textarea>
-            <button class="comment-submit-btn" id="commentSubmitBtn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <!-- 댓글 탭 -->
+    <div class="panel-tab-content" id="panelCommentsContent">
+        <div class="comment-list" id="matchCommentList">
+            <div class="comment-empty">첫 번째 댓글을 남겨보세요! 💬</div>
+        </div>
+        <div class="comment-input-area">
+            <div class="comment-nickname-row">
+                <input class="comment-nickname-input" id="matchCommentNickname" placeholder="닉네임 (익명)" maxlength="12">
+            </div>
+            <div class="comment-text-row">
+                <textarea class="comment-textarea" id="commentText" placeholder="이 경기에 대한 생각을 남겨주세요..." maxlength="200"></textarea>
+                <button class="comment-submit-btn" id="commentSubmitBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
         </div>
     </div>
 </div>
@@ -1973,22 +1996,10 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 <script>
 // ===== API Config =====
 const ApiConfig = {
-    endpoints: {
-        oddsApi: 'https://api.the-odds-api.com/v4'
-    },
-    saveApiKeys(keys) {
-        try {
-            if (keys.oddsApi) localStorage.setItem('sportsLive_oddsApiKey', keys.oddsApi.trim());
-            return true;
-        } catch(e) { return false; }
-    },
-    loadApiKeys() {
-        return {
-            oddsApi: localStorage.getItem('sportsLive_oddsApiKey') || ''
-        };
+    saveFirebaseConfig(config) {
+        try { localStorage.setItem('sportsLive_firebaseConfig', JSON.stringify(config)); return true; } catch(e) { return false; }
     },
     hasApiKey() { return true; }, // ESPN은 키 없이 항상 사용 가능
-    clearApiKeys() { localStorage.removeItem('sportsLive_oddsApiKey'); },
     isDemoMode() { return localStorage.getItem('sportsLive_demoMode') === 'true'; },
     setDemoMode(enabled) { enabled ? localStorage.setItem('sportsLive_demoMode','true') : localStorage.removeItem('sportsLive_demoMode'); }
 };
@@ -2146,7 +2157,6 @@ const ApiService = {
         return await this.fetchESPN(lg.espnId);
     },
 
-    getDemoOdds() { return []; }
 };
 
 // ===== Animations =====
@@ -2528,10 +2538,8 @@ const app = {
         document.getElementById('cancelModalBtn')?.addEventListener('click', () => this.closeApiModal());
         document.getElementById('saveApiKeysBtn')?.addEventListener('click', () => this.saveApiKeys());
         document.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeApiModal());
-        document.querySelectorAll('.api-tab').forEach(tab => { tab.addEventListener('click', () => this.switchApiTab(tab.dataset.api)); });
         document.getElementById('refreshLiveBtn')?.addEventListener('click', () => this.refreshLiveData());
         document.getElementById('refreshUpcomingBtn')?.addEventListener('click', () => this.refreshUpcomingData());
-        document.getElementById('refreshOddsBtn')?.addEventListener('click', () => this.refreshOddsData());
         document.getElementById('heroLiveBtn')?.addEventListener('click', () => { this.switchView('live'); document.querySelector('.main-content')?.scrollIntoView({ behavior:'smooth' }); });
     },
 
@@ -2754,7 +2762,6 @@ const app = {
         if (!list.children.length) list.innerHTML = '<p class="empty-state" style="font-size:var(--text-xs)">리그 없음</p>';
     },
 
-    async loadOdds() {},  // 배당률 탭 제거됨
 
     renderMatches(container, matches) {
         if (!matches || matches.length === 0) {
@@ -2885,26 +2892,6 @@ const app = {
         return card;
     },
 
-    renderOdds(container, odds) {
-        if (!odds || odds.length === 0) { container.innerHTML = '<p class="empty-state">배당률 정보가 없습니다</p>'; return; }
-        container.innerHTML = '';
-        odds.forEach((odd, index) => { const card = this.createOddsCard(odd); container.appendChild(card); Animations.animateCard(card, index*100); });
-    },
-
-    createOddsCard(odd) {
-        const card = document.createElement('div');
-        card.className = 'odds-card';
-        card.dataset.sport = odd.sport;
-        const formatChange = (change) => {
-            if (change===null||change===0) return '━';
-            const arrow = change>0?'▲':'▼'; const cls = change>0?'up':'down';
-            return `<span class="odds-change ${cls}">${arrow} ${Math.abs(change).toFixed(2)}</span>`;
-        };
-        const sportIcon = { soccer:'fa-futbol', basketball:'fa-basketball-ball', baseball:'fa-baseball-ball', hockey:'fa-hockey-puck' }[odd.sport] || 'fa-circle';
-        const drawColumn = odd.drawOdds !== null ? `<div class="odds-value"><div class="odds-label">무승부</div><div class="odds-number">${odd.drawOdds.toFixed(2)}</div>${formatChange(odd.drawChange)}</div>` : '';
-        card.innerHTML = `<div class="odds-header"><div class="odds-match">${odd.match}</div><div class="match-league"><i class="fas ${sportIcon}"></i><span>${odd.league}</span></div></div><div class="odds-values"><div class="odds-value"><div class="odds-label">홈 승</div><div class="odds-number">${odd.homeOdds.toFixed(2)}</div>${formatChange(odd.homeChange)}</div>${drawColumn}<div class="odds-value"><div class="odds-label">원정 승</div><div class="odds-number">${odd.awayOdds.toFixed(2)}</div>${formatChange(odd.awayChange)}</div></div>`;
-        return card;
-    },
 
     switchView(view) {
         this.currentView = view;
@@ -2961,38 +2948,26 @@ const app = {
     setupAutoRefresh() {
         this.autoRefreshInterval = setInterval(() => {
             if (this.currentView==='live') this.loadLiveMatches();
-            else if (this.currentView==='odds') this.loadOdds();
         }, 30000);
     },
 
     async refreshLiveData() { Animations.showToast('새로고침 중...','info',1000); await this.loadLiveMatches(); Animations.showToast('새로고침 완료!','success'); },
     async refreshUpcomingData() { Animations.showToast('새로고침 중...','info',1000); await this.loadUpcomingMatches(); Animations.showToast('새로고침 완료!','success'); },
-    async refreshOddsData() { Animations.showToast('새로고침 중...','info',1000); await this.loadOdds(); Animations.showToast('새로고침 완료!','success'); },
 
     openApiModal() {
         document.getElementById('apiModal')?.classList.add('show');
-        const keys = ApiConfig.loadApiKeys();
-        if (document.getElementById('oddsApiKey')) document.getElementById('oddsApiKey').value = keys.oddsApi || '';
-        // Firebase config
         const fbSaved = localStorage.getItem('sportsLive_firebaseConfig') || '';
         if (document.getElementById('firebaseConfigInModal')) document.getElementById('firebaseConfigInModal').value = fbSaved;
     },
 
     closeApiModal() { document.getElementById('apiModal')?.classList.remove('show'); },
 
-    switchApiTab(api) {
-        document.querySelectorAll('.api-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.api===api));
-        document.querySelectorAll('.api-tab-content').forEach(content => content.classList.toggle('active', content.dataset.content===api));
-    },
-
     saveApiKeys() {
-        // Firebase config 저장 (모달 내 탭)
         const fbVal = document.getElementById('firebaseConfigInModal')?.value?.trim();
         if (fbVal) {
             try {
                 const fbConfig = JSON.parse(fbVal);
                 localStorage.setItem('sportsLive_firebaseConfig', fbVal);
-                // 현재 세션에도 즉시 반영 (페이지 새로고침 없이 적용)
                 if (!firebase.apps.length) firebase.initializeApp(fbConfig);
                 if (!Community.db) {
                     Community.db = firebase.firestore();
@@ -3003,14 +2978,8 @@ const app = {
             }
             catch(e) { Animations.showToast('Firebase JSON 형식 오류: ' + e.message, 'error'); return; }
         }
-        const keys = {
-            oddsApi: document.getElementById('oddsApiKey')?.value || ''
-        };
-        if (ApiConfig.saveApiKeys(keys)) {
-            ApiConfig.setDemoMode(false); this.closeApiModal(); this.checkApiConfig();
-            DataCache.clear(); this.loadAllData();
-            Animations.showToast('API 키가 저장되었습니다 ✅','success');
-        } else { Animations.showToast('API 키 저장에 실패했습니다','error'); }
+        this.closeApiModal();
+        Animations.showToast('저장되었습니다 ✅','success');
     },
 
     enableDemoMode() {
@@ -3055,6 +3024,209 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ===== 경기 상세 정보 서비스 (ESPN /summary) =====
+const GameDetailService = {
+    // 스포츠별 ESPN URL 생성
+    _summaryUrl(match) {
+        const sport = match.sport;
+        const espnId = match.leagueId;
+        const eventId = match.id;
+        const soccerIds = ['eng.1','esp.1','ger.1','ita.1','fra.1','uefa.champions','usa.1'];
+        if (sport === 'basketball') return `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${eventId}`;
+        if (sport === 'baseball')   return `https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event=${eventId}`;
+        if (sport === 'hockey')     return `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/summary?event=${eventId}`;
+        if (sport === 'football')   return `https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${eventId}`;
+        if (sport === 'soccer' && soccerIds.includes(espnId)) return `https://site.api.espn.com/apis/site/v2/sports/soccer/${espnId}/summary?event=${eventId}`;
+        return null;
+    },
+
+    async fetch(match) {
+        const url = this._summaryUrl(match);
+        if (!url) return null;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return await res.json();
+    },
+
+    // 라인스코어 파싱 (쿼터/이닝별 점수)
+    parseLinescore(data, match) {
+        const comp = data.header?.competitions?.[0] || data.boxscore?.teams?.[0];
+        // boxscore에서 직접 가져오기
+        const linescores = data.header?.competitions?.[0]?.competitors;
+        if (!linescores) return null;
+
+        const home = linescores.find(c => c.homeAway === 'home');
+        const away = linescores.find(c => c.homeAway === 'away');
+        if (!home || !away) return null;
+
+        const homeLine = home.linescores || [];
+        const awayLine = away.linescores || [];
+        if (homeLine.length === 0 && awayLine.length === 0) return null;
+
+        const sport = match.sport;
+        let periodLabels;
+        if (sport === 'basketball') periodLabels = homeLine.map((_, i) => i < 4 ? `Q${i+1}` : `OT${i-3}`);
+        else if (sport === 'baseball') periodLabels = homeLine.map((_, i) => `${i+1}`);
+        else if (sport === 'hockey') periodLabels = homeLine.map((_, i) => i < 3 ? `P${i+1}` : `OT`);
+        else if (sport === 'football') periodLabels = homeLine.map((_, i) => i < 4 ? `Q${i+1}` : `OT`);
+        else periodLabels = homeLine.map((_, i) => i === 0 ? '전반' : '후반');
+
+        return {
+            labels: periodLabels,
+            home: { name: match.homeTeam, scores: homeLine.map(l => l.displayValue ?? l.value ?? '-'), total: home.score },
+            away: { name: match.awayTeam, scores: awayLine.map(l => l.displayValue ?? l.value ?? '-'), total: away.score },
+            homeWin: parseInt(home.score) > parseInt(away.score),
+        };
+    },
+
+    // 선수 리더 파싱
+    parseLeaders(data, match) {
+        const leaders = data.leaders || [];
+        const result = [];
+        const sport = match.sport;
+
+        // 카테고리 우선순위
+        const categoryMap = {
+            basketball: ['points','rebounds','assists'],
+            baseball:   ['homeRuns','rbi','hits'],
+            hockey:     ['goals','assists','saves'],
+            football:   ['passingYards','rushingYards','receivingYards'],
+            soccer:     ['goals','assists','saves'],
+        };
+        const wantedCats = categoryMap[sport] || [];
+        const catLabels = {
+            points:'득점', rebounds:'리바운드', assists:'어시스트',
+            homeRuns:'홈런', rbi:'타점', hits:'안타',
+            goals:'골', saves:'세이브',
+            passingYards:'패싱야드', rushingYards:'러싱야드', receivingYards:'수신야드',
+        };
+
+        for (const cat of wantedCats) {
+            const found = leaders.find(l => l.name === cat || l.abbreviation?.toLowerCase() === cat.toLowerCase());
+            if (!found) continue;
+            const topLeaders = (found.leaders || []).slice(0, 3);
+            if (topLeaders.length === 0) continue;
+            result.push({
+                label: catLabels[cat] || cat,
+                players: topLeaders.map(l => ({
+                    name: l.athlete?.displayName || l.athlete?.shortName || '?',
+                    team: l.team?.abbreviation || l.team?.shortDisplayName || '',
+                    value: l.displayValue || l.value,
+                })),
+            });
+        }
+        return result;
+    },
+
+    // 팀 스탯 파싱
+    parseTeamStats(data, match) {
+        const boxTeams = data.boxscore?.teams;
+        if (!boxTeams || boxTeams.length < 2) return null;
+        const home = boxTeams.find(t => t.homeAway === 'home') || boxTeams[0];
+        const away = boxTeams.find(t => t.homeAway === 'away') || boxTeams[1];
+
+        const sport = match.sport;
+        const wantedStats = {
+            basketball: ['fieldGoalPct','threePointPct','freeThrowPct','rebounds','assists','turnovers'],
+            baseball:   ['hits','errors','leftOnBase'],
+            hockey:     ['shots','powerPlayGoals','faceoffWinPct'],
+            football:   ['totalYards','passingYards','rushingYards','turnovers','penaltyYards'],
+            soccer:     ['possessionPct','shots','shotsOnTarget','fouls','corners'],
+        }[sport] || [];
+
+        const statLabels = {
+            fieldGoalPct:'FG%', threePointPct:'3P%', freeThrowPct:'FT%',
+            rebounds:'리바운드', assists:'어시스트', turnovers:'턴오버',
+            hits:'안타', errors:'실책', leftOnBase:'잔루',
+            shots:'슈팅', powerPlayGoals:'PP골', faceoffWinPct:'페이스오프%',
+            totalYards:'총야드', passingYards:'패싱야드', rushingYards:'러싱야드', penaltyYards:'반칙야드',
+            possessionPct:'점유율', shotsOnTarget:'유효슈팅', fouls:'파울', corners:'코너킥',
+        };
+
+        const extract = (team, statName) => {
+            const stats = team.statistics || [];
+            const s = stats.find(x => x.name === statName || x.abbreviation === statName);
+            return s ? (s.displayValue || s.value || '-') : null;
+        };
+
+        const rows = [];
+        for (const stat of wantedStats) {
+            const hVal = extract(home, stat);
+            const aVal = extract(away, stat);
+            if (hVal !== null || aVal !== null) {
+                rows.push({ label: statLabels[stat] || stat, home: hVal ?? '-', away: aVal ?? '-' });
+            }
+        }
+        return rows.length > 0 ? rows : null;
+    },
+
+    // HTML 렌더링
+    render(container, data, match) {
+        if (!data) {
+            container.innerHTML = `<div class="game-detail-error"><i class="fas fa-info-circle"></i><br>상세 정보를 불러올 수 없습니다<br><small>예정된 경기는 데이터가 없을 수 있습니다</small></div>`;
+            return;
+        }
+
+        const linescore = this.parseLinescore(data, match);
+        const leaders   = this.parseLeaders(data, match);
+        const teamStats = this.parseTeamStats(data, match);
+
+        let html = '';
+
+        // 라인스코어
+        if (linescore && linescore.labels.length > 0) {
+            const periodCols = linescore.labels.map(l => `<th>${l}</th>`).join('');
+            const homeScores = linescore.home.scores.map(s => `<td>${s}</td>`).join('');
+            const awayScores = linescore.away.scores.map(s => `<td>${s}</td>`).join('');
+            const homeWinCls = linescore.homeWin ? 'winner-row' : '';
+            const awayWinCls = !linescore.homeWin ? 'winner-row' : '';
+            html += `<div class="linescore-section">
+                <h4>경기 점수</h4>
+                <table class="linescore-table">
+                    <thead><tr><th></th>${periodCols}<th class="total-col">합계</th></tr></thead>
+                    <tbody>
+                        <tr class="${awayWinCls}"><td>${linescore.away.name}</td>${awayScores}<td class="total-col">${linescore.away.total}</td></tr>
+                        <tr class="${homeWinCls}"><td>${linescore.home.name}</td>${homeScores}<td class="total-col">${linescore.home.total}</td></tr>
+                    </tbody>
+                </table>
+            </div>`;
+        }
+
+        // 선수 리더
+        if (leaders && leaders.length > 0) {
+            const leadersHtml = leaders.map(cat => {
+                const rows = cat.players.map((p, i) => `
+                    <div class="player-leader-row">
+                        <div class="player-leader-num">${p.value}</div>
+                        <div class="player-leader-info">
+                            <div class="player-leader-name">${p.name}</div>
+                            <div class="player-leader-team">${p.team}</div>
+                        </div>
+                    </div>`).join('');
+                return `<div class="player-leader-group"><div class="player-leader-label">${cat.label}</div>${rows}</div>`;
+            }).join('');
+            html += `<div class="players-section"><h4>선수 기록</h4>${leadersHtml}</div>`;
+        }
+
+        // 팀 스탯
+        if (teamStats && teamStats.length > 0) {
+            const rows = teamStats.map(r => `
+                <div class="team-stat-row">
+                    <div class="team-stat-home">${r.home}</div>
+                    <div class="team-stat-label">${r.label}</div>
+                    <div class="team-stat-away">${r.away}</div>
+                </div>`).join('');
+            html += `<div class="team-stats-section"><h4>팀 스탯 — ${match.homeTeam} | ${match.awayTeam}</h4>${rows}</div>`;
+        }
+
+        if (!html) {
+            html = `<div class="game-detail-error"><i class="fas fa-clock"></i><br>아직 표시할 데이터가 없습니다<br><small>경기 시작 후 다시 확인해보세요</small></div>`;
+        }
+
+        container.innerHTML = html;
+    }
+};
+
 // ===== 경기 댓글 시스템 =====
 const MatchComments = {
     db: null,
@@ -3062,25 +3234,34 @@ const MatchComments = {
     unsubscribe: null,
 
     init() {
-        // Firebase DB 참조 (Community와 공유)
-        const panel  = document.getElementById('matchCommentPanel');
-        const overlay= document.getElementById('commentPanelOverlay');
         const closeBtn = document.getElementById('commentPanelClose');
         const submitBtn = document.getElementById('commentSubmitBtn');
+        const overlay = document.getElementById('commentPanelOverlay');
 
         closeBtn?.addEventListener('click', () => this.close());
         overlay?.addEventListener('click', () => this.close());
-
         submitBtn?.addEventListener('click', () => this.submitComment());
+
+        // 패널 탭 전환
+        document.querySelectorAll('.panel-tab').forEach(tab => {
+            tab.addEventListener('click', () => this.switchPanelTab(tab.dataset.panel));
+        });
 
         // 닉네임 localStorage 복원
         const saved = localStorage.getItem('sportsLive_commentNick');
-        if (saved) document.getElementById('matchCommentNickname').value = saved;
+        if (saved && document.getElementById('matchCommentNickname')) document.getElementById('matchCommentNickname').value = saved;
 
         // Enter → 제출 (Shift+Enter는 줄바꿈)
         document.getElementById('commentText')?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.submitComment(); }
         });
+    },
+
+    switchPanelTab(tab) {
+        document.querySelectorAll('.panel-tab').forEach(t => t.classList.toggle('active', t.dataset.panel === tab));
+        document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+        if (tab === 'detail') document.getElementById('panelDetailContent')?.classList.add('active');
+        else document.getElementById('panelCommentsContent')?.classList.add('active');
     },
 
     getDb() {
@@ -3107,12 +3288,24 @@ const MatchComments = {
         document.getElementById('commentPanelMeta').textContent =
             `${match.league} · ${statusText} ${match.time || ''}`.trim();
 
+        // 경기 정보 탭으로 초기화
+        this.switchPanelTab('detail');
+        const detailBody = document.getElementById('gameDetailBody');
+        if (detailBody) detailBody.innerHTML = '<div class="game-detail-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>';
+
         // 열기
         this.currentMatchId = match.id;
         panel?.classList.add('open');
         overlay?.classList.add('show');
         document.body.style.overflow = 'hidden';
         document.querySelector('.mobile-nav')?.classList.add('hidden-by-panel');
+
+        // ESPN summary 비동기 로드
+        GameDetailService.fetch(match).then(data => {
+            if (detailBody) GameDetailService.render(detailBody, data, match);
+        }).catch(() => {
+            if (detailBody) detailBody.innerHTML = '<div class="game-detail-error">데이터를 불러올 수 없습니다</div>';
+        });
 
         if (db) {
             this.subscribeComments(match.id);
