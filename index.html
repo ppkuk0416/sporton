@@ -1124,6 +1124,28 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .team-stat-home { text-align:right; font-weight:600; color:var(--text-primary); }
 .team-stat-away { text-align:left; font-weight:600; color:var(--text-primary); }
 .team-stat-label { text-align:center; color:var(--text-muted); font-size:11px; }
+.team-stat-header { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; font-size:11px; font-weight:700; color:var(--accent-cyan); margin-bottom:6px; }
+.team-stat-header span:first-child { text-align:right; }
+.team-stat-header span:last-child { text-align:left; }
+/* 팀 시즌 전적 */
+.team-record { font-size:10px; color:var(--text-muted); font-weight:400; margin-left:4px; }
+/* 라인스코어/박스스코어 가로 스크롤 */
+.linescore-scroll, .boxscore-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+/* 개인 박스스코어 */
+.boxscore-section { background:rgba(255,255,255,0.03); border-radius:var(--radius-md); padding:var(--space-2); border:1px solid rgba(255,255,255,0.06); }
+.boxscore-section h4 { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--space-2); }
+.boxscore-team { margin-bottom:var(--space-3); }
+.boxscore-team:last-child { margin-bottom:0; }
+.boxscore-team-name { font-size:11px; font-weight:700; color:var(--accent-gold); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em; }
+.boxscore-table { width:100%; border-collapse:collapse; font-size:11px; white-space:nowrap; }
+.boxscore-table th { color:var(--text-muted); font-weight:700; font-size:10px; padding:4px 6px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.08); }
+.boxscore-table td { padding:4px 6px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text-secondary); }
+.boxscore-table td.player-col { text-align:left; min-width:120px; }
+.boxscore-table th.player-col { text-align:left; }
+.boxscore-table .starter-row td { color:var(--text-primary); }
+.bench-divider td { font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:6px 6px 2px; background:rgba(255,255,255,0.02); }
+.player-jersey { display:inline-block; width:18px; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); }
+.player-pos { font-size:9px; color:var(--text-muted); margin-left:4px; }
 .match-card { cursor:pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .match-card:hover { border-color:rgba(0,212,255,0.3) !important; }
 .comment-badge { display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--text-muted); margin-left:auto; }
@@ -1225,6 +1247,16 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .team-stat-label { color: #94A3B8 !important; }
 .team-stat-row { border-bottom-color: rgba(0,0,0,0.05) !important; }
 .game-detail-error, .game-detail-loading { color: #94A3B8 !important; }
+.boxscore-section { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.06) !important; }
+.boxscore-team-name { color: #D97706 !important; }
+.boxscore-table th { color: #94A3B8 !important; border-bottom-color: rgba(0,0,0,0.07) !important; }
+.boxscore-table td { color: #64748B !important; border-bottom-color: rgba(0,0,0,0.04) !important; }
+.boxscore-table .starter-row td { color: #1E293B !important; }
+.bench-divider td { color: #94A3B8 !important; background: rgba(0,0,0,0.02) !important; }
+.player-jersey { color: #94A3B8 !important; }
+.player-pos { color: #94A3B8 !important; }
+.team-record { color: #94A3B8 !important; }
+.team-stat-header { color: #2563EB !important; }
 .comment-panel-match-title { color: #1E293B !important; }
 .comment-panel-match-meta { color: #94A3B8 !important; }
 .comment-panel-close { color: #94A3B8 !important; }
@@ -3026,7 +3058,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== 경기 상세 정보 서비스 (ESPN /summary) =====
 const GameDetailService = {
-    // 스포츠별 ESPN URL 생성
     _summaryUrl(match) {
         const sport = match.sport;
         const espnId = match.leagueId;
@@ -3048,17 +3079,13 @@ const GameDetailService = {
         return await res.json();
     },
 
-    // 라인스코어 파싱 (쿼터/이닝별 점수)
+    // 쿼터/이닝별 점수 파싱
     parseLinescore(data, match) {
-        const comp = data.header?.competitions?.[0] || data.boxscore?.teams?.[0];
-        // boxscore에서 직접 가져오기
-        const linescores = data.header?.competitions?.[0]?.competitors;
-        if (!linescores) return null;
-
-        const home = linescores.find(c => c.homeAway === 'home');
-        const away = linescores.find(c => c.homeAway === 'away');
+        const competitors = data.header?.competitions?.[0]?.competitors;
+        if (!competitors) return null;
+        const home = competitors.find(c => c.homeAway === 'home');
+        const away = competitors.find(c => c.homeAway === 'away');
         if (!home || !away) return null;
-
         const homeLine = home.linescores || [];
         const awayLine = away.linescores || [];
         if (homeLine.length === 0 && awayLine.length === 0) return null;
@@ -3066,59 +3093,108 @@ const GameDetailService = {
         const sport = match.sport;
         let periodLabels;
         if (sport === 'basketball') periodLabels = homeLine.map((_, i) => i < 4 ? `Q${i+1}` : `OT${i-3}`);
-        else if (sport === 'baseball') periodLabels = homeLine.map((_, i) => `${i+1}`);
-        else if (sport === 'hockey') periodLabels = homeLine.map((_, i) => i < 3 ? `P${i+1}` : `OT`);
-        else if (sport === 'football') periodLabels = homeLine.map((_, i) => i < 4 ? `Q${i+1}` : `OT`);
-        else periodLabels = homeLine.map((_, i) => i === 0 ? '전반' : '후반');
+        else if (sport === 'baseball')  periodLabels = homeLine.map((_, i) => `${i+1}`);
+        else if (sport === 'hockey')    periodLabels = homeLine.map((_, i) => i < 3 ? `P${i+1}` : `OT`);
+        else if (sport === 'football')  periodLabels = homeLine.map((_, i) => i < 4 ? `Q${i+1}` : `OT`);
+        else                            periodLabels = homeLine.map((_, i) => i === 0 ? '전반' : '후반');
+
+        const homeScore = parseInt(home.score) || 0;
+        const awayScore = parseInt(away.score) || 0;
+        // 시즌 전적 (예: "40-20")
+        const homeRecord = home.record?.find(r => r.type === 'total')?.displayValue || '';
+        const awayRecord = away.record?.find(r => r.type === 'total')?.displayValue || '';
 
         return {
-            labels: periodLabels,
-            home: { name: match.homeTeam, scores: homeLine.map(l => l.displayValue ?? l.value ?? '-'), total: home.score },
-            away: { name: match.awayTeam, scores: awayLine.map(l => l.displayValue ?? l.value ?? '-'), total: away.score },
-            homeWin: parseInt(home.score) > parseInt(away.score),
+            labels:      periodLabels,
+            home:        { name: match.homeTeam, scores: homeLine.map(l => l.displayValue ?? '-'), total: home.score, record: homeRecord },
+            away:        { name: match.awayTeam, scores: awayLine.map(l => l.displayValue ?? '-'), total: away.score, record: awayRecord },
+            homeWin:     homeScore > awayScore,
+            awayWin:     awayScore > homeScore,
         };
     },
 
-    // 선수 리더 파싱
+    // 선수 리더 파싱 (축구, 또는 boxscore.players 없는 경우 폴백)
     parseLeaders(data, match) {
         const leaders = data.leaders || [];
-        const result = [];
         const sport = match.sport;
-
-        // 카테고리 우선순위
         const categoryMap = {
-            basketball: ['points','rebounds','assists'],
-            baseball:   ['homeRuns','rbi','hits'],
-            hockey:     ['goals','assists','saves'],
-            football:   ['passingYards','rushingYards','receivingYards'],
-            soccer:     ['goals','assists','saves'],
+            basketball: ['points', 'rebounds', 'assists'],
+            baseball:   ['homeRuns', 'rbi', 'hits'],
+            hockey:     ['goals', 'assists', 'saves'],
+            football:   ['passingYards', 'rushingYards', 'receivingYards'],
+            soccer:     ['goals', 'assists', 'saves'],
         };
-        const wantedCats = categoryMap[sport] || [];
         const catLabels = {
             points:'득점', rebounds:'리바운드', assists:'어시스트',
             homeRuns:'홈런', rbi:'타점', hits:'안타',
             goals:'골', saves:'세이브',
-            passingYards:'패싱야드', rushingYards:'러싱야드', receivingYards:'수신야드',
+            passingYards:'패싱 (야드/TD/INT)', rushingYards:'러싱 (야드/TD)', receivingYards:'수신 (야드/TD)',
         };
-
+        const wantedCats = categoryMap[sport] || [];
+        const result = [];
         for (const cat of wantedCats) {
-            const found = leaders.find(l => l.name === cat || l.abbreviation?.toLowerCase() === cat.toLowerCase());
+            const found = leaders.find(l => l.name === cat);
             if (!found) continue;
             const topLeaders = (found.leaders || []).slice(0, 3);
-            if (topLeaders.length === 0) continue;
+            if (!topLeaders.length) continue;
             result.push({
                 label: catLabels[cat] || cat,
                 players: topLeaders.map(l => ({
-                    name: l.athlete?.displayName || l.athlete?.shortName || '?',
-                    team: l.team?.abbreviation || l.team?.shortDisplayName || '',
-                    value: l.displayValue || l.value,
+                    name:  l.athlete?.displayName || l.athlete?.shortName || '?',
+                    team:  l.team?.abbreviation || l.team?.shortDisplayName || '',
+                    value: l.displayValue || String(l.value ?? ''),
                 })),
             });
         }
         return result;
     },
 
-    // 팀 스탯 파싱
+    // 개인 박스스코어 파싱 (NBA/NHL/NFL/MLB — boxscore.players 사용)
+    parseBoxscore(data, match) {
+        const boxPlayers = data.boxscore?.players;
+        if (!boxPlayers || boxPlayers.length === 0) return null;
+
+        // 종목별 표시할 컬럼 (ESPN names 배열의 헤더 값과 일치해야 함)
+        const showCols = {
+            basketball: ['MIN','FG','3PT','REB','AST','STL','BLK','PTS','+/-'],
+            baseball:   ['AB','R','H','RBI','HR','BB','K'],
+            hockey:     ['G','A','PTS','SOG','HIT','TOI'],
+            football:   ['C/ATT','YDS','TD','INT','LNG'],  // QB 우선
+        }[match.sport];
+        if (!showCols) return null;
+
+        const result = [];
+        for (const teamData of boxPlayers) {
+            const teamName = teamData.team?.abbreviation || teamData.team?.shortDisplayName || '';
+            const statsGroup = teamData.statistics?.[0];
+            if (!statsGroup) continue;
+
+            // ESPN은 names 또는 labels 둘 다 쓸 수 있음
+            const allCols = statsGroup.names || statsGroup.labels || [];
+            const athletes = statsGroup.athletes || [];
+            if (!allCols.length || !athletes.length) continue;
+
+            const colIndices = showCols.map(c => allCols.indexOf(c));
+            const actualCols = showCols.filter((_, i) => colIndices[i] >= 0);
+            const validIndices = colIndices.filter(i => i >= 0);
+
+            const players = athletes
+                .filter(a => !a.didNotPlay && a.active !== false)
+                .map(a => ({
+                    name:    a.athlete?.shortName || a.athlete?.displayName || '?',
+                    jersey:  a.athlete?.jersey || '',
+                    pos:     a.athlete?.position?.abbreviation || '',
+                    starter: a.starter || false,
+                    stats:   validIndices.map(idx => a.stats?.[idx] ?? '-'),
+                }))
+                .filter(p => p.stats.some(s => s !== '-' && s !== '0:00'));
+
+            if (players.length > 0) result.push({ teamName, players, colLabels: actualCols });
+        }
+        return result.length > 0 ? result : null;
+    },
+
+    // 팀 스탯 파싱 (확인된 ESPN 필드명 사용)
     parseTeamStats(data, match) {
         const boxTeams = data.boxscore?.teams;
         if (!boxTeams || boxTeams.length < 2) return null;
@@ -3126,41 +3202,45 @@ const GameDetailService = {
         const away = boxTeams.find(t => t.homeAway === 'away') || boxTeams[1];
 
         const sport = match.sport;
+        // ※ ESPN 실제 필드명 기준 (totalRebounds ≠ rebounds)
         const wantedStats = {
-            basketball: ['fieldGoalPct','threePointPct','freeThrowPct','rebounds','assists','turnovers'],
+            basketball: ['fieldGoalPct','threePointPct','freeThrowPct','totalRebounds','assists','steals','blocks','turnovers','pointsInPaint','fastBreakPoints'],
             baseball:   ['hits','errors','leftOnBase'],
-            hockey:     ['shots','powerPlayGoals','faceoffWinPct'],
-            football:   ['totalYards','passingYards','rushingYards','turnovers','penaltyYards'],
-            soccer:     ['possessionPct','shots','shotsOnTarget','fouls','corners'],
+            hockey:     ['shots','powerPlayGoals','faceoffsWon','blocked','hits','giveaways'],
+            football:   ['totalYards','netPassingYards','rushingYards','firstDowns','thirdDownEff','turnovers','penaltyYards','possessionTime'],
+            soccer:     ['possessionPct','shots','shotsOnTarget','offsides','fouls','yellowCards','corners'],
         }[sport] || [];
 
         const statLabels = {
             fieldGoalPct:'FG%', threePointPct:'3P%', freeThrowPct:'FT%',
-            rebounds:'리바운드', assists:'어시스트', turnovers:'턴오버',
+            totalRebounds:'리바운드', assists:'어시스트', steals:'스틸',
+            blocks:'블록', turnovers:'턴오버',
+            pointsInPaint:'페인트존 득점', fastBreakPoints:'속공 득점',
             hits:'안타', errors:'실책', leftOnBase:'잔루',
-            shots:'슈팅', powerPlayGoals:'PP골', faceoffWinPct:'페이스오프%',
-            totalYards:'총야드', passingYards:'패싱야드', rushingYards:'러싱야드', penaltyYards:'반칙야드',
-            possessionPct:'점유율', shotsOnTarget:'유효슈팅', fouls:'파울', corners:'코너킥',
+            shots:'슈팅', powerPlayGoals:'파워플레이 골', faceoffsWon:'페이스오프 승',
+            blocked:'블로킹', giveaways:'기브어웨이',
+            totalYards:'총야드', netPassingYards:'패싱야드', rushingYards:'러싱야드',
+            firstDowns:'퍼스트다운', thirdDownEff:'3rd 다운 성공', turnovers:'턴오버',
+            penaltyYards:'반칙야드', possessionTime:'점유 시간',
+            possessionPct:'점유율', shotsOnTarget:'유효슈팅',
+            offsides:'오프사이드', yellowCards:'경고', corners:'코너킥',
         };
 
         const extract = (team, statName) => {
-            const stats = team.statistics || [];
-            const s = stats.find(x => x.name === statName || x.abbreviation === statName);
-            return s ? (s.displayValue || s.value || '-') : null;
+            const s = (team.statistics || []).find(x => x.name === statName);
+            return s ? (s.displayValue ?? String(s.value) ?? null) : null;
         };
 
         const rows = [];
         for (const stat of wantedStats) {
             const hVal = extract(home, stat);
             const aVal = extract(away, stat);
-            if (hVal !== null || aVal !== null) {
+            if (hVal !== null || aVal !== null)
                 rows.push({ label: statLabels[stat] || stat, home: hVal ?? '-', away: aVal ?? '-' });
-            }
         }
         return rows.length > 0 ? rows : null;
     },
 
-    // HTML 렌더링
     render(container, data, match) {
         if (!data) {
             container.innerHTML = `<div class="game-detail-error"><i class="fas fa-info-circle"></i><br>상세 정보를 불러올 수 없습니다<br><small>예정된 경기는 데이터가 없을 수 있습니다</small></div>`;
@@ -3170,32 +3250,62 @@ const GameDetailService = {
         const linescore = this.parseLinescore(data, match);
         const leaders   = this.parseLeaders(data, match);
         const teamStats = this.parseTeamStats(data, match);
+        const boxscore  = this.parseBoxscore(data, match);
 
         let html = '';
 
-        // 라인스코어
+        // ─── 라인스코어 ───────────────────────────────────
         if (linescore && linescore.labels.length > 0) {
             const periodCols = linescore.labels.map(l => `<th>${l}</th>`).join('');
             const homeScores = linescore.home.scores.map(s => `<td>${s}</td>`).join('');
             const awayScores = linescore.away.scores.map(s => `<td>${s}</td>`).join('');
             const homeWinCls = linescore.homeWin ? 'winner-row' : '';
-            const awayWinCls = !linescore.homeWin ? 'winner-row' : '';
+            const awayWinCls = linescore.awayWin ? 'winner-row' : '';
+            const homeRec = linescore.home.record ? `<span class="team-record">(${linescore.home.record})</span>` : '';
+            const awayRec = linescore.away.record ? `<span class="team-record">(${linescore.away.record})</span>` : '';
             html += `<div class="linescore-section">
                 <h4>경기 점수</h4>
+                <div class="linescore-scroll">
                 <table class="linescore-table">
                     <thead><tr><th></th>${periodCols}<th class="total-col">합계</th></tr></thead>
                     <tbody>
-                        <tr class="${awayWinCls}"><td>${linescore.away.name}</td>${awayScores}<td class="total-col">${linescore.away.total}</td></tr>
-                        <tr class="${homeWinCls}"><td>${linescore.home.name}</td>${homeScores}<td class="total-col">${linescore.home.total}</td></tr>
+                        <tr class="${awayWinCls}"><td>${linescore.away.name} ${awayRec}</td>${awayScores}<td class="total-col">${linescore.away.total}</td></tr>
+                        <tr class="${homeWinCls}"><td>${linescore.home.name} ${homeRec}</td>${homeScores}<td class="total-col">${linescore.home.total}</td></tr>
                     </tbody>
                 </table>
+                </div>
             </div>`;
         }
 
-        // 선수 리더
-        if (leaders && leaders.length > 0) {
+        // ─── 개인 박스스코어 (NBA/NFL/NHL/MLB) ───────────
+        if (boxscore && boxscore.length > 0) {
+            const teamBlocks = boxscore.map(teamData => {
+                const colHeaders = teamData.colLabels.map(c => `<th>${c}</th>`).join('');
+                const starters = teamData.players.filter(p => p.starter);
+                const bench    = teamData.players.filter(p => !p.starter);
+                const makeRow = (p, cls='') => `<tr class="${cls}">
+                    <td class="player-col"><span class="player-jersey">${p.jersey}</span>${p.name}<span class="player-pos">${p.pos}</span></td>
+                    ${p.stats.map(s => `<td>${s}</td>`).join('')}
+                </tr>`;
+                const starterHtml = starters.map(p => makeRow(p, 'starter-row')).join('');
+                const benchHtml   = bench.length
+                    ? `<tr class="bench-divider"><td colspan="${teamData.colLabels.length + 1}">벤치</td></tr>${bench.map(p => makeRow(p)).join('')}`
+                    : '';
+                return `<div class="boxscore-team">
+                    <div class="boxscore-team-name">${teamData.teamName}</div>
+                    <div class="boxscore-scroll">
+                    <table class="boxscore-table">
+                        <thead><tr><th class="player-col">선수</th>${colHeaders}</tr></thead>
+                        <tbody>${starterHtml}${benchHtml}</tbody>
+                    </table>
+                    </div>
+                </div>`;
+            }).join('');
+            html += `<div class="boxscore-section"><h4>선수 박스스코어</h4>${teamBlocks}</div>`;
+        } else if (leaders && leaders.length > 0) {
+            // 폴백: 리더만 (축구 등 boxscore.players 없는 종목)
             const leadersHtml = leaders.map(cat => {
-                const rows = cat.players.map((p, i) => `
+                const rows = cat.players.map(p => `
                     <div class="player-leader-row">
                         <div class="player-leader-num">${p.value}</div>
                         <div class="player-leader-info">
@@ -3208,21 +3318,26 @@ const GameDetailService = {
             html += `<div class="players-section"><h4>선수 기록</h4>${leadersHtml}</div>`;
         }
 
-        // 팀 스탯
+        // ─── 팀 스탯 ─────────────────────────────────────
         if (teamStats && teamStats.length > 0) {
-            const rows = teamStats.map(r => `
+            const statRows = teamStats.map(r => `
                 <div class="team-stat-row">
                     <div class="team-stat-home">${r.home}</div>
                     <div class="team-stat-label">${r.label}</div>
                     <div class="team-stat-away">${r.away}</div>
                 </div>`).join('');
-            html += `<div class="team-stats-section"><h4>팀 스탯 — ${match.homeTeam} | ${match.awayTeam}</h4>${rows}</div>`;
+            html += `<div class="team-stats-section">
+                <h4>팀 스탯</h4>
+                <div class="team-stat-header">
+                    <span>${match.homeTeam}</span><span></span><span>${match.awayTeam}</span>
+                </div>
+                ${statRows}
+            </div>`;
         }
 
         if (!html) {
             html = `<div class="game-detail-error"><i class="fas fa-clock"></i><br>아직 표시할 데이터가 없습니다<br><small>경기 시작 후 다시 확인해보세요</small></div>`;
         }
-
         container.innerHTML = html;
     }
 };
