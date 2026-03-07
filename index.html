@@ -48,6 +48,7 @@
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <style>
 :root {
@@ -757,6 +758,78 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .predict-bar-away { background:#f4a261; transition:flex 0.4s; }
 .predict-counts { display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:3px; }
 
+/* ===== 로그인 버튼 & 프로필 ===== */
+.header-login-btn { display:flex; align-items:center; gap:6px; padding:7px 14px; background:rgba(0,217,255,0.12); border:1px solid rgba(0,217,255,0.3); border-radius:var(--radius-full); color:#00d9ff; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; }
+.header-login-btn:hover { background:rgba(0,217,255,0.22); }
+.header-profile { display:flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-full); cursor:pointer; transition:all 0.15s; }
+.header-profile:hover { background:rgba(255,255,255,0.1); }
+.header-avatar { width:26px; height:26px; border-radius:50%; object-fit:cover; }
+.header-nickname { font-size:13px; font-weight:600; color:#fff; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.header-points { font-size:11px; font-weight:700; color:var(--accent-gold); background:rgba(244,162,97,0.12); padding:1px 7px; border-radius:99px; }
+
+/* ===== 소셜 로그인 ===== */
+.social-login-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:13px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.15s; margin-bottom:10px; border:1px solid rgba(255,255,255,0.1); }
+.social-login-btn.google { background:#fff; color:#1a1a1a; border-color:rgba(0,0,0,0.1); }
+.social-login-btn.google:hover { box-shadow:0 2px 12px rgba(0,0,0,0.2); transform:translateY(-1px); }
+.login-divider { display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--text-muted); font-size:12px; }
+.login-divider::before, .login-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+.guest-login-wrap { display:flex; gap:8px; }
+.guest-login-wrap .form-input { flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:10px 12px; color:var(--text-primary); font-size:13px; outline:none; }
+.guest-login-wrap .form-input:focus { border-color:var(--accent-gold); }
+
+/* ===== 프로필 모달 ===== */
+.profile-card { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.04); border-radius:12px; padding:16px; margin-bottom:16px; }
+.profile-avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,217,255,0.3); }
+.profile-name { font-size:16px; font-weight:700; color:var(--text-primary); }
+.profile-stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+.profile-stat { background:rgba(255,255,255,0.04); border-radius:10px; padding:12px 6px; text-align:center; }
+.profile-stat-val { display:block; font-size:1.3rem; font-weight:800; font-family:var(--font-mono); color:var(--text-primary); }
+.profile-stat-label { display:block; font-size:10px; color:var(--text-muted); margin-top:3px; }
+
+/* ===== 공유 카드 모달 ===== */
+.share-action-btn { display:flex; align-items:center; gap:7px; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.06); color:var(--text-secondary); transition:all 0.15s; }
+.share-action-btn:hover { background:rgba(255,255,255,0.12); color:var(--text-primary); }
+.share-action-btn.twitter { background:rgba(29,161,242,0.12); border-color:rgba(29,161,242,0.3); color:#1da1f2; }
+.share-action-btn.native { background:rgba(0,217,255,0.12); border-color:rgba(0,217,255,0.3); color:#00d9ff; }
+
+/* ===== 리더보드 ===== */
+.lb-period-btn { padding:6px 14px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text-muted); transition:all 0.15s; }
+.lb-period-btn.active { background:var(--gradient-accent); border-color:transparent; color:#fff; }
+.lb-my-rank { display:flex; align-items:center; gap:14px; background:rgba(244,162,97,0.08); border:1px solid rgba(244,162,97,0.25); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+.lb-my-avatar-wrap { position:relative; flex-shrink:0; }
+.lb-avatar { width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--accent-gold); }
+.lb-my-rank-num { position:absolute; bottom:-4px; right:-6px; background:var(--accent-gold); color:#000; font-size:10px; font-weight:900; padding:1px 5px; border-radius:99px; }
+.lb-my-info { flex:1; min-width:0; }
+.lb-my-nick { font-size:14px; font-weight:700; color:var(--text-primary); }
+.lb-my-stats { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.lb-my-points { font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--accent-gold); }
+.lb-login-prompt { text-align:center; padding:24px; color:var(--text-muted); font-size:13px; margin-bottom:16px; }
+.lb-login-prompt i { font-size:2.5rem; display:block; margin-bottom:10px; color:rgba(255,255,255,0.15); }
+.lb-login-prompt p { margin-bottom:14px; line-height:1.6; }
+.lb-table-wrap { background:var(--gradient-card); border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow:hidden; }
+.lb-table-header { display:grid; grid-template-columns:50px 1fr 70px 70px 80px; padding:10px 14px; background:rgba(255,255,255,0.04); font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.06); }
+.lb-row { display:grid; grid-template-columns:50px 1fr 70px 70px 80px; padding:11px 14px; align-items:center; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px; transition:background 0.1s; }
+.lb-row:last-child { border-bottom:none; }
+.lb-row:hover { background:rgba(255,255,255,0.03); }
+.lb-row.me { background:rgba(0,217,255,0.05); border-left:3px solid #00d9ff; }
+.lb-rank { font-weight:900; font-family:var(--font-mono); color:var(--text-muted); }
+.lb-rank.gold { color:#ffd700; font-size:16px; }
+.lb-rank.silver { color:#c0c0c0; font-size:15px; }
+.lb-rank.bronze { color:#cd7f32; font-size:15px; }
+.lb-user { display:flex; align-items:center; gap:8px; min-width:0; }
+.lb-user-avatar { width:30px; height:30px; border-radius:50%; object-fit:cover; flex-shrink:0; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:14px; }
+.lb-user-name { font-weight:600; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lb-badge { display:inline-block; font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; margin-left:4px; background:rgba(244,162,97,0.2); color:var(--accent-gold); }
+.lb-num { font-family:var(--font-mono); font-size:13px; color:var(--text-secondary); text-align:center; }
+.lb-winrate { font-family:var(--font-mono); font-size:13px; font-weight:700; text-align:center; }
+.lb-points { font-family:var(--font-mono); font-size:14px; font-weight:800; color:var(--accent-gold); text-align:right; }
+.lb-loading { text-align:center; padding:32px; color:var(--text-muted); font-size:14px; }
+.lb-empty { text-align:center; padding:40px; color:var(--text-muted); font-size:13px; }
+@media (max-width:600px) {
+    .lb-table-header, .lb-row { grid-template-columns:40px 1fr 55px 80px; }
+    .lb-table-header span:nth-child(3), .lb-row .lb-num:first-of-type { display:none; }
+}
+
 
 /* Widget Sidebar */
 .widget-sidebar { position: sticky; top: 90px; height: fit-content; }
@@ -1433,11 +1506,22 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
                 <a href="#" class="nav-link" data-view="myteam"><i class="fas fa-heart"></i><span>내 팀</span><span class="myteam-badge" id="myteamBadge" style="display:none;background:#ef476f;color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:4px;">0</span></a>
+                <a href="#" class="nav-link" data-view="leaderboard"><i class="fas fa-crown"></i><span>리더보드</span></a>
                 <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
                 <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
             </nav>
             <div class="header-actions">
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
+                <!-- 로그인 버튼 (비로그인 시) -->
+                <button class="header-login-btn" id="headerLoginBtn" onclick="UserAuth.openModal()">
+                    <i class="fas fa-user-circle"></i><span>로그인</span>
+                </button>
+                <!-- 유저 프로필 (로그인 후) -->
+                <div class="header-profile" id="headerProfile" style="display:none" onclick="UserAuth.openProfile()">
+                    <img class="header-avatar" id="headerAvatar" src="" alt="">
+                    <span class="header-nickname" id="headerNickname"></span>
+                    <span class="header-points" id="headerPoints"></span>
+                </div>
                 <div class="api-status connected" id="apiStatus">
                     <span class="status-dot"></span>
                     <span class="status-text">ESPN</span>
@@ -1935,6 +2019,38 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                     </div>
                 </section>
 
+                <!-- ===== 리더보드 섹션 ===== -->
+                <section class="content-section" id="leaderboardSection">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-crown" style="color:#f4a261"></i> 예측 리더보드</h2>
+                        <div style="display:flex;gap:8px;">
+                            <button class="lb-period-btn active" data-period="weekly" onclick="Leaderboard.switchPeriod('weekly',this)">이번 주</button>
+                            <button class="lb-period-btn" data-period="alltime" onclick="Leaderboard.switchPeriod('alltime',this)">전체</button>
+                        </div>
+                    </div>
+                    <!-- 내 순위 카드 -->
+                    <div class="lb-my-rank" id="lbMyRank" style="display:none">
+                        <div class="lb-my-avatar-wrap"><img id="lbMyAvatar" src="" alt="" class="lb-avatar"><span id="lbMyRankNum" class="lb-my-rank-num"></span></div>
+                        <div class="lb-my-info">
+                            <div class="lb-my-nick" id="lbMyNick">-</div>
+                            <div class="lb-my-stats" id="lbMyStats">-</div>
+                        </div>
+                        <div class="lb-my-points" id="lbMyPoints">-</div>
+                    </div>
+                    <div class="lb-login-prompt" id="lbLoginPrompt">
+                        <i class="fas fa-user-circle"></i>
+                        <p>로그인하면 내 순위를 확인하고 포인트를 적립할 수 있어요!</p>
+                        <button class="btn btn-primary" onclick="UserAuth.openModal()"><i class="fas fa-sign-in-alt"></i> 로그인</button>
+                    </div>
+                    <!-- TOP 리더보드 -->
+                    <div class="lb-table-wrap">
+                        <div class="lb-table-header">
+                            <span>순위</span><span>유저</span><span>예측수</span><span>적중률</span><span>포인트</span>
+                        </div>
+                        <div id="lbList"><div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> 로딩 중...</div></div>
+                    </div>
+                </section>
+
                 <!-- ===== 내 팀 섹션 ===== -->
                 <section class="content-section" id="myteamSection">
                     <div class="section-header">
@@ -2008,9 +2124,84 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
     <a href="#" class="mobile-nav-item" data-view="myteam"><i class="fas fa-heart"></i><span>내 팀</span></a>
+    <a href="#" class="mobile-nav-item" data-view="leaderboard"><i class="fas fa-crown"></i><span>리더보드</span></a>
     <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
     <a href="#" class="mobile-nav-item" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
 </nav>
+
+<!-- ===== 로그인 모달 ===== -->
+<div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="UserAuth.closeModal()"></div>
+    <div class="modal-content" style="max-width:400px">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-circle"></i> 로그인</h2>
+            <button class="modal-close" onclick="UserAuth.closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;line-height:1.6;">로그인하면 예측 포인트 적립, 리더보드 등록, 팔로우 팀 동기화가 가능합니다.</p>
+            <div id="loginFirebaseWarn" style="display:none;background:rgba(239,71,111,0.1);border:1px solid rgba(239,71,111,0.3);border-radius:8px;padding:12px;font-size:12px;color:#ef476f;margin-bottom:16px;">
+                <i class="fas fa-exclamation-triangle"></i> Firebase가 연결되지 않았습니다. API 키를 먼저 설정해주세요.
+            </div>
+            <button class="social-login-btn google" id="googleLoginBtn" onclick="UserAuth.loginGoogle()">
+                <svg width="18" height="18" viewBox="0 0 18 18" style="flex-shrink:0"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z"/></svg>
+                Google로 계속하기
+            </button>
+            <div class="login-divider"><span>또는</span></div>
+            <div class="guest-login-wrap">
+                <input type="text" id="guestNickInput" class="form-input" placeholder="닉네임 입력 (게스트)" maxlength="12">
+                <button class="btn btn-secondary" onclick="UserAuth.loginGuest()">게스트로 시작</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 프로필 모달 ===== -->
+<div class="modal" id="profileModal">
+    <div class="modal-overlay" onclick="UserAuth.closeProfile()"></div>
+    <div class="modal-content" style="max-width:420px">
+        <div class="modal-header">
+            <h2><i class="fas fa-user"></i> 내 프로필</h2>
+            <button class="modal-close" onclick="UserAuth.closeProfile()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="profile-card">
+                <img id="profileAvatar" src="" alt="" class="profile-avatar" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 40 40\'><circle cx=\'20\' cy=\'20\' r=\'20\' fill=\'%23334155\'/><text x=\'50%25\' y=\'55%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'%23fff\'>👤</text></svg>'">
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">-</div>
+                    <div class="profile-email" id="profileEmail" style="font-size:11px;color:var(--text-muted)"></div>
+                </div>
+            </div>
+            <div class="profile-stats-grid">
+                <div class="profile-stat"><span class="profile-stat-val" id="profilePoints">0</span><span class="profile-stat-label">포인트</span></div>
+                <div class="profile-stat"><span class="profile-stat-val" id="profileVotes">0</span><span class="profile-stat-label">예측수</span></div>
+                <div class="profile-stat"><span class="profile-stat-val" id="profileWinRate">-</span><span class="profile-stat-label">적중률</span></div>
+                <div class="profile-stat"><span class="profile-stat-val" id="profileStreak">0</span><span class="profile-stat-label">연속 적중</span></div>
+            </div>
+            <h4 style="font-size:13px;color:var(--text-secondary);margin:16px 0 8px">최근 예측</h4>
+            <div id="profileHistory" style="font-size:12px;color:var(--text-muted)">예측 기록이 없습니다.</div>
+            <button class="btn btn-secondary" onclick="UserAuth.logout()" style="width:100%;margin-top:20px;justify-content:center;"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 공유 카드 모달 ===== -->
+<div class="modal" id="shareCardModal">
+    <div class="modal-overlay" onclick="ShareCard.closeModal()"></div>
+    <div class="modal-content" style="max-width:460px;text-align:center">
+        <div class="modal-header">
+            <h2><i class="fas fa-share-alt"></i> 예측 공유</h2>
+            <button class="modal-close" onclick="ShareCard.closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <canvas id="shareCanvas" width="600" height="315" style="width:100%;border-radius:12px;display:block;margin-bottom:16px;"></canvas>
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                <button class="share-action-btn" onclick="ShareCard.downloadCard()"><i class="fas fa-download"></i> 저장</button>
+                <button class="share-action-btn twitter" onclick="ShareCard.shareTwitter()"><i class="fab fa-twitter"></i> 트위터</button>
+                <button class="share-action-btn native" id="shareNativeBtn" onclick="ShareCard.shareNative()" style="display:none"><i class="fas fa-share"></i> 공유</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="apiModal">
     <div class="modal-overlay"></div>
@@ -2884,6 +3075,375 @@ const AdminMode = {
     }
 };
 
+// ===== 소셜 로그인 & 유저 관리 =====
+const UserAuth = {
+    SK_GUEST: 'sporton_guest_v1',
+    currentUser: null,   // { uid, displayName, photoURL, isGuest, points, votes, winRate, streak }
+
+    getDb() { try { return firebase.apps.length ? firebase.firestore() : null; } catch(e) { return null; } },
+    getAuth() { try { return firebase.apps.length ? firebase.auth() : null; } catch(e) { return null; } },
+
+    init() {
+        // Firebase Auth 상태 감지
+        const auth = this.getAuth();
+        if (auth) {
+            auth.onAuthStateChanged((fbUser) => {
+                if (fbUser) {
+                    this.currentUser = { uid: fbUser.uid, displayName: fbUser.displayName || fbUser.email?.split('@')[0] || '유저', photoURL: fbUser.photoURL || '', isGuest: false, points: 0, votes: 0, winRate: 0, streak: 0 };
+                    this._loadUserStats(fbUser.uid);
+                    this._updateHeaderUI();
+                } else {
+                    // 게스트 복원
+                    const g = this._getGuest();
+                    if (g) { this.currentUser = g; this._updateHeaderUI(); }
+                    else { this.currentUser = null; this._updateHeaderUI(); }
+                }
+            });
+        } else {
+            const g = this._getGuest();
+            if (g) { this.currentUser = g; this._updateHeaderUI(); }
+        }
+    },
+
+    _getGuest() {
+        try { return JSON.parse(localStorage.getItem(this.SK_GUEST)); } catch { return null; }
+    },
+
+    async _loadUserStats(uid) {
+        const db = this.getDb();
+        if (!db) return;
+        try {
+            const doc = await db.collection('users').doc(uid).get();
+            if (doc.exists) {
+                const d = doc.data();
+                Object.assign(this.currentUser, { points: d.points||0, votes: d.votes||0, winRate: d.winRate||0, streak: d.streak||0 });
+                this._updateHeaderUI();
+            }
+        } catch(e) {}
+    },
+
+    _updateHeaderUI() {
+        const loginBtn = document.getElementById('headerLoginBtn');
+        const profileEl = document.getElementById('headerProfile');
+        const u = this.currentUser;
+        if (!u) {
+            if (loginBtn) loginBtn.style.display = '';
+            if (profileEl) profileEl.style.display = 'none';
+            return;
+        }
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (profileEl) profileEl.style.display = '';
+        const avatarEl = document.getElementById('headerAvatar');
+        if (avatarEl) { avatarEl.src = u.photoURL || ''; avatarEl.style.display = u.photoURL ? '' : 'none'; }
+        const nickEl = document.getElementById('headerNickname');
+        if (nickEl) nickEl.textContent = u.displayName;
+        const ptsEl = document.getElementById('headerPoints');
+        if (ptsEl) ptsEl.textContent = u.points ? `${u.points}pt` : '';
+    },
+
+    async loginGoogle() {
+        const auth = this.getAuth();
+        if (!auth) {
+            document.getElementById('loginFirebaseWarn').style.display = '';
+            return;
+        }
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            await auth.signInWithPopup(provider);
+            this.closeModal();
+            Animations.showToast('로그인 성공! 🎉', 'success');
+        } catch(e) {
+            if (e.code !== 'auth/popup-closed-by-user') Animations.showToast('로그인 실패: ' + e.message, 'error');
+        }
+    },
+
+    loginGuest() {
+        const nick = document.getElementById('guestNickInput')?.value.trim();
+        if (!nick) { Animations.showToast('닉네임을 입력해주세요', 'error'); return; }
+        const uid = 'guest_' + Date.now();
+        const guest = { uid, displayName: nick, photoURL: '', isGuest: true, points: 0, votes: 0, winRate: 0, streak: 0 };
+        localStorage.setItem(this.SK_GUEST, JSON.stringify(guest));
+        this.currentUser = guest;
+        this._updateHeaderUI();
+        this.closeModal();
+        Animations.showToast(`${nick}님, 환영합니다! 🎉`, 'success');
+    },
+
+    async logout() {
+        const auth = this.getAuth();
+        if (auth && !this.currentUser?.isGuest) {
+            try { await auth.signOut(); } catch(e) {}
+        }
+        localStorage.removeItem(this.SK_GUEST);
+        this.currentUser = null;
+        this._updateHeaderUI();
+        this.closeProfile();
+        Animations.showToast('로그아웃되었습니다', 'info');
+    },
+
+    openModal() {
+        const warn = document.getElementById('loginFirebaseWarn');
+        if (warn) warn.style.display = this.getAuth() ? 'none' : '';
+        document.getElementById('loginModal')?.classList.add('show');
+    },
+    closeModal() { document.getElementById('loginModal')?.classList.remove('show'); },
+
+    openProfile() {
+        const u = this.currentUser;
+        if (!u) { this.openModal(); return; }
+        document.getElementById('profileAvatar').src = u.photoURL || '';
+        document.getElementById('profileName').textContent = u.displayName;
+        document.getElementById('profileEmail').textContent = u.isGuest ? '게스트' : '';
+        document.getElementById('profilePoints').textContent = u.points || 0;
+        document.getElementById('profileVotes').textContent = u.votes || 0;
+        const wr = u.votes > 0 ? Math.round(u.winRate * 100) + '%' : '-';
+        document.getElementById('profileWinRate').textContent = wr;
+        document.getElementById('profileStreak').textContent = u.streak || 0;
+        // 예측 히스토리
+        const hist = PredictionGame.getAll();
+        const entries = Object.entries(hist).slice(-5).reverse();
+        const histEl = document.getElementById('profileHistory');
+        if (histEl) {
+            histEl.innerHTML = entries.length ? entries.map(([id, v]) =>
+                `<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">${id.substring(0,12)}…</span><span style="color:var(--accent-gold);font-weight:700">${{home:'홈 승',draw:'무승부',away:'원정 승'}[v.choice]||v.choice}</span></div>`
+            ).join('') : '<p style="color:var(--text-muted)">예측 기록이 없습니다.</p>';
+        }
+        document.getElementById('profileModal')?.classList.add('show');
+    },
+    closeProfile() { document.getElementById('profileModal')?.classList.remove('show'); },
+
+    // 예측 적중 시 포인트 지급
+    async awardPoints(uid, points, isWin) {
+        const db = this.getDb();
+        if (!db || !uid || uid.startsWith('guest_')) return;
+        try {
+            await db.collection('users').doc(uid).set({
+                points: firebase.firestore.FieldValue.increment(points),
+                votes: firebase.firestore.FieldValue.increment(1),
+                wins: isWin ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
+                lastActive: Date.now()
+            }, { merge: true });
+            // 적중률 재계산은 Cloud Function에서 처리 (여기선 로컬만 업데이트)
+            if (this.currentUser) {
+                this.currentUser.points = (this.currentUser.points||0) + points;
+                this._updateHeaderUI();
+            }
+        } catch(e) {}
+    }
+};
+
+// ===== 예측 공유 카드 (Canvas API) =====
+const ShareCard = {
+    _matchData: null,
+    _choice: null,
+
+    show(match, choice) {
+        this._matchData = match;
+        this._choice = choice;
+        this._draw(match, choice);
+        document.getElementById('shareCardModal')?.classList.add('show');
+        if (navigator.share) document.getElementById('shareNativeBtn').style.display = '';
+    },
+
+    closeModal() { document.getElementById('shareCardModal')?.classList.remove('show'); },
+
+    _draw(match, choice) {
+        const canvas = document.getElementById('shareCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = 600, H = 315;
+        canvas.width = W; canvas.height = H;
+
+        // 배경 그라디언트
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#0b1d3a');
+        grad.addColorStop(0.5, '#0d2b55');
+        grad.addColorStop(1, '#0a1628');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // 상단 브랜드 바
+        const brandGrad = ctx.createLinearGradient(0, 0, W, 0);
+        brandGrad.addColorStop(0, '#00d9ff');
+        brandGrad.addColorStop(1, '#f4a261');
+        ctx.fillStyle = brandGrad;
+        ctx.fillRect(0, 0, W, 4);
+
+        // SPORTON 로고
+        ctx.font = 'bold 18px Poppins, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText('⚽ SPORTON', 28, 38);
+
+        // 체크 아이콘
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillText('✅', W - 80, 60);
+
+        // 예측 적중 텍스트
+        ctx.font = 'bold 28px Poppins, sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText('내 예측 적중!', 28, 80);
+
+        // 경기 정보
+        const resultLabel = { home: `${match.homeTeam} 승`, draw: '무승부', away: `${match.awayTeam} 승` }[choice] || choice;
+        ctx.font = 'bold 20px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(0,217,255,0.9)';
+        ctx.fillText(resultLabel, 28, 116);
+
+        // 구분선
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(28, 138); ctx.lineTo(W - 28, 138); ctx.stroke();
+
+        // 팀 vs 팀
+        ctx.font = 'bold 22px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        const vsText = `${match.homeTeam}  vs  ${match.awayTeam}`;
+        ctx.fillText(vsText, 28, 175);
+
+        // 리그
+        ctx.font = '14px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText(`${match.league}`, 28, 200);
+
+        // 스코어 (있으면)
+        if (match.homeScore !== undefined) {
+            ctx.font = 'bold 48px JetBrains Mono, monospace';
+            ctx.fillStyle = '#fff';
+            const score = `${match.homeScore} : ${match.awayScore}`;
+            const sm = ctx.measureText(score);
+            ctx.fillText(score, (W - sm.width) / 2, 262);
+        }
+
+        // 하단 CTA
+        const ctaGrad = ctx.createLinearGradient(0, H - 48, 0, H);
+        ctaGrad.addColorStop(0, 'transparent');
+        ctaGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
+        ctx.fillStyle = ctaGrad;
+        ctx.fillRect(0, H - 48, W, 48);
+
+        ctx.font = 'bold 13px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(0,217,255,0.7)';
+        ctx.fillText('sporton.live 에서 예측하기 →', 28, H - 16);
+
+        // 유저 닉네임
+        const nick = UserAuth.currentUser?.displayName || '';
+        if (nick) {
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            const nm = ctx.measureText(nick);
+            ctx.fillText(nick, W - nm.width - 28, H - 16);
+        }
+    },
+
+    downloadCard() {
+        const canvas = document.getElementById('shareCanvas');
+        if (!canvas) return;
+        const a = document.createElement('a');
+        a.download = 'sporton-prediction.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        Animations.showToast('카드 저장 완료!', 'success');
+    },
+
+    shareTwitter() {
+        const m = this._matchData;
+        const label = { home: `${m.homeTeam} 승`, draw: '무승부', away: `${m.awayTeam} 승` }[this._choice] || '';
+        const text = `SPORTON에서 ${m.homeTeam} vs ${m.awayTeam} 경기 결과 "${label}"을 예측했습니다! sporton.live`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+    },
+
+    async shareNative() {
+        const canvas = document.getElementById('shareCanvas');
+        if (!canvas || !navigator.share) return;
+        try {
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'sporton-prediction.png', { type: 'image/png' });
+                await navigator.share({ title: 'SPORTON 예측 적중!', text: `내 예측이 맞았어요! sporton.live`, files: [file] });
+            }, 'image/png');
+        } catch(e) {}
+    }
+};
+
+// ===== 예측 리더보드 =====
+const Leaderboard = {
+    _period: 'weekly',
+    _data: [],
+
+    switchPeriod(period, btn) {
+        this._period = period;
+        document.querySelectorAll('.lb-period-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        this.load();
+    },
+
+    async load() {
+        const listEl = document.getElementById('lbList');
+        if (!listEl) return;
+        listEl.innerHTML = '<div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> 로딩 중...</div>';
+
+        // 로그인 상태에 따라 내 순위 카드 표시
+        const u = UserAuth.currentUser;
+        const myRankEl = document.getElementById('lbMyRank');
+        const promptEl = document.getElementById('lbLoginPrompt');
+        if (u) {
+            if (myRankEl) myRankEl.style.display = '';
+            if (promptEl) promptEl.style.display = 'none';
+            document.getElementById('lbMyNick').textContent = u.displayName;
+            document.getElementById('lbMyStats').textContent = `${u.votes||0}번 예측 · 적중률 ${u.votes>0?Math.round(u.winRate*100)+'%':'-'}`;
+            document.getElementById('lbMyPoints').textContent = `${u.points||0}pt`;
+            if (u.photoURL) { const av = document.getElementById('lbMyAvatar'); if(av){ av.src = u.photoURL; av.style.display=''; } }
+        } else {
+            if (myRankEl) myRankEl.style.display = 'none';
+            if (promptEl) promptEl.style.display = '';
+        }
+
+        const db = typeof firebase !== 'undefined' && firebase.apps?.length ? firebase.firestore() : null;
+        if (!db) { listEl.innerHTML = '<div class="lb-empty"><i class="fas fa-database" style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.3"></i>Firebase가 연결되면 리더보드가 활성화됩니다.</div>'; return; }
+
+        try {
+            const snap = await db.collection('users').orderBy('points', 'desc').limit(20).get();
+            if (snap.empty) { listEl.innerHTML = '<div class="lb-empty">아직 예측 참여자가 없습니다.<br>첫 번째 예측자가 되어보세요!</div>'; return; }
+            const rows = [];
+            snap.forEach(doc => rows.push({ uid: doc.id, ...doc.data() }));
+            this._data = rows;
+            this._render(rows, listEl, u?.uid);
+        } catch(e) {
+            listEl.innerHTML = '<div class="lb-empty">데이터를 불러올 수 없습니다.</div>';
+        }
+    },
+
+    _render(rows, container, myUid) {
+        const rankIcon = (i) => i === 0 ? '<span class="lb-rank gold">👑</span>' : i === 1 ? '<span class="lb-rank silver">🥈</span>' : i === 2 ? '<span class="lb-rank bronze">🥉</span>' : `<span class="lb-rank">${i+1}</span>`;
+        const badgeHtml = (r) => {
+            if (!r.streak || r.streak < 3) return '';
+            return `<span class="lb-badge">🔥${r.streak}연속</span>`;
+        };
+
+        let myRank = -1;
+        const html = rows.map((r, i) => {
+            const isMe = r.uid === myUid;
+            if (isMe) myRank = i + 1;
+            const wr = r.votes > 0 ? Math.round((r.wins||0)/r.votes*100) : 0;
+            const wrColor = wr >= 60 ? '#4ade80' : wr >= 40 ? '#facc15' : '#f87171';
+            const avatar = r.photoURL
+                ? `<img class="lb-user-avatar" src="${r.photoURL}" onerror="this.style.display='none'" alt="">`
+                : `<div class="lb-user-avatar">${(r.displayName||'?')[0].toUpperCase()}</div>`;
+            return `<div class="lb-row${isMe?' me':''}">
+                ${rankIcon(i)}
+                <div class="lb-user">${avatar}<span class="lb-user-name">${r.displayName||'유저'}${badgeHtml(r)}</span></div>
+                <span class="lb-num">${r.votes||0}</span>
+                <span class="lb-winrate" style="color:${wrColor}">${r.votes>0?wr+'%':'-'}</span>
+                <span class="lb-points">${r.points||0}pt</span>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = html || '<div class="lb-empty">데이터 없음</div>';
+
+        // 내 순위 번호 업데이트
+        if (myRank > 0) { const el = document.getElementById('lbMyRankNum'); if(el) el.textContent = '#' + myRank; }
+    }
+};
+
 // ===== 팀 팔로우 / 즐겨찾기 =====
 const FavoriteTeams = {
     SK: 'sporton_favorites_v2',
@@ -3057,7 +3617,20 @@ const PredictionGame = {
                         b.classList.add(`selected-${choice}`);
                     }
                 });
+                // 공유 버튼 삽입
+                if (!widget.querySelector('.predict-share-btn')) {
+                    const shareBtn = document.createElement('button');
+                    shareBtn.className = 'predict-share-btn';
+                    shareBtn.style.cssText = 'margin-top:6px;width:100%;padding:5px;background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.2);border-radius:6px;color:#00d9ff;font-size:11px;font-weight:700;cursor:pointer;';
+                    shareBtn.innerHTML = '<i class="fas fa-share-alt" style="margin-right:4px;"></i>공유하기';
+                    shareBtn.addEventListener('click', (e) => { e.stopPropagation(); ShareCard.show(match, choice); });
+                    widget.appendChild(shareBtn);
+                }
                 Animations.showToast('예측 완료! 🎯', 'success');
+                // 포인트 지급 (로그인 시)
+                if (UserAuth.currentUser && !UserAuth.currentUser.isGuest) {
+                    UserAuth.awardPoints(UserAuth.currentUser.uid, 10, false);
+                }
                 PredictionGame.refreshBar(match);
             });
         });
@@ -3590,15 +4163,17 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', calendar:'calendarSection', nbacalc:'nbaCalcSection', gameDetail:'gameDetailSection' };
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', leaderboard:'leaderboardSection', calendar:'calendarSection', nbacalc:'nbaCalcSection', gameDetail:'gameDetailSection' };
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam' || view==='leaderboard') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
         // 내 팀 뷰: 팔로우 경기 로드
         if (view === 'myteam') this.loadMyTeamMatches();
+        // 리더보드 뷰: 데이터 로드
+        if (view === 'leaderboard') Leaderboard.load();
     },
 
     filterSport(sport) {
@@ -3748,6 +4323,7 @@ const app = {
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
     FavoriteTeams.init();         // 팀 팔로우 초기화
+    UserAuth.init();              // 소셜 로그인 초기화
     AdminMode.setupLogoTrigger(); // 로고 5번 클릭 → 관리자 모드
     LiveChat.init();              // 실시간 채팅
 
