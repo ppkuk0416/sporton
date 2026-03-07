@@ -1385,6 +1385,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .nav-link:hover, .nav-link.active { color: #1E293B !important; background: rgba(0,0,0,0.04) !important; }
 .icon-btn { background: rgba(0,0,0,0.04) !important; color: #64748B !important; }
 .icon-btn:hover { background: rgba(0,0,0,0.08) !important; color: #1E293B !important; }
+#notifBellBtn[style*="00d9ff"] { color: #2563EB !important; }
 .api-status { background: rgba(0,0,0,0.04) !important; }
 .sidebar-section { background: #FFFFFF !important; border: 1px solid rgba(0,0,0,0.07) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important; }
 .sport-chip { background: #F8FAFC !important; color: #475569 !important; }
@@ -1584,6 +1585,9 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                     <span class="ccu-dot"></span>
                     <span id="ccuCount">0</span>명 접속 중
                 </div>
+                <button class="icon-btn" id="notifBellBtn" title="경기 알림 받기" onclick="NotificationManager.requestPermission()" style="position:relative;">
+                    <i class="fas fa-bell"></i>
+                </button>
                 <div class="api-status connected" id="apiStatus">
                     <span class="status-dot"></span>
                     <span class="status-text">ESPN</span>
@@ -2560,7 +2564,8 @@ const ApiService = {
             const awayTeam = away?.team?.displayName || away?.team?.shortDisplayName || '';
             if (!homeTeam || !awayTeam) return null; // 팀명 없으면 제거
             const rawDate = ev.date ? ev.date.split('T')[0] : '';
-            return { id:ev.id, sport:sportMap[espnId]||'soccer', league:nameMap[espnId]||espnId, leagueId:espnId, status, time, rawDate,
+            const isoDate = ev.date || '';
+            return { id:ev.id, sport:sportMap[espnId]||'soccer', league:nameMap[espnId]||espnId, leagueId:espnId, status, time, rawDate, isoDate,
                 homeTeam, awayTeam,
                 homeLogoUrl: home?.team?.logo || '',
                 awayLogoUrl: away?.team?.logo || '',
@@ -3900,6 +3905,134 @@ const AdminDashboard = {
     }
 };
 
+// ===== 웹 푸시 알림 매니저 =====
+const NotificationManager = {
+    SK_ASKED:  'sporton_notif_asked',
+    SK_ALERTS: 'sporton_notif_alerts_v2',
+    _timers: {},
+
+    isSupported() { return 'Notification' in window; },
+    hasPermission() { return this.isSupported() && Notification.permission === 'granted'; },
+    wasAsked() { return !!localStorage.getItem(this.SK_ASKED); },
+
+    // 팀 팔로우 직후 소프트 프롬프트 (브라우저 dialog 전에 먼저 in-app 배너 표시)
+    softPrompt(teamName) {
+        if (!this.isSupported() || this.wasAsked() || Notification.permission !== 'default') return;
+        // 소프트 배너 생성
+        const existing = document.getElementById('notifSoftBar');
+        if (existing) return;
+        const bar = document.createElement('div');
+        bar.id = 'notifSoftBar';
+        bar.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:2500;background:#0d2b55;border:1px solid rgba(0,217,255,0.35);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;font-size:13px;color:#a8d8ff;max-width:90%;box-shadow:0 4px 24px rgba(0,0,0,0.4);';
+        bar.innerHTML = `
+            <i class="fas fa-bell" style="color:#00d9ff;font-size:18px;flex-shrink:0;"></i>
+            <span style="flex:1;line-height:1.4;"><strong style="color:#fff;">${teamName}</strong> 경기 시작 30분 전에 알림 받을까요?</span>
+            <button id="notifSoftAllow" style="background:linear-gradient(90deg,#00d9ff,#0099dd);color:#000;font-weight:700;font-size:12px;padding:7px 14px;border:none;border-radius:8px;cursor:pointer;flex-shrink:0;">허용하기</button>
+            <button id="notifSoftDeny" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);font-size:20px;padding:2px 8px;border:none;border-radius:6px;cursor:pointer;flex-shrink:0;">&times;</button>`;
+        document.body.appendChild(bar);
+        document.getElementById('notifSoftAllow').addEventListener('click', () => {
+            bar.remove();
+            this.requestPermission();
+        });
+        document.getElementById('notifSoftDeny').addEventListener('click', () => {
+            bar.remove();
+            localStorage.setItem(this.SK_ASKED, 'denied');
+        });
+        // 8초 후 자동 닫기
+        setTimeout(() => { if (document.getElementById('notifSoftBar')) bar.remove(); }, 8000);
+    },
+
+    async requestPermission() {
+        if (!this.isSupported()) return false;
+        localStorage.setItem(this.SK_ASKED, '1');
+        const result = await Notification.requestPermission();
+        if (result === 'granted') {
+            Animations.showToast('알림 허용됨! 팔로우 팀 경기 30분 전에 알려드릴게요 🔔', 'success', 4000);
+            this._updateBell();
+            // 현재 캐시된 예정 경기 스케줄
+            this._rescheduleAll();
+        } else {
+            Animations.showToast('알림이 차단되어 있습니다. 브라우저 설정에서 허용해주세요.', 'info', 4000);
+        }
+        return result === 'granted';
+    },
+
+    // 팀 팔로우 시: 해당 팀의 예정 경기 알림 등록
+    scheduleForTeam(teamName) {
+        if (!this.hasPermission()) return;
+        // DataCache에서 예정 경기 가져오기
+        const allKeys = Object.keys(DataCache._cache || {});
+        const matches = [];
+        allKeys.forEach(k => {
+            const cached = DataCache._cache[k];
+            if (cached && Array.isArray(cached.data)) matches.push(...cached.data);
+        });
+        this._scheduleMatches(teamName, matches);
+    },
+
+    _scheduleMatches(teamName, matches) {
+        if (!this.hasPermission()) return;
+        const now = Date.now();
+        const saved = this._getSaved();
+        matches.forEach(m => {
+            if (m.status !== 'upcoming') return;
+            if (m.homeTeam !== teamName && m.awayTeam !== teamName) return;
+            if (!m.isoDate) return;
+            const gameMs = new Date(m.isoDate).getTime();
+            const notifMs = gameMs - 30 * 60 * 1000;
+            const delay = notifMs - now;
+            if (delay > 0 && delay < 48 * 3600 * 1000) {
+                saved[m.id] = { homeTeam: m.homeTeam, awayTeam: m.awayTeam, league: m.league, notifMs };
+                if (this._timers[m.id]) clearTimeout(this._timers[m.id]);
+                this._timers[m.id] = setTimeout(() => this._fire(m), delay);
+            }
+        });
+        this._save(saved);
+    },
+
+    _rescheduleAll() {
+        const saved = this._getSaved();
+        const now = Date.now();
+        Object.values(saved).forEach(a => {
+            const delay = a.notifMs - now;
+            if (delay > 0) {
+                const fakeMatch = { id: a.matchId || a.homeTeam, homeTeam: a.homeTeam, awayTeam: a.awayTeam, league: a.league };
+                this._timers[fakeMatch.id] = setTimeout(() => this._fire(fakeMatch), delay);
+            }
+        });
+    },
+
+    _fire(match) {
+        if (!this.hasPermission()) return;
+        try {
+            const n = new Notification('⏰ 경기 시작 30분 전!', {
+                body: `${match.homeTeam} vs ${match.awayTeam}  (${match.league})`,
+                icon: '/icon-192.png',
+                tag: `game-${match.id || match.homeTeam}`,
+                requireInteraction: false
+            });
+            n.onclick = () => { window.focus(); n.close(); };
+        } catch(e) {}
+    },
+
+    _updateBell() {
+        const btn = document.getElementById('notifBellBtn');
+        if (!btn) return;
+        if (this.hasPermission()) {
+            btn.style.color = '#00d9ff';
+            btn.title = '알림 허용됨';
+        } else {
+            btn.style.color = '';
+            btn.title = '경기 알림 받기';
+        }
+    },
+
+    _getSaved() { try { return JSON.parse(localStorage.getItem(this.SK_ALERTS) || '{}'); } catch { return {}; } },
+    _save(d) { localStorage.setItem(this.SK_ALERTS, JSON.stringify(d)); },
+
+    init() { this._updateBell(); this._rescheduleAll(); }
+};
+
 // ===== 친구 초대 시스템 =====
 const InviteSystem = {
     SK_CODE: 'sporton_invite_code',
@@ -4013,11 +4146,18 @@ const FavoriteTeams = {
 
     toggle(teamName) {
         const set = this.get();
+        const isAdding = !set.has(teamName);
         if (set.has(teamName)) set.delete(teamName);
         else set.add(teamName);
         this.save(set);
         this.updateSidebar();
         this.updateBadge();
+        if (isAdding) {
+            // 알림 소프트 프롬프트 (권한 미요청 시)
+            setTimeout(() => NotificationManager.softPrompt(teamName), 600);
+            // 권한 있으면 바로 스케줄 등록
+            if (NotificationManager.hasPermission()) NotificationManager.scheduleForTeam(teamName);
+        }
     },
 
     has(teamName) { return this.get().has(teamName); },
@@ -4739,6 +4879,24 @@ const app = {
         if (view === 'leaderboard') Leaderboard.load();
         // Analytics: 뷰 전환 트래킹
         Analytics.pageView(view);
+        // SEO: 동적 타이틀 업데이트
+        const viewTitles = {
+            home:        'SPORTON — 실시간 스포츠 라이브스코어 & 배당률',
+            live:        '라이브스코어 | SPORTON',
+            upcoming:    '예정 경기 | SPORTON',
+            community:   '커뮤니티 | SPORTON',
+            myteam:      '내 팀 경기 | SPORTON',
+            leaderboard: '예측 리더보드 | SPORTON',
+            calendar:    '경기 캘린더 | SPORTON',
+            nbacalc:     'NBA O/U 계산기 | SPORTON',
+        };
+        if (view !== 'gameDetail') {
+            document.title = viewTitles[view] || 'SPORTON';
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.setAttribute('content', view === 'home'
+                ? 'NBA, EPL, K리그, KBO 실시간 스코어와 배당률을 한 화면에서. 경기 결과 예측까지!'
+                : `SPORTON ${viewTitles[view]?.split(' |')[0] || ''} — 실시간 스포츠 플랫폼`);
+        }
     },
 
     filterSport(sport) {
@@ -4921,6 +5079,7 @@ document.addEventListener('DOMContentLoaded', () => {
     UserAuth.init();              // 소셜 로그인 초기화
     CCUTracker.init();            // 실시간 접속자 추적
     InviteSystem.checkIncoming(); // 친구 초대 레퍼럴 코드 감지
+    NotificationManager.init();   // 웹 푸시 알림 초기화
     AdminDashboard.trackDau();    // DAU 추적
     // GA4 초기화 (측정 ID는 운영자가 교체, 또는 관리자 대시보드에서 입력)
     const _savedGaId = localStorage.getItem(AdminDashboard.SK_GA);
