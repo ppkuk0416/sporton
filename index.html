@@ -117,7 +117,7 @@ img { max-width: 100%; height: auto; }
 .logo i { font-size: 1.3rem; color: var(--accent-gold); filter: drop-shadow(0 0 6px rgba(244,162,97,0.7)); }
 .logo span { background: linear-gradient(90deg, #fff 0%, #a8d8ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .nav { display: flex; gap: var(--space-2); }
-.nav-link { display: flex; align-items: center; gap: 0.5rem; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); color: var(--text-secondary); font-weight: 500; transition: var(--transition-fast); position: relative; }
+.nav-link { display: flex; align-items: center; gap: 0.5rem; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); color: var(--text-secondary); font-weight: 500; transition: var(--transition-fast); position: relative; white-space: nowrap; flex-shrink: 0; }
 .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) scaleX(0); width: 80%; height: 2px; background: var(--gradient-accent); transition: var(--transition-base); }
 .nav-link:hover, .nav-link.active { color: var(--text-primary); background: rgba(255,255,255,0.05); }
 .nav-link.active::after { transform: translateX(-50%) scaleX(1); }
@@ -1476,6 +1476,9 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .config-input { background: #F8FAFC !important; border: 1px solid rgba(0,0,0,0.10) !important; color: #1E293B !important; }
 .standings-table th { color: #94A3B8 !important; border-bottom: 1px solid rgba(0,0,0,0.06) !important; }
 .standings-table td { color: #1E293B !important; border-bottom: 1px solid rgba(0,0,0,0.04) !important; }
+.standings-table td.num { color: #64748B !important; }
+.standings-pts { color: #1E293B !important; }
+.standings-team-name { color: #1E293B !important; }
 .standings-table tr:hover td { background: rgba(0,0,0,0.02) !important; }
 .standings-tab { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.07) !important; color: #64748B !important; }
 .standings-tab.active { background: rgba(37,99,235,0.10) !important; border-color: rgba(37,99,235,0.3) !important; color: #2563EB !important; }
@@ -2781,12 +2784,11 @@ const StandingsService = {
             const data = await res.json();
             const children = data.children || [];
             const groups = children.map(child => {
-                const entries = (child.standings?.entries || []).map((entry, i) => {
+                const entries = (child.standings?.entries || []).map((entry) => {
                     const team = entry.team;
                     const stats = {};
                     (entry.stats || []).forEach(s => { stats[s.name] = s.value; stats[s.abbreviation] = s.value; });
                     return {
-                        rank: i + 1,
                         name: team?.displayName || team?.name || '',
                         logo: team?.logos?.[0]?.href || '',
                         wins:   stats['wins']        ?? stats['W']   ?? 0,
@@ -2797,7 +2799,7 @@ const StandingsService = {
                         otl:    stats['otl']         ?? stats['OTL'] ?? 0,
                         pts:    stats['points']      ?? stats['PTS'] ?? 0,
                     };
-                });
+                }).sort((a, b) => b.pct - a.pct || b.wins - a.wins).map((e, i) => ({ ...e, rank: i + 1 }));
                 return { name: child.name || child.abbreviation || '', entries };
             }).filter(g => g.entries.length > 0);
             this.cache[cacheKey] = groups;
@@ -3325,7 +3327,14 @@ const UserAuth = {
             Analytics.socialLogin('google');
             Animations.showToast('로그인 성공! 🎉', 'success');
         } catch(e) {
-            if (e.code !== 'auth/popup-closed-by-user') Animations.showToast('로그인 실패: ' + e.message, 'error');
+            if (e.code === 'auth/popup-closed-by-user') return;
+            if (e.code === 'auth/unauthorized-domain') {
+                Animations.showToast('Firebase 콘솔 > Authentication > 승인된 도메인에 현재 도메인을 추가해주세요', 'error', 6000);
+            } else if (e.code === 'auth/operation-not-allowed') {
+                Animations.showToast('Firebase 콘솔에서 Google 로그인을 활성화해주세요', 'error', 5000);
+            } else {
+                Animations.showToast('로그인 실패: ' + e.message, 'error');
+            }
         }
     },
 
@@ -5597,13 +5606,17 @@ const Community = {
             document.getElementById('postTitle').value = '';
             document.getElementById('postContent').value = '';
             Animations.showToast('게시글이 등록되었습니다!', 'success');
-            this.showList();
-            this.loadPosts();
         } catch(e) {
-            Animations.showToast('등록 실패: ' + e.message, 'error');
+            if (e.message && e.message.includes('시간 초과')) {
+                Animations.showToast('등록 요청이 전송되었습니다 (네트워크 지연)', 'info');
+            } else {
+                Animations.showToast('등록 실패: ' + e.message, 'error');
+            }
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalHTML;
+            this.showList();
+            this.loadPosts();
         }
     },
 
