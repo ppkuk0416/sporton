@@ -3,8 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="실시간 스포츠 라이브스코어 및 배당률 정보">
-    <title>SPORTON</title>
+    <meta name="description" content="실시간 스포츠 라이브스코어, 배당률, 경기 예측 — NBA, EPL, K리그, KBO 무료 제공">
+    <meta name="keywords" content="라이브스코어, 스포츠 배당률, NBA 라이브, EPL 경기, 실시간 스코어, 스포츠 예측">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sporton.live/">
+    <title>SPORTON — 실시간 라이브스코어 &amp; 배당률</title>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SPORTON">
+    <meta property="og:title" content="SPORTON — 실시간 라이브스코어 &amp; 배당률">
+    <meta property="og:description" content="NBA, EPL, K리그, KBO 실시간 스코어와 배당률을 한 화면에서. 경기 결과 예측까지!">
+    <meta property="og:url" content="https://sporton.live/">
+    <meta property="og:image" content="https://sporton.live/og-image.png">
+    <meta property="og:locale" content="ko_KR">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@sporton_kr">
+    <meta name="twitter:title" content="SPORTON — 실시간 라이브스코어">
+    <meta name="twitter:description" content="NBA, EPL, K리그 실시간 스코어 &amp; 배당률">
+    <meta name="twitter:image" content="https://sporton.live/og-image.png">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0A1628">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SPORTON">
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SPORTON",
+      "url": "https://sporton.live",
+      "description": "실시간 스포츠 라이브스코어, 배당률, 경기 예측 서비스",
+      "inLanguage": "ko",
+      "publisher": { "@type": "Organization", "name": "SPORTON" }
+    }
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -692,6 +727,36 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .card-team-logo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
 .card-team-logo-placeholder { width: 20px; height: 20px; flex-shrink: 0; }
 
+/* ===== 내 팀 / 팔로우 ===== */
+.myteam-onboarding { text-align:center; padding: 60px 20px; color: var(--text-muted); }
+.myteam-onboard-icon { font-size: 3.5rem; color: rgba(239,71,111,0.25); margin-bottom: 16px; }
+.myteam-onboarding h3 { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 10px; }
+.myteam-onboarding p { font-size: var(--text-sm); line-height: 1.8; margin-bottom: 24px; }
+
+/* 즐겨찾기 사이드바 카드 */
+.fav-team-item { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.04); margin-bottom:6px; font-size:12px; }
+.fav-team-name { color: var(--text-secondary); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; }
+.fav-team-remove { background:none; border:none; color:rgba(255,255,255,0.2); cursor:pointer; padding:2px 4px; font-size:12px; transition:color 0.15s; }
+.fav-team-remove:hover { color:#ef476f; }
+
+/* ===== 예측 게임 위젯 ===== */
+.predict-widget { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); }
+.predict-label { font-size: 10px; color: var(--text-muted); font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:6px; }
+.predict-btns { display:flex; gap:4px; }
+.predict-btn { flex:1; padding:5px 2px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.55); font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s; text-align:center; }
+.predict-btn:hover { background:rgba(255,255,255,0.09); color:#fff; }
+.predict-btn.selected-home { background:rgba(0,217,255,0.18); border-color:rgba(0,217,255,0.5); color:#00d9ff; }
+.predict-btn.selected-away { background:rgba(244,162,97,0.18); border-color:rgba(244,162,97,0.5); color:#f4a261; }
+.predict-btn.selected-draw { background:rgba(167,139,250,0.18); border-color:rgba(167,139,250,0.5); color:#a78bfa; }
+.predict-btn.correct { background:rgba(6,214,160,0.2); border-color:rgba(6,214,160,0.5); color:#06d6a0; }
+.predict-btn.wrong { background:rgba(239,71,111,0.1); border-color:rgba(239,71,111,0.3); color:rgba(255,255,255,0.3); }
+.predict-btn:disabled { cursor:default; }
+.predict-bar-wrap { display:flex; gap:2px; height:3px; border-radius:2px; overflow:hidden; margin-top:5px; }
+.predict-bar-home { background:#00d9ff; transition:flex 0.4s; }
+.predict-bar-draw { background:#a78bfa; transition:flex 0.4s; }
+.predict-bar-away { background:#f4a261; transition:flex 0.4s; }
+.predict-counts { display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:3px; }
+
 
 /* Widget Sidebar */
 .widget-sidebar { position: sticky; top: 90px; height: fit-content; }
@@ -1367,6 +1432,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <a href="#" class="nav-link" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
                 <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
                 <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
+                <a href="#" class="nav-link" data-view="myteam"><i class="fas fa-heart"></i><span>내 팀</span><span class="myteam-badge" id="myteamBadge" style="display:none;background:#ef476f;color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:4px;">0</span></a>
                 <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
                 <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
             </nav>
@@ -1390,6 +1456,15 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <button class="btn btn-primary" id="setupApiBtn"><i class="fas fa-cog"></i> 설정</button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- PWA 설치 배너 -->
+<div id="pwaInstallBar" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:linear-gradient(90deg,#0d2b55,#0a3d6e);border-bottom:1px solid rgba(0,217,255,0.2);font-size:13px;color:#a8d8ff;">
+    <span><i class="fas fa-mobile-alt" style="color:#00d9ff;margin-right:8px;"></i>홈화면에 추가하면 경기 시작 알림을 받을 수 있어요!</span>
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button id="pwaInstallBtn" style="background:linear-gradient(90deg,#00d9ff,#0099dd);color:#000;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:8px;cursor:pointer;">설치하기</button>
+        <button id="pwaInstallDismiss" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;padding:6px 10px;border:none;border-radius:8px;cursor:pointer;">닫기</button>
     </div>
 </div>
 
@@ -1859,9 +1934,23 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                         </div>
                     </div>
                 </section>
+
+                <!-- ===== 내 팀 섹션 ===== -->
+                <section class="content-section" id="myteamSection">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-heart" style="color:#ef476f"></i> 내 팀</h2>
+                    </div>
+                    <div id="myteamOnboarding" class="myteam-onboarding" style="display:none">
+                        <div class="myteam-onboard-icon"><i class="fas fa-heart"></i></div>
+                        <h3>팔로우한 팀이 없습니다</h3>
+                        <p>경기 카드의 <i class="far fa-heart" style="color:#ef476f"></i> 버튼을 눌러 팀을 팔로우하면<br>여기서 한 번에 모아볼 수 있습니다.</p>
+                        <button class="btn btn-primary" onclick="app.switchView('live')"><i class="fas fa-bolt"></i> 라이브 경기 보기</button>
+                    </div>
+                    <div id="myteamMatchesWrapper"></div>
+                </section>
             </div>
 
-            
+
         </div>
     </div>
 
@@ -1918,6 +2007,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
     <a href="#" class="mobile-nav-item" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
     <a href="#" class="mobile-nav-item" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
     <a href="#" class="mobile-nav-item" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
+    <a href="#" class="mobile-nav-item" data-view="myteam"><i class="fas fa-heart"></i><span>내 팀</span></a>
     <a href="#" class="mobile-nav-item" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
     <a href="#" class="mobile-nav-item" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
 </nav>
@@ -2794,6 +2884,206 @@ const AdminMode = {
     }
 };
 
+// ===== 팀 팔로우 / 즐겨찾기 =====
+const FavoriteTeams = {
+    SK: 'sporton_favorites_v2',
+
+    get() {
+        try { return new Set(JSON.parse(localStorage.getItem(this.SK) || '[]')); }
+        catch { return new Set(); }
+    },
+
+    save(set) {
+        localStorage.setItem(this.SK, JSON.stringify([...set]));
+    },
+
+    toggle(teamName) {
+        const set = this.get();
+        if (set.has(teamName)) set.delete(teamName);
+        else set.add(teamName);
+        this.save(set);
+        this.updateSidebar();
+        this.updateBadge();
+    },
+
+    has(teamName) { return this.get().has(teamName); },
+
+    updateBadge() {
+        const cnt = this.get().size;
+        const badge = document.getElementById('myteamBadge');
+        if (!badge) return;
+        if (cnt > 0) { badge.style.display = ''; badge.textContent = cnt; }
+        else { badge.style.display = 'none'; }
+    },
+
+    updateSidebar() {
+        const list = document.getElementById('favoritesList');
+        if (!list) return;
+        const teams = this.get();
+        if (!teams.size) {
+            list.innerHTML = '<p class="empty-state">즐겨찾기한 팀이 없습니다</p>';
+            return;
+        }
+        list.innerHTML = [...teams].map(t => `
+            <div class="fav-team-item">
+                <span class="fav-team-name"><i class="fas fa-heart" style="color:#ef476f;margin-right:5px;font-size:10px;"></i>${t}</span>
+                <button class="fav-team-remove" onclick="FavoriteTeams.removeTeam('${t.replace(/'/g,'\\\'')}')" title="제거"><i class="fas fa-times"></i></button>
+            </div>`).join('');
+    },
+
+    removeTeam(teamName) {
+        const set = this.get();
+        set.delete(teamName);
+        this.save(set);
+        this.updateSidebar();
+        this.updateBadge();
+        // 카드의 하트 버튼도 업데이트
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            if (btn.dataset.home === teamName || btn.dataset.away === teamName) {
+                btn.classList.remove('active');
+                const icon = btn.querySelector('i');
+                if (icon) { icon.classList.replace('fas','far'); }
+            }
+        });
+        Animations.showToast(`${teamName} 팔로우 해제`, 'info');
+    },
+
+    init() {
+        this.updateSidebar();
+        this.updateBadge();
+    }
+};
+
+// ===== 예측 게임 =====
+const PredictionGame = {
+    SK: 'sporton_predictions_v1',
+
+    getAll() {
+        try { return JSON.parse(localStorage.getItem(this.SK) || '{}'); }
+        catch { return {}; }
+    },
+
+    get(matchId) { return this.getAll()[matchId] || null; },
+
+    save(matchId, choice) {
+        const all = this.getAll();
+        all[matchId] = { choice, ts: Date.now() };
+        localStorage.setItem(this.SK, JSON.stringify(all));
+    },
+
+    // 투표 집계 (Firebase 없으면 로컬만, Firebase 있으면 Firestore)
+    async vote(matchId, choice, matchData) {
+        this.save(matchId, choice);
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length && Community && Community.db) {
+            try {
+                const ref = Community.db.collection('predictions').doc(matchId);
+                await ref.set({
+                    [choice]: firebase.firestore.FieldValue.increment(1),
+                    homeTeam: matchData.homeTeam,
+                    awayTeam: matchData.awayTeam,
+                    league: matchData.league,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch(e) { /* offline 무시 */ }
+        }
+    },
+
+    async getTotals(matchId) {
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length && Community && Community.db) {
+            try {
+                const doc = await Community.db.collection('predictions').doc(matchId).get();
+                if (doc.exists) {
+                    const d = doc.data();
+                    return { home: d.home||0, draw: d.draw||0, away: d.away||0 };
+                }
+            } catch(e) {}
+        }
+        // 로컬 fallback: 자신의 투표만
+        const myVote = this.get(matchId);
+        if (!myVote) return { home:0, draw:0, away:0 };
+        return { home: myVote.choice==='home'?1:0, draw: myVote.choice==='draw'?1:0, away: myVote.choice==='away'?1:0 };
+    },
+
+    renderWidget(match) {
+        const canPredict = match.status === 'upcoming';
+        const myVote = this.get(match.id);
+        const isSoccer = match.sport === 'soccer';
+        const disabled = (!canPredict || myVote) ? 'disabled' : '';
+
+        let homeCls = '', drawCls = '', awayCls = '';
+        if (myVote) {
+            if (myVote.choice === 'home') homeCls = 'selected-home';
+            else if (myVote.choice === 'draw') drawCls = 'selected-draw';
+            else awayCls = 'selected-away';
+        }
+
+        const drawBtn = isSoccer
+            ? `<button class="predict-btn ${drawCls}" ${disabled} data-choice="draw" title="무승부">무</button>`
+            : '';
+
+        return `<div class="predict-widget" id="pw_${match.id}">
+            <div class="predict-label"><i class="fas fa-poll" style="margin-right:4px;"></i>결과 예측</div>
+            <div class="predict-btns">
+                <button class="predict-btn ${homeCls}" ${disabled} data-choice="home">${match.homeTeam.split(' ').slice(-1)[0]}</button>
+                ${drawBtn}
+                <button class="predict-btn ${awayCls}" ${disabled} data-choice="away">${match.awayTeam.split(' ').slice(-1)[0]}</button>
+            </div>
+            <div class="predict-bar-wrap">
+                <div class="predict-bar-home" id="pbar_home_${match.id}" style="flex:1"></div>
+                ${isSoccer ? `<div class="predict-bar-draw" id="pbar_draw_${match.id}" style="flex:1"></div>` : ''}
+                <div class="predict-bar-away" id="pbar_away_${match.id}" style="flex:1"></div>
+            </div>
+            <div class="predict-counts" id="pcount_${match.id}">
+                <span id="pct_home_${match.id}">-</span>
+                ${isSoccer ? `<span id="pct_draw_${match.id}">-</span>` : ''}
+                <span id="pct_away_${match.id}">-</span>
+            </div>
+        </div>`;
+    },
+
+    async attachWidget(card, match) {
+        card.querySelectorAll('.predict-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const choice = btn.dataset.choice;
+                await PredictionGame.vote(match.id, choice, match);
+                // UI 업데이트
+                const widget = document.getElementById(`pw_${match.id}`);
+                if (!widget) return;
+                widget.querySelectorAll('.predict-btn').forEach(b => {
+                    b.disabled = true;
+                    b.classList.remove('selected-home','selected-draw','selected-away');
+                    if (b.dataset.choice === choice) {
+                        b.classList.add(`selected-${choice}`);
+                    }
+                });
+                Animations.showToast('예측 완료! 🎯', 'success');
+                PredictionGame.refreshBar(match);
+            });
+        });
+        // 바 데이터 로드 (비동기)
+        PredictionGame.refreshBar(match);
+    },
+
+    async refreshBar(match) {
+        const totals = await PredictionGame.getTotals(match.id);
+        const total = totals.home + totals.draw + totals.away || 1;
+        const hp = Math.round(totals.home/total*100);
+        const dp = Math.round(totals.draw/total*100);
+        const ap = 100 - hp - dp;
+
+        const setFlex = (id, val) => { const el = document.getElementById(id); if(el) el.style.flex = String(val||1); };
+        const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+
+        setFlex(`pbar_home_${match.id}`, totals.home||1);
+        setFlex(`pbar_draw_${match.id}`, totals.draw||1);
+        setFlex(`pbar_away_${match.id}`, totals.away||1);
+        setText(`pct_home_${match.id}`, total > 1 ? `${hp}%` : '-');
+        setText(`pct_draw_${match.id}`, total > 1 ? `${dp}%` : '-');
+        setText(`pct_away_${match.id}`, total > 1 ? `${ap}%` : '-');
+    }
+};
+
 // ===== Main App =====
 const app = {
     currentView: 'live',
@@ -2802,12 +3092,25 @@ const app = {
     _prevView: 'live',
     _currentOdds: null,    // 현재 스포츠의 Odds API 데이터 (캐시)
 
+    updateSEOMeta(title, description) {
+        document.title = title ? `${title} | SPORTON` : 'SPORTON — 실시간 라이브스코어 & 배당률';
+        const desc = document.querySelector('meta[name="description"]');
+        if (desc) desc.content = description || '실시간 스포츠 라이브스코어, 배당률, 경기 예측 — NBA, EPL, K리그, KBO 무료 제공';
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.content = document.title;
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.content = desc?.content || '';
+    },
+
     showGameDetail(match) {
         this._prevView = this.currentView;
         this.switchView('gameDetail');
 
-        // 헤더 정보
         const statusText = { live:'🔴 LIVE', finished:'종료', upcoming:'예정' }[match.status] || '';
+        this.updateSEOMeta(
+            `${match.homeTeam} vs ${match.awayTeam} ${statusText}`,
+            `${match.league} ${match.homeTeam} vs ${match.awayTeam} 실시간 라이브스코어, 배당률 | SPORTON`
+        );
         document.getElementById('gameDetailTitle').textContent = `${match.awayTeam} vs ${match.homeTeam}`;
         document.getElementById('gameDetailMeta').textContent = `${match.league} · ${statusText} ${match.time || ''}`.trim();
 
@@ -3233,6 +3536,16 @@ const app = {
         // Odds API 미니 배당 칩 (예정 경기만, 크레딧 절약을 위해 캐시된 데이터 사용)
         const oddsChipsHtml = app._currentOdds ? OddsService.miniHtml(match, app._currentOdds) : '';
 
+        // 즐겨찾기 상태 복원
+        const isFav = FavoriteTeams.has(match.homeTeam) || FavoriteTeams.has(match.awayTeam);
+        const favActiveCls = isFav ? ' active' : '';
+        const favIconCls   = isFav ? 'fas' : 'far';
+
+        // 예측 위젯 (예정 경기에만)
+        const predictHtml = match.status === 'upcoming'
+            ? PredictionGame.renderWidget(match)
+            : '';
+
         card.innerHTML = `
             <div class="match-header">
                 <span class="match-time">${match.time || ''}</span>
@@ -3241,15 +3554,20 @@ const app = {
             ${teamsHtml}
             ${ouHtml}
             ${oddsChipsHtml}
+            ${predictHtml}
             <div class="match-footer">
                 <span class="match-league"><i class="fas ${sportIcon}"></i> ${match.league}</span>
-                <button class="favorite-btn" data-match-id="${match.id}"><i class="far fa-heart"></i></button>
+                <button class="favorite-btn${favActiveCls}" data-match-id="${match.id}" data-home="${match.homeTeam}" data-away="${match.awayTeam}" title="팀 팔로우"><i class="${favIconCls} fa-heart"></i></button>
             </div>`;
 
         card.querySelector('.favorite-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleFavorite(match.id, e.currentTarget);
         });
+        // 예측 버튼 이벤트
+        if (match.status === 'upcoming') {
+            PredictionGame.attachWidget(card, match);
+        }
         card.addEventListener('click', () => { app.showGameDetail(match); });
         return card;
     },
@@ -3272,13 +3590,15 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', calendar:'calendarSection', nbacalc:'nbaCalcSection', gameDetail:'gameDetailSection' };
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', calendar:'calendarSection', nbacalc:'nbaCalcSection', gameDetail:'gameDetailSection' };
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
+        // 내 팀 뷰: 팔로우 경기 로드
+        if (view === 'myteam') this.loadMyTeamMatches();
     },
 
     filterSport(sport) {
@@ -3301,9 +3621,72 @@ const app = {
 
     toggleFavorite(matchId, button) {
         const icon = button.querySelector('i');
+        const home = button.dataset.home || '';
+        const away = button.dataset.away || '';
+        // 두 팀 중 하나라도 팔로우 중이면 "팔로우 중" 상태
+        const isActive = button.classList.contains('active');
         button.classList.toggle('active');
-        if (button.classList.contains('active')) { icon.classList.replace('far','fas'); Animations.showToast('즐겨찾기에 추가되었습니다','success'); }
-        else { icon.classList.replace('fas','far'); Animations.showToast('즐겨찾기에서 제거되었습니다','info'); }
+        if (!isActive) {
+            icon.classList.replace('far','fas');
+            if (home) FavoriteTeams.toggle(home);
+            if (away) FavoriteTeams.toggle(away);
+            Animations.showToast(`${home || away} 팔로우!`, 'success');
+        } else {
+            icon.classList.replace('fas','far');
+            if (home) { const s=FavoriteTeams.get(); s.delete(home); FavoriteTeams.save(s); }
+            if (away) { const s=FavoriteTeams.get(); s.delete(away); FavoriteTeams.save(s); }
+            FavoriteTeams.updateSidebar();
+            FavoriteTeams.updateBadge();
+            Animations.showToast('팔로우 해제', 'info');
+        }
+    },
+
+    async loadMyTeamMatches() {
+        const wrapper = document.getElementById('myteamMatchesWrapper');
+        const onboarding = document.getElementById('myteamOnboarding');
+        if (!wrapper) return;
+        const favorites = FavoriteTeams.get();
+        if (!favorites.size) {
+            wrapper.innerHTML = '';
+            if (onboarding) onboarding.style.display = '';
+            return;
+        }
+        if (onboarding) onboarding.style.display = 'none';
+        wrapper.innerHTML = '<div class="skeleton-card"></div><div class="skeleton-card"></div>';
+        try {
+            const [liveData, upData] = await Promise.all([
+                ApiService.getMatchesBySport('all', 'live'),
+                ApiService.getMatchesBySport('all', 'upcoming')
+            ]);
+            const allMatches = [];
+            for (const data of [liveData, upData]) {
+                for (const sportData of Object.values(data)) {
+                    for (const lg of sportData.leagues) {
+                        for (const m of (lg.matches || [])) {
+                            if (favorites.has(m.homeTeam) || favorites.has(m.awayTeam)) {
+                                allMatches.push(m);
+                            }
+                        }
+                    }
+                }
+            }
+            wrapper.innerHTML = '';
+            if (!allMatches.length) {
+                wrapper.innerHTML = '<p class="empty-state">팔로우한 팀의 진행 중/예정 경기가 없습니다.<br><small>경기 결과는 종료 후 사라집니다.</small></p>';
+                return;
+            }
+            const grid = document.createElement('div');
+            grid.className = 'matches-grid';
+            allMatches.forEach((m, i) => {
+                const card = this.createMatchCard(m);
+                card.style.border = '1px solid rgba(239,71,111,0.35)';
+                grid.appendChild(card);
+                Animations.animateCard(card, i * 80);
+            });
+            wrapper.appendChild(grid);
+        } catch(e) {
+            wrapper.innerHTML = '<p class="empty-state">불러오기 실패. 잠시 후 다시 시도해주세요.</p>';
+        }
     },
 
     updateTimestamp(elementId) {
@@ -3364,6 +3747,7 @@ const app = {
 
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
+    FavoriteTeams.init();         // 팀 팔로우 초기화
     AdminMode.setupLogoTrigger(); // 로고 5번 클릭 → 관리자 모드
     LiveChat.init();              // 실시간 채팅
 
@@ -4547,6 +4931,52 @@ const NBACalc = {
 };
 
 NBACalc.init();
+
+// ===== PWA: Service Worker 등록 =====
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+}
+
+// ===== PWA: 홈화면 설치 프롬프트 =====
+let _pwaInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _pwaInstallPrompt = e;
+    // 이미 설치됐거나 dismissed된 경우 무시
+    if (localStorage.getItem('sporton_pwa_dismissed')) return;
+    const bar = document.getElementById('pwaInstallBar');
+    if (bar) bar.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+    const bar = document.getElementById('pwaInstallBar');
+    if (bar) bar.style.display = 'none';
+    Animations.showToast('SPORTON이 홈화면에 추가되었습니다 🎉', 'success');
+});
+
+// PWA 설치 바 버튼 핸들러
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+        if (!_pwaInstallPrompt) return;
+        _pwaInstallPrompt.prompt();
+        const { outcome } = await _pwaInstallPrompt.userChoice;
+        _pwaInstallPrompt = null;
+        document.getElementById('pwaInstallBar').style.display = 'none';
+        if (outcome === 'dismissed') localStorage.setItem('sporton_pwa_dismissed', '1');
+    });
+    document.getElementById('pwaInstallDismiss')?.addEventListener('click', () => {
+        document.getElementById('pwaInstallBar').style.display = 'none';
+        localStorage.setItem('sporton_pwa_dismissed', '1');
+    });
+    // URL 파라미터로 뷰 초기화 (?view=live 등)
+    const params = new URLSearchParams(location.search);
+    const initView = params.get('view');
+    if (initView && ['live','upcoming','community','myteam','calendar','nbacalc'].includes(initView)) {
+        app.switchView(initView);
+    }
+});
 </script>
 </body>
 </html>
