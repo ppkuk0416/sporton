@@ -758,6 +758,26 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .predict-bar-away { background:#f4a261; transition:flex 0.4s; }
 .predict-counts { display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:3px; }
 
+/* ===== CCU 접속자 표시 ===== */
+.ccu-display { display:flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.2); border-radius:var(--radius-full); font-size:12px; font-weight:600; color:rgba(0,255,136,0.85); }
+.ccu-dot { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 6px #00ff88; animation:pulse 1.5s infinite; flex-shrink:0; }
+
+/* ===== 친구 초대 모달 ===== */
+.invite-reward-banner { display:flex; align-items:center; gap:12px; background:rgba(244,162,97,0.08); border:1px solid rgba(244,162,97,0.2); border-radius:10px; padding:14px; margin-bottom:16px; }
+.invite-reward-banner i { font-size:1.8rem; color:var(--accent-gold); flex-shrink:0; }
+.invite-reward-banner strong { font-size:13px; color:var(--text-primary); display:block; margin-bottom:3px; }
+.invite-reward-banner p { font-size:12px; color:var(--text-muted); margin:0; }
+.invite-code-display { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px 16px; margin-bottom:12px; }
+.invite-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+.invite-code-val { font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--accent-gold); letter-spacing:0.1em; }
+.social-share-invite { display:flex; align-items:center; justify-content:center; gap:8px; padding:11px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:var(--text-secondary); transition:all 0.15s; }
+.social-share-invite:hover { background:rgba(255,255,255,0.1); color:var(--text-primary); }
+.invite-stats { display:flex; justify-content:space-between; background:rgba(255,255,255,0.04); border-radius:8px; padding:10px 14px; margin-top:14px; font-size:13px; color:var(--text-muted); }
+.invite-stats strong { color:var(--accent-gold); }
+.footer-invite { display:flex; align-items:center; justify-content:space-between; padding:16px 0; border-top:1px solid rgba(255,255,255,0.06); margin-bottom:8px; font-size:13px; color:var(--text-muted); flex-wrap:wrap; gap:12px; }
+.footer-invite-btn { display:flex; align-items:center; gap:7px; padding:9px 18px; background:linear-gradient(90deg,rgba(244,162,97,0.15),rgba(230,111,81,0.15)); border:1px solid rgba(244,162,97,0.3); border-radius:99px; color:var(--accent-gold); font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; }
+.footer-invite-btn:hover { background:linear-gradient(90deg,rgba(244,162,97,0.25),rgba(230,111,81,0.25)); }
+
 /* ===== 로그인 버튼 & 프로필 ===== */
 .header-login-btn { display:flex; align-items:center; gap:6px; padding:7px 14px; background:rgba(0,217,255,0.12); border:1px solid rgba(0,217,255,0.3); border-radius:var(--radius-full); color:#00d9ff; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; }
 .header-login-btn:hover { background:rgba(0,217,255,0.22); }
@@ -1522,6 +1542,11 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                     <span class="header-nickname" id="headerNickname"></span>
                     <span class="header-points" id="headerPoints"></span>
                 </div>
+                <!-- CCU 접속자 수 (소셜 증거) -->
+                <div class="ccu-display" id="ccuDisplay" style="display:none">
+                    <span class="ccu-dot"></span>
+                    <span id="ccuCount">0</span>명 접속 중
+                </div>
                 <div class="api-status connected" id="apiStatus">
                     <span class="status-dot"></span>
                     <span class="status-text">ESPN</span>
@@ -2112,8 +2137,14 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 </p>
             </div>
         </div>
+        <div class="footer-invite">
+            <span><i class="fas fa-heart" style="color:#ef476f;margin-right:6px;"></i>SPORTON이 마음에 드셨나요?</span>
+            <button class="footer-invite-btn" onclick="InviteSystem.openModal()">
+                <i class="fas fa-user-plus"></i> 친구에게 초대하기
+            </button>
+        </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 SPORTON — 실시간 스포츠 데이터</p>
+            <p>&copy; 2026 SPORTON — 실시간 스포츠 데이터 · <span id="oddsRefreshTs" style="font-size:11px;opacity:0.5;"></span></p>
         </div>
     </div>
 </footer>
@@ -2179,7 +2210,10 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
             </div>
             <h4 style="font-size:13px;color:var(--text-secondary);margin:16px 0 8px">최근 예측</h4>
             <div id="profileHistory" style="font-size:12px;color:var(--text-muted)">예측 기록이 없습니다.</div>
-            <button class="btn btn-secondary" onclick="UserAuth.logout()" style="width:100%;margin-top:20px;justify-content:center;"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px;">
+                <button class="btn btn-primary" onclick="InviteSystem.openModal();UserAuth.closeProfile();" style="justify-content:center;"><i class="fas fa-user-plus"></i> 친구 초대</button>
+                <button class="btn btn-secondary" onclick="UserAuth.logout()" style="justify-content:center;"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+            </div>
         </div>
     </div>
 </div>
@@ -2198,6 +2232,49 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <button class="share-action-btn" onclick="ShareCard.downloadCard()"><i class="fas fa-download"></i> 저장</button>
                 <button class="share-action-btn twitter" onclick="ShareCard.shareTwitter()"><i class="fab fa-twitter"></i> 트위터</button>
                 <button class="share-action-btn native" id="shareNativeBtn" onclick="ShareCard.shareNative()" style="display:none"><i class="fas fa-share"></i> 공유</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 친구 초대 모달 ===== -->
+<div class="modal" id="inviteModal">
+    <div class="modal-overlay" onclick="InviteSystem.closeModal()"></div>
+    <div class="modal-content" style="max-width:440px">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-plus"></i> 친구 초대</h2>
+            <button class="modal-close" onclick="InviteSystem.closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="invite-reward-banner">
+                <i class="fas fa-gift"></i>
+                <div>
+                    <strong>친구가 가입하면 두 사람 모두 보너스 포인트!</strong>
+                    <p>친구 1명 초대 = +50pt 지급</p>
+                </div>
+            </div>
+            <div class="invite-code-display">
+                <span class="invite-label">내 초대 코드</span>
+                <span class="invite-code-val" id="inviteCodeVal">-</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:16px;">
+                <input type="text" id="inviteUrl" readonly style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;color:var(--text-muted);font-size:12px;outline:none;">
+                <button class="btn btn-primary" onclick="InviteSystem.copyLink()" style="flex-shrink:0;padding:10px 16px;"><i class="fas fa-copy"></i></button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button class="social-share-invite" onclick="InviteSystem.shareKakao()">
+                    <i class="fas fa-comment" style="color:#FAE100"></i> 카카오톡
+                </button>
+                <button class="social-share-invite" onclick="InviteSystem.shareTwitter()">
+                    <i class="fab fa-twitter" style="color:#1da1f2"></i> 트위터
+                </button>
+                <button class="social-share-invite" onclick="InviteSystem.shareNative()" style="grid-column:1/-1;">
+                    <i class="fas fa-share-alt"></i> 더 많은 앱으로 공유
+                </button>
+            </div>
+            <div class="invite-stats" id="inviteStats" style="display:none">
+                <span><i class="fas fa-users"></i> 초대한 친구 <strong id="inviteCount">0</strong>명</span>
+                <span><i class="fas fa-coins"></i> 획득 포인트 <strong id="invitePoints">0</strong>pt</span>
             </div>
         </div>
     </div>
@@ -2301,7 +2378,8 @@ const DataCache = {
         if (Date.now() > e.expiry) { this.cache.delete(key); return null; }
         return e.value;
     },
-    clear() { this.cache.clear(); }
+    clear() { this.cache.clear(); },
+    invalidate(key) { this.cache.delete(key); }
 };
 
 // ===== API Service =====
@@ -3151,6 +3229,7 @@ const UserAuth = {
             const provider = new firebase.auth.GoogleAuthProvider();
             await auth.signInWithPopup(provider);
             this.closeModal();
+            Analytics.socialLogin('google');
             Animations.showToast('로그인 성공! 🎉', 'success');
         } catch(e) {
             if (e.code !== 'auth/popup-closed-by-user') Animations.showToast('로그인 실패: ' + e.message, 'error');
@@ -3444,6 +3523,198 @@ const Leaderboard = {
     }
 };
 
+// ===== Google Analytics 4 이벤트 트래킹 =====
+const Analytics = {
+    _ready: false,
+
+    init(measurementId) {
+        if (!measurementId || this._ready) return;
+        // gtag.js 동적 로드
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', measurementId, { send_page_view: true });
+        this._ready = true;
+        this._id = measurementId;
+    },
+
+    track(eventName, params = {}) {
+        if (!this._ready || !window.gtag) return;
+        window.gtag('event', eventName, params);
+    },
+
+    // 미리 정의된 핵심 이벤트
+    gameView(match)       { this.track('game_view',          { sport: match.sport, league: match.league, match_id: match.id }); },
+    predictionSubmit(m,c) { this.track('prediction_submit',  { sport: m.sport, league: m.league, choice: c }); },
+    predictionShare(m)    { this.track('prediction_share',   { sport: m.sport, league: m.league }); },
+    teamFollow(team)      { this.track('team_follow',        { team_name: team }); },
+    chatSend()            { this.track('chat_send'); },
+    notifOptIn()          { this.track('notification_opt_in'); },
+    socialLogin(provider) { this.track('social_login',       { method: provider }); },
+    inviteShare(code)     { this.track('invite_share',       { referral_code: code }); },
+    inviteConvert(code)   { this.track('invite_convert',     { referral_code: code }); },
+    pageView(viewName)    { this.track('page_view',          { page_title: viewName, page_location: location.href }); }
+};
+
+// ===== CCU 실시간 접속자 추적 =====
+const CCUTracker = {
+    _uid: null,
+    _db: null,
+    _unsub: null,
+    _interval: null,
+
+    init() {
+        // Firebase 연결 시 시작
+        const tryStart = () => {
+            if (typeof firebase === 'undefined' || !firebase.apps?.length) return false;
+            try {
+                this._db = firebase.firestore();
+                this._start();
+                return true;
+            } catch(e) { return false; }
+        };
+        if (!tryStart()) {
+            // Firebase 연결 대기
+            const poll = setInterval(() => { if (tryStart()) clearInterval(poll); }, 3000);
+        }
+    },
+
+    _start() {
+        if (!this._db) return;
+        this._uid = 'ccu_' + Math.random().toString(36).slice(2) + Date.now();
+        const ref = this._db.collection('_ccu').doc(this._uid);
+
+        // 현재 접속자로 등록
+        const heartbeat = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        heartbeat();
+        this._interval = setInterval(heartbeat, 30000);
+
+        // 창 닫을 때 제거
+        window.addEventListener('beforeunload', () => ref.delete());
+
+        // 실시간 카운팅 (1분 내 활성 세션)
+        this._unsub = this._db.collection('_ccu').onSnapshot(snap => {
+            const cutoff = Date.now() - 90000; // 90초
+            let count = 0;
+            snap.forEach(doc => {
+                const t = doc.data().t?.toDate?.()?.getTime?.() || 0;
+                if (t > cutoff) count++;
+            });
+            this._updateDisplay(count);
+        });
+    },
+
+    _updateDisplay(count) {
+        const el = document.getElementById('ccuDisplay');
+        const numEl = document.getElementById('ccuCount');
+        if (!el || !numEl) return;
+        numEl.textContent = count;
+        el.style.display = count > 1 ? '' : 'none'; // 1명(자신)이면 숨김
+    }
+};
+
+// ===== 친구 초대 시스템 =====
+const InviteSystem = {
+    SK_CODE: 'sporton_invite_code',
+    SK_FROM: 'sporton_invite_from',
+
+    // 내 초대코드 생성 (사용자 UID 기반 or 랜덤)
+    getMyCode() {
+        let code = localStorage.getItem(this.SK_CODE);
+        if (!code) {
+            const uid = UserAuth.currentUser?.uid || Math.random().toString(36).slice(2,8).toUpperCase();
+            code = uid.substring(0, 6).toUpperCase();
+            localStorage.setItem(this.SK_CODE, code);
+        }
+        return code;
+    },
+
+    // 초대 링크 생성
+    getInviteUrl() {
+        const code = this.getMyCode();
+        return `${location.origin}${location.pathname}?ref=${code}&utm_source=invite&utm_medium=referral&utm_campaign=friend`;
+    },
+
+    // 페이지 로드 시 레퍼럴 코드 감지
+    checkIncoming() {
+        const params = new URLSearchParams(location.search);
+        const ref = params.get('ref');
+        if (ref && ref !== this.getMyCode()) {
+            localStorage.setItem(this.SK_FROM, ref);
+            Analytics.inviteConvert(ref);
+            Animations.showToast(`친구 초대로 방문하셨군요! 🎉`, 'success');
+        }
+    },
+
+    // 공유 모달 열기
+    openModal() {
+        const code = this.getMyCode();
+        const url = this.getInviteUrl();
+        const codeEl = document.getElementById('inviteCodeVal');
+        if (codeEl) codeEl.textContent = code;
+        const urlEl = document.getElementById('inviteUrl');
+        if (urlEl) urlEl.value = url;
+        // 초대 통계 (로컬 추적)
+        const inviteCount = parseInt(localStorage.getItem('sporton_invite_count') || '0');
+        if (inviteCount > 0) {
+            const statsEl = document.getElementById('inviteStats');
+            if (statsEl) statsEl.style.display = '';
+            const cntEl = document.getElementById('inviteCount');
+            if (cntEl) cntEl.textContent = inviteCount;
+            const ptEl = document.getElementById('invitePoints');
+            if (ptEl) ptEl.textContent = inviteCount * 50;
+        }
+        document.getElementById('inviteModal')?.classList.add('show');
+        Analytics.inviteShare(code);
+    },
+
+    closeModal() { document.getElementById('inviteModal')?.classList.remove('show'); },
+
+    copyLink() {
+        const url = this.getInviteUrl();
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => Animations.showToast('링크 복사 완료! 📋', 'success'));
+        } else {
+            document.getElementById('inviteUrl').select();
+            document.execCommand('copy');
+            Animations.showToast('링크 복사 완료! 📋', 'success');
+        }
+    },
+
+    shareKakao() {
+        const url = this.getInviteUrl();
+        // 카카오 SDK 미로드 시 클립보드 폴백
+        if (window.Kakao?.isInitialized?.()) {
+            window.Kakao.Share.sendDefault({
+                objectType: 'text',
+                text: `SPORTON에서 스포츠 경기 예측 같이 해요! 실시간 스코어 + 배당률 + 예측 게임 🔴`,
+                link: { mobileWebUrl: url, webUrl: url }
+            });
+        } else {
+            this.copyLink();
+        }
+    },
+
+    shareTwitter() {
+        const url = this.getInviteUrl();
+        const text = `SPORTON에서 스포츠 경기 예측 같이 해요! 실시간 스코어 + 배당률 무료 🏆`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+    },
+
+    async shareNative() {
+        const url = this.getInviteUrl();
+        if (navigator.share) {
+            await navigator.share({ title: 'SPORTON 친구 초대', text: '실시간 스포츠 예측 게임 같이 해요!', url });
+        } else {
+            this.copyLink();
+        }
+    }
+};
+
 // ===== 팀 팔로우 / 즐겨찾기 =====
 const FavoriteTeams = {
     SK: 'sporton_favorites_v2',
@@ -3626,6 +3897,7 @@ const PredictionGame = {
                     shareBtn.addEventListener('click', (e) => { e.stopPropagation(); ShareCard.show(match, choice); });
                     widget.appendChild(shareBtn);
                 }
+                Analytics.predictionSubmit(match, choice);
                 Animations.showToast('예측 완료! 🎯', 'success');
                 // 포인트 지급 (로그인 시)
                 if (UserAuth.currentUser && !UserAuth.currentUser.isGuest) {
@@ -3678,6 +3950,7 @@ const app = {
     showGameDetail(match) {
         this._prevView = this.currentView;
         this.switchView('gameDetail');
+        Analytics.gameView(match);
 
         const statusText = { live:'🔴 LIVE', finished:'종료', upcoming:'예정' }[match.status] || '';
         this.updateSEOMeta(
@@ -4174,6 +4447,8 @@ const app = {
         if (view === 'myteam') this.loadMyTeamMatches();
         // 리더보드 뷰: 데이터 로드
         if (view === 'leaderboard') Leaderboard.load();
+        // Analytics: 뷰 전환 트래킹
+        Analytics.pageView(view);
     },
 
     filterSport(sport) {
@@ -4205,6 +4480,7 @@ const app = {
             icon.classList.replace('far','fas');
             if (home) FavoriteTeams.toggle(home);
             if (away) FavoriteTeams.toggle(away);
+            Analytics.teamFollow(home || away);
             Animations.showToast(`${home || away} 팔로우!`, 'success');
         } else {
             icon.classList.replace('fas','far');
@@ -4270,9 +4546,38 @@ const app = {
     },
 
     setupAutoRefresh() {
+        // 스코어: 30초마다 라이브 경기 갱신
         this.autoRefreshInterval = setInterval(() => {
-            if (this.currentView==='live') this.loadLiveMatches();
+            if (this.currentView === 'live') this.loadLiveMatches();
+            else if (this.currentView === 'home') this.loadHomeMatches?.();
         }, 30000);
+
+        // 배당률: 60초마다 갱신 후 카드의 odds 칩 인플레이스 업데이트
+        this._oddsRefreshInterval = setInterval(async () => {
+            if (!['live','upcoming','home'].includes(this.currentView)) return;
+            const sport = this.currentSport;
+            const hasOdds = Object.keys(OddsService.SPORT_MAP).includes(sport);
+            if (!hasOdds) return;
+            try {
+                DataCache.invalidate(`odds_${sport}`);
+                const fresh = await OddsService.fetchForSport(sport);
+                if (!fresh) return;
+                this._currentOdds = fresh;
+                // 화면에 보이는 카드의 odds 칩만 교체
+                document.querySelectorAll('.match-card[data-match-id]').forEach(card => {
+                    const matchId = card.dataset.matchId;
+                    if (!matchId) return;
+                    const chipsEl = card.querySelector('.card-odds-mini');
+                    if (!chipsEl) return;
+                    // 현재 카드가 가진 데이터로 재계산 — match 객체는 카드에 없으므로 칩만 교체
+                    const newHtml = OddsService._miniChipsFromCurrent(matchId, fresh);
+                    if (newHtml) chipsEl.outerHTML = newHtml;
+                });
+                // 헤더 배당률 갱신 타임스탬프 표시
+                const tsEl = document.getElementById('oddsRefreshTs');
+                if (tsEl) tsEl.textContent = new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            } catch(e) {}
+        }, 60000);
     },
 
     async refreshLiveData() { Animations.showToast('새로고침 중...','info',1000); await this.loadLiveMatches(); Animations.showToast('새로고침 완료!','success'); },
@@ -4324,6 +4629,10 @@ document.addEventListener('DOMContentLoaded', () => {
     app.init();
     FavoriteTeams.init();         // 팀 팔로우 초기화
     UserAuth.init();              // 소셜 로그인 초기화
+    CCUTracker.init();            // 실시간 접속자 추적
+    InviteSystem.checkIncoming(); // 친구 초대 레퍼럴 코드 감지
+    // GA4 초기화 (측정 ID는 운영자가 교체)
+    // Analytics.init('G-XXXXXXXXXX');
     AdminMode.setupLogoTrigger(); // 로고 5번 클릭 → 관리자 모드
     LiveChat.init();              // 실시간 채팅
 
