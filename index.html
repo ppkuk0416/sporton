@@ -7,6 +7,7 @@
     <meta name="keywords" content="라이브스코어, 스포츠 배당률, NBA 라이브, EPL 경기, 실시간 스코어, 스포츠 예측">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sporton.live/">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <title>SPORTON — 실시간 라이브스코어 &amp; 배당률</title>
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -761,6 +762,36 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 /* ===== CCU 접속자 표시 ===== */
 .ccu-display { display:flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.2); border-radius:var(--radius-full); font-size:12px; font-weight:600; color:rgba(0,255,136,0.85); }
 .ccu-dot { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 6px #00ff88; animation:pulse 1.5s infinite; flex-shrink:0; }
+
+/* ===== 관리자 대시보드 ===== */
+.admin-dashboard-btn { display:none; align-items:center; gap:5px; padding:5px 10px; background:rgba(255,200,0,0.1); border:1px solid rgba(255,200,0,0.3); border-radius:var(--radius-full); font-size:11px; font-weight:700; color:rgba(255,200,0,0.9); cursor:pointer; transition:var(--transition-fast); }
+.admin-dashboard-btn:hover { background:rgba(255,200,0,0.2); }
+.admin-dashboard-btn i { font-size:10px; }
+.admin-modal { position:fixed; top:0; left:0; width:100%; height:100%; z-index:3500; display:none; align-items:center; justify-content:center; padding:var(--space-4); }
+.admin-modal.show { display:flex; }
+.admin-modal .modal-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(10,22,40,0.85); backdrop-filter:blur(8px); }
+.admin-modal-content { position:relative; z-index:1; background:var(--bg-secondary); border:1px solid rgba(255,200,0,0.2); border-radius:var(--radius-xl); max-width:560px; width:100%; max-height:90vh; overflow-y:auto; animation:modalSlideIn 0.3s ease-out; }
+.admin-modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.08); }
+.admin-modal-header h2 { display:flex; align-items:center; gap:8px; font-size:15px; color:rgba(255,200,0,0.9); }
+.admin-stats-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:20px; }
+.admin-stat-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; }
+.admin-stat-label { font-size:11px; color:var(--text-muted); margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+.admin-stat-value { font-size:28px; font-weight:800; color:var(--text-primary); line-height:1; }
+.admin-stat-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.admin-stat-card.highlight { border-color:rgba(0,255,136,0.2); background:rgba(0,255,136,0.05); }
+.admin-stat-card.highlight .admin-stat-value { color:#00ff88; }
+.admin-log-section { padding:0 20px 20px; }
+.admin-log-title { font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px; text-transform:uppercase; }
+.admin-log-list { background:rgba(0,0,0,0.2); border-radius:8px; padding:10px 12px; max-height:140px; overflow-y:auto; }
+.admin-log-item { font-size:11px; color:rgba(255,255,255,0.5); padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; }
+.admin-log-item:last-child { border-bottom:none; }
+.admin-actions { display:flex; gap:8px; padding:0 20px 20px; }
+.admin-action-btn { flex:1; padding:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; transition:var(--transition-fast); }
+.admin-action-btn:hover { background:rgba(255,255,255,0.1); color:var(--text-primary); }
+.admin-ga-input { padding:0 20px 20px; }
+.admin-ga-input label { font-size:11px; color:var(--text-muted); display:block; margin-bottom:6px; }
+.admin-ga-input input { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px 12px; color:var(--text-primary); font-size:13px; outline:none; }
+.admin-ga-input input:focus { border-color:rgba(255,200,0,0.4); }
 
 /* ===== 친구 초대 모달 ===== */
 .invite-reward-banner { display:flex; align-items:center; gap:12px; background:rgba(244,162,97,0.08); border:1px solid rgba(244,162,97,0.2); border-radius:10px; padding:14px; margin-bottom:16px; }
@@ -1531,6 +1562,7 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
             </nav>
             <div class="header-actions">
+                <button class="admin-dashboard-btn" id="adminDashboardBtn" onclick="AdminDashboard.open()" title="관리자 대시보드"><i class="fas fa-chart-bar"></i> 대시보드</button>
                 <button class="icon-btn" id="settingsBtn" style="display:none;"><i class="fas fa-cog"></i></button>
                 <!-- 로그인 버튼 (비로그인 시) -->
                 <button class="header-login-btn" id="headerLoginBtn" onclick="UserAuth.openModal()">
@@ -2276,6 +2308,67 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                 <span><i class="fas fa-users"></i> 초대한 친구 <strong id="inviteCount">0</strong>명</span>
                 <span><i class="fas fa-coins"></i> 획득 포인트 <strong id="invitePoints">0</strong>pt</span>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 관리자 대시보드 모달 ===== -->
+<div class="admin-modal" id="adminDashboardModal">
+    <div class="modal-overlay" onclick="AdminDashboard.close()"></div>
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h2><i class="fas fa-chart-line"></i> 관리자 대시보드</h2>
+            <button class="modal-close" onclick="AdminDashboard.close()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card highlight">
+                <div class="admin-stat-label"><i class="fas fa-circle" style="color:#00ff88;font-size:8px;"></i> 실시간 CCU</div>
+                <div class="admin-stat-value" id="adCcu">-</div>
+                <div class="admin-stat-sub">현재 접속 중인 유저</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label"><i class="fas fa-crown" style="color:#ffd700;"></i> CCU 피크 (오늘)</div>
+                <div class="admin-stat-value" id="adCcuPeak">-</div>
+                <div class="admin-stat-sub" id="adCcuPeakTime">기록 없음</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label"><i class="fas fa-users"></i> DAU (오늘)</div>
+                <div class="admin-stat-value" id="adDau">-</div>
+                <div class="admin-stat-sub">오늘 방문 고유 유저</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label"><i class="fas fa-gamepad"></i> 예측 참여 (오늘)</div>
+                <div class="admin-stat-value" id="adPredictions">-</div>
+                <div class="admin-stat-sub">오늘 제출된 예측 수</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label"><i class="fas fa-comments"></i> 채팅 메시지 (오늘)</div>
+                <div class="admin-stat-value" id="adChats">-</div>
+                <div class="admin-stat-sub">오늘 전송된 채팅 수</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label"><i class="fas fa-user-plus"></i> 신규 가입 (오늘)</div>
+                <div class="admin-stat-value" id="adNewUsers">-</div>
+                <div class="admin-stat-sub">오늘 가입한 유저 수</div>
+            </div>
+        </div>
+        <div class="admin-ga-input">
+            <label>Google Analytics 4 측정 ID (G-XXXXXXXXXX)</label>
+            <div style="display:flex;gap:8px;">
+                <input type="text" id="adGaId" placeholder="G-XXXXXXXXXX" />
+                <button class="admin-action-btn" style="flex:0 0 auto;padding:10px 14px;" onclick="AdminDashboard.saveGaId()"><i class="fas fa-save"></i></button>
+            </div>
+        </div>
+        <div class="admin-log-section">
+            <div class="admin-log-title">최근 이벤트 로그</div>
+            <div class="admin-log-list" id="adEventLog">
+                <div class="admin-log-item"><span style="color:rgba(255,255,255,0.3);">이벤트가 없습니다</span><span></span></div>
+            </div>
+        </div>
+        <div class="admin-actions">
+            <button class="admin-action-btn" onclick="AdminDashboard.refresh()"><i class="fas fa-sync-alt"></i> 새로고침</button>
+            <button class="admin-action-btn" onclick="AdminDashboard.exportCsv()"><i class="fas fa-download"></i> CSV 내보내기</button>
+            <button class="admin-action-btn" style="color:#ff6b6b;border-color:rgba(255,107,107,0.2);" onclick="AdminDashboard.exitAdmin()"><i class="fas fa-sign-out-alt"></i> 관리자 종료</button>
         </div>
     </div>
 </div>
@@ -3543,8 +3636,9 @@ const Analytics = {
     },
 
     track(eventName, params = {}) {
-        if (!this._ready || !window.gtag) return;
-        window.gtag('event', eventName, params);
+        if (this._ready && window.gtag) window.gtag('event', eventName, params);
+        // 관리자 이벤트 로그에 기록
+        AdminDashboard.logEvent(eventName, Object.entries(params).map(([k,v])=>`${k}:${v}`).join(' '));
     },
 
     // 미리 정의된 핵심 이벤트
@@ -3614,6 +3708,184 @@ const CCUTracker = {
         if (!el || !numEl) return;
         numEl.textContent = count;
         el.style.display = count > 1 ? '' : 'none'; // 1명(자신)이면 숨김
+        // 관리자 대시보드 CCU 동기화
+        AdminDashboard.updateCcu(count);
+    }
+};
+
+// ===== 관리자 대시보드 =====
+const AdminDashboard = {
+    SK_PEAK: 'sporton_ccu_peak',
+    SK_PEAK_TIME: 'sporton_ccu_peak_time',
+    SK_DAU: 'sporton_dau_',
+    SK_GA: 'sporton_ga_id',
+    _eventLog: [],
+    _refreshTimer: null,
+
+    getDb() { try { return (typeof firebase !== 'undefined' && firebase.apps?.length) ? firebase.firestore() : null; } catch(e) { return null; } },
+
+    open() {
+        document.getElementById('adminDashboardModal')?.classList.add('show');
+        // GA 입력 복원
+        const savedGa = localStorage.getItem(this.SK_GA) || '';
+        const gaInput = document.getElementById('adGaId');
+        if (gaInput) gaInput.value = savedGa;
+        this.refresh();
+    },
+
+    close() {
+        document.getElementById('adminDashboardModal')?.classList.remove('show');
+        clearTimeout(this._refreshTimer);
+    },
+
+    async refresh() {
+        clearTimeout(this._refreshTimer);
+        // CCU (CCUTracker로부터)
+        const ccuEl = document.getElementById('adCcu');
+        const ccuCount = parseInt(document.getElementById('ccuCount')?.textContent || '0');
+        if (ccuEl) ccuEl.textContent = ccuCount;
+
+        // CCU 피크
+        const peak = parseInt(localStorage.getItem(this.SK_PEAK) || '0');
+        const peakTime = localStorage.getItem(this.SK_PEAK_TIME) || '';
+        const peakEl = document.getElementById('adCcuPeak');
+        const peakTimeEl = document.getElementById('adCcuPeakTime');
+        if (peakEl) peakEl.textContent = peak || '-';
+        if (peakTimeEl) peakTimeEl.textContent = peakTime || '기록 없음';
+
+        // DAU (로컬 추적)
+        const dauKey = this.SK_DAU + new Date().toISOString().slice(0, 10);
+        const dau = parseInt(localStorage.getItem(dauKey) || '1');
+        const dauEl = document.getElementById('adDau');
+        if (dauEl) dauEl.textContent = dau;
+
+        // Firebase 데이터
+        const db = this.getDb();
+        if (db) {
+            await this._loadFirestoreStats(db);
+        } else {
+            ['adPredictions','adChats','adNewUsers'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 'Firebase 미연결';
+            });
+        }
+
+        this._renderEventLog();
+        // 30초마다 자동 새로고침
+        this._refreshTimer = setTimeout(() => this.refresh(), 30000);
+    },
+
+    async _loadFirestoreStats(db) {
+        const today = new Date().toISOString().slice(0, 10);
+        const todayStart = new Date(today + 'T00:00:00Z');
+        try {
+            // 예측 수
+            const predSnap = await db.collection('predictions')
+                .where('predictedAt', '>=', todayStart)
+                .get().catch(() => null);
+            const predEl = document.getElementById('adPredictions');
+            if (predEl) predEl.textContent = predSnap ? predSnap.size : '-';
+        } catch(e) {}
+        try {
+            // 신규 유저 수 (users 컬렉션에 createdAt 필드 기준)
+            const userSnap = await db.collection('users')
+                .where('createdAt', '>=', todayStart)
+                .get().catch(() => null);
+            const userEl = document.getElementById('adNewUsers');
+            if (userEl) userEl.textContent = userSnap ? userSnap.size : '-';
+        } catch(e) {}
+        // 채팅 수 (로컬 카운터 기반)
+        const chatKey = 'sporton_chat_count_' + today;
+        const chatCount = localStorage.getItem(chatKey) || '0';
+        const chatEl = document.getElementById('adChats');
+        if (chatEl) chatEl.textContent = chatCount;
+    },
+
+    updateCcu(count) {
+        // 피크 업데이트
+        const peak = parseInt(localStorage.getItem(this.SK_PEAK) || '0');
+        if (count > peak) {
+            localStorage.setItem(this.SK_PEAK, String(count));
+            const now = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' });
+            localStorage.setItem(this.SK_PEAK_TIME, now + ' 기록');
+        }
+        // 대시보드 열려있으면 실시간 업데이트
+        const modal = document.getElementById('adminDashboardModal');
+        if (modal?.classList.contains('show')) {
+            const el = document.getElementById('adCcu');
+            if (el) el.textContent = count;
+        }
+    },
+
+    logEvent(name, detail = '') {
+        const time = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        this._eventLog.unshift({ name, detail, time });
+        if (this._eventLog.length > 50) this._eventLog.pop();
+        // 채팅 카운트 증가
+        if (name === 'chat_send') {
+            const today = new Date().toISOString().slice(0, 10);
+            const key = 'sporton_chat_count_' + today;
+            localStorage.setItem(key, String((parseInt(localStorage.getItem(key) || '0') + 1)));
+        }
+    },
+
+    _renderEventLog() {
+        const container = document.getElementById('adEventLog');
+        if (!container) return;
+        if (this._eventLog.length === 0) {
+            container.innerHTML = '<div class="admin-log-item"><span style="color:rgba(255,255,255,0.3);">이벤트가 없습니다</span><span></span></div>';
+            return;
+        }
+        container.innerHTML = this._eventLog.slice(0, 20).map(e =>
+            `<div class="admin-log-item"><span><span style="color:rgba(0,255,136,0.7);margin-right:6px;">${e.name}</span>${e.detail}</span><span style="color:rgba(255,255,255,0.25);">${e.time}</span></div>`
+        ).join('');
+    },
+
+    saveGaId() {
+        const val = document.getElementById('adGaId')?.value?.trim() || '';
+        if (val) {
+            localStorage.setItem(this.SK_GA, val);
+            Analytics.init(val);
+            Animations.showToast('GA4 측정 ID 저장 완료 ✅', 'success');
+        }
+    },
+
+    exportCsv() {
+        const today = new Date().toISOString().slice(0, 10);
+        const peak = localStorage.getItem(this.SK_PEAK) || '0';
+        const dau = localStorage.getItem(this.SK_DAU + today) || '1';
+        const chatCount = localStorage.getItem('sporton_chat_count_' + today) || '0';
+        const rows = [
+            ['날짜', '실시간 CCU', 'CCU 피크', 'DAU', '채팅 수'],
+            [today, document.getElementById('adCcu')?.textContent || '0', peak, dau, chatCount]
+        ];
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `sporton_stats_${today}.csv`; a.click();
+        URL.revokeObjectURL(url);
+    },
+
+    exitAdmin() {
+        AdminMode.deactivate();
+        this.close();
+        document.getElementById('adminDashboardBtn').style.display = 'none';
+        document.getElementById('settingsBtn').style.display = 'none';
+        app.checkApiConfig();
+        Animations.showToast('관리자 모드 종료', 'info');
+    },
+
+    // DAU 추적 (페이지 로드 시 호출)
+    trackDau() {
+        const today = new Date().toISOString().slice(0, 10);
+        const key = this.SK_DAU + today;
+        const visited = sessionStorage.getItem('sporton_session_tracked');
+        if (!visited) {
+            sessionStorage.setItem('sporton_session_tracked', '1');
+            const dau = parseInt(localStorage.getItem(key) || '0') + 1;
+            localStorage.setItem(key, String(dau));
+        }
     }
 };
 
@@ -4048,10 +4320,17 @@ const app = {
             else { banner?.classList.remove('show'); }
             document.getElementById('settingsBtn').style.display = '';
             document.getElementById('heroSetupBtn').style.display = '';
+            const adminBtn = document.getElementById('adminDashboardBtn');
+            if (adminBtn) adminBtn.style.display = 'flex';
+            // GA ID 자동 로드
+            const savedGa = localStorage.getItem(AdminDashboard.SK_GA);
+            if (savedGa) Analytics.init(savedGa);
         } else {
             banner?.classList.remove('show');
             document.getElementById('settingsBtn').style.display = 'none';
             document.getElementById('heroSetupBtn').style.display = 'none';
+            const adminBtn = document.getElementById('adminDashboardBtn');
+            if (adminBtn) adminBtn.style.display = 'none';
         }
         if (hasKey) {
             statusEl?.classList.add('connected');
@@ -4631,8 +4910,10 @@ document.addEventListener('DOMContentLoaded', () => {
     UserAuth.init();              // 소셜 로그인 초기화
     CCUTracker.init();            // 실시간 접속자 추적
     InviteSystem.checkIncoming(); // 친구 초대 레퍼럴 코드 감지
-    // GA4 초기화 (측정 ID는 운영자가 교체)
-    // Analytics.init('G-XXXXXXXXXX');
+    AdminDashboard.trackDau();    // DAU 추적
+    // GA4 초기화 (측정 ID는 운영자가 교체, 또는 관리자 대시보드에서 입력)
+    const _savedGaId = localStorage.getItem(AdminDashboard.SK_GA);
+    if (_savedGaId) Analytics.init(_savedGaId);
     AdminMode.setupLogoTrigger(); // 로고 5번 클릭 → 관리자 모드
     LiveChat.init();              // 실시간 채팅
 
