@@ -33,12 +33,39 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "SPORTON",
-      "url": "https://sporton.live",
-      "description": "실시간 스포츠 라이브스코어, 배당률, 경기 예측 서비스",
-      "inLanguage": "ko",
-      "publisher": { "@type": "Organization", "name": "SPORTON" }
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://sporton.live/#website",
+          "name": "SPORTON",
+          "url": "https://sporton.live",
+          "description": "NBA, EPL, K리그, KBO 실시간 라이브스코어, 배당률, 경기 예측 서비스",
+          "inLanguage": "ko",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://sporton.live/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://sporton.live/#organization",
+          "name": "SPORTON",
+          "url": "https://sporton.live",
+          "logo": "https://sporton.live/icon-192.png",
+          "sameAs": ["https://twitter.com/sporton_kr"]
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://sporton.live/#webpage",
+          "url": "https://sporton.live",
+          "name": "SPORTON — 실시간 스포츠 라이브스코어 & 배당률",
+          "description": "NBA, EPL, K리그, KBO 실시간 스코어와 배당률을 한 화면에서. 경기 결과 예측까지!",
+          "isPartOf": { "@id": "https://sporton.live/#website" },
+          "about": { "@id": "https://sporton.live/#organization" },
+          "inLanguage": "ko"
+        }
+      ]
     }
     </script>
     
@@ -1769,6 +1796,13 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                             <div class="skeleton-card"></div>
                         </div>
                     </div>
+                    <!-- 광고 슬롯 1: 라이브 경기 하단 -->
+                    <div class="adsense-slot" style="display:none;margin:16px 0;text-align:center;">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                    </div>
                 </section>
 
                 <section class="content-section" id="upcomingSection">
@@ -1785,6 +1819,13 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
                             <div class="skeleton-card"></div>
                             <div class="skeleton-card"></div>
                         </div>
+                    </div>
+                    <!-- 광고 슬롯 2: 예정 경기 하단 -->
+                    <div class="adsense-slot" style="display:none;margin:16px 0;text-align:center;">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
                     </div>
                 </section>
 
@@ -1989,6 +2030,13 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
+                    <!-- 광고 슬롯 3: 커뮤니티 상단 -->
+                    <div class="adsense-slot" style="display:none;margin-bottom:16px;text-align:center;">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                    </div>
                     <div class="section-header">
                         <h2 class="section-title"><i class="fas fa-comments"></i> 스포츠 게시판</h2>
                         <button class="btn btn-primary" id="writePostBtn"><i class="fas fa-pen"></i> 글쓰기</button>
@@ -2186,6 +2234,10 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
         </div>
         <div class="footer-bottom">
             <p>&copy; 2026 SPORTON — 실시간 스포츠 데이터 · <span id="oddsRefreshTs" style="font-size:11px;opacity:0.5;"></span></p>
+            <p style="margin-top:8px;font-size:12px;">
+                <a href="/privacy.html" style="color:#94A3B8;text-decoration:underline;margin-right:16px;">개인정보처리방침</a>
+                <span style="color:#64748B;">본 서비스는 ESPN API, The Odds API의 데이터를 활용합니다.</span>
+            </p>
         </div>
     </div>
 </footer>
@@ -2366,6 +2418,16 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
             <div style="display:flex;gap:8px;">
                 <input type="text" id="adGaId" placeholder="G-XXXXXXXXXX" />
                 <button class="admin-action-btn" style="flex:0 0 auto;padding:10px 14px;" onclick="AdminDashboard.saveGaId()"><i class="fas fa-save"></i></button>
+            </div>
+        </div>
+        <div class="admin-ga-input" style="margin-top:12px;">
+            <label style="display:flex;align-items:center;gap:8px;"><i class="fas fa-dollar-sign" style="color:#f4a261;"></i> Google AdSense 게시자 ID (ca-pub-XXXXXXXXXXXXXXXX)</label>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+                <input type="text" id="adAdsenseId" placeholder="ca-pub-XXXXXXXXXXXXXXXX" style="font-family:monospace;" />
+                <button class="admin-action-btn" style="flex:0 0 auto;padding:10px 14px;" onclick="AdminDashboard.saveAdsenseId()"><i class="fas fa-save"></i></button>
+            </div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;">
+                💡 <a href="https://adsense.google.com" target="_blank" style="color:#f4a261;">Google AdSense</a> 가입 → 내 사이트 등록 → 게시자 ID 복사 후 붙여넣기
             </div>
         </div>
         <div class="admin-log-section">
@@ -3670,6 +3732,47 @@ const Analytics = {
     pageView(viewName)    { this.track('page_view',          { page_title: viewName, page_location: location.href }); }
 };
 
+// ===== Google AdSense 매니저 =====
+const AdSenseManager = {
+    SK: 'sporton_adsense_id',
+    _loaded: false,
+
+    init(clientId) {
+        if (!clientId || !clientId.startsWith('ca-pub-')) return;
+        if (this._loaded) { this._showAds(); return; }
+        // <head>에 AdSense 스크립트 동적 삽입
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`;
+        script.crossOrigin = 'anonymous';
+        script.onload = () => { this._loaded = true; this._showAds(); };
+        document.head.appendChild(script);
+        // 모든 ins 요소에 data-ad-client 세팅
+        document.querySelectorAll('.adsbygoogle').forEach(el => {
+            el.setAttribute('data-ad-client', clientId);
+        });
+    },
+
+    _showAds() {
+        // 숨겨진 광고 슬롯 표시
+        document.querySelectorAll('.adsense-slot').forEach(el => {
+            el.style.display = '';
+        });
+        // adsbygoogle.push 호출
+        try {
+            document.querySelectorAll('.adsbygoogle').forEach(() => {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            });
+        } catch(e) {}
+    },
+
+    // 앱 시작 시 저장된 ID로 자동 초기화
+    autoInit() {
+        const saved = localStorage.getItem(this.SK);
+        if (saved) this.init(saved);
+    }
+};
+
 // ===== CCU 실시간 접속자 추적 =====
 const CCUTracker = {
     _uid: null,
@@ -3746,6 +3849,10 @@ const AdminDashboard = {
         const savedGa = localStorage.getItem(this.SK_GA) || '';
         const gaInput = document.getElementById('adGaId');
         if (gaInput) gaInput.value = savedGa;
+        // AdSense ID 복원
+        const savedAds = localStorage.getItem('sporton_adsense_id') || '';
+        const adsInput = document.getElementById('adAdsenseId');
+        if (adsInput) adsInput.value = savedAds;
         this.refresh();
     },
 
@@ -3864,6 +3971,17 @@ const AdminDashboard = {
             Analytics.init(val);
             Animations.showToast('GA4 측정 ID 저장 완료 ✅', 'success');
         }
+    },
+
+    saveAdsenseId() {
+        const val = document.getElementById('adAdsenseId')?.value?.trim() || '';
+        if (!val || !val.startsWith('ca-pub-')) {
+            Animations.showToast('올바른 AdSense 게시자 ID를 입력해주세요 (ca-pub-으로 시작)', 'error');
+            return;
+        }
+        localStorage.setItem('sporton_adsense_id', val);
+        AdSenseManager.init(val);
+        Animations.showToast('AdSense ID 저장 완료! 광고가 활성화됩니다 💰', 'success');
     },
 
     exportCsv() {
@@ -5080,6 +5198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CCUTracker.init();            // 실시간 접속자 추적
     InviteSystem.checkIncoming(); // 친구 초대 레퍼럴 코드 감지
     NotificationManager.init();   // 웹 푸시 알림 초기화
+    AdSenseManager.autoInit();    // Google AdSense 자동 로드
     AdminDashboard.trackDau();    // DAU 추적
     // GA4 초기화 (측정 ID는 운영자가 교체, 또는 관리자 대시보드에서 입력)
     const _savedGaId = localStorage.getItem(AdminDashboard.SK_GA);

@@ -58,4 +58,20 @@
     <priority>0.5</priority>
   </url>
 
+  <!-- 경기 캘린더 -->
+  <url>
+    <loc>https://sporton.live/?view=calendar</loc>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- 개인정보처리방침 -->
+  <url>
+    <loc>https://sporton.live/privacy.html</loc>
+    <lastmod>2026-03-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>
