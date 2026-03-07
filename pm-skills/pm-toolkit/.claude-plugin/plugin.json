@@ -1,0 +1,7 @@
+{
+  "name": "pm-toolkit",
+  "version": "1.0.0",
+  "description": "PM utility skills: resume review, grammar checking, and privacy policy generation.",
+  "author": "sporton",
+  "keywords": ["resume", "grammar", "privacy-policy", "proofreading", "career"]
+}

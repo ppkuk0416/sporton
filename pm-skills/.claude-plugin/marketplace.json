@@ -1,0 +1,17 @@
+{
+  "name": "PM Skills Marketplace",
+  "version": "1.0.0",
+  "description": "65+ agentic PM skills and workflows — from discovery to strategy, execution, launch, and growth.",
+  "author": "sporton",
+  "keywords": ["product-management", "pm-skills", "agentic", "strategy", "execution", "discovery"],
+  "plugins": [
+    "pm-product-discovery",
+    "pm-product-strategy",
+    "pm-execution",
+    "pm-market-research",
+    "pm-data-analytics",
+    "pm-go-to-market",
+    "pm-marketing-growth",
+    "pm-toolkit"
+  ]
+}

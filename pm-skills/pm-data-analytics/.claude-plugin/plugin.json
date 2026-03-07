@@ -1,0 +1,7 @@
+{
+  "name": "pm-data-analytics",
+  "version": "1.0.0",
+  "description": "Data analytics skills for PMs: SQL generation, A/B test analysis, and cohort analysis.",
+  "author": "sporton",
+  "keywords": ["sql", "ab-testing", "cohort-analysis", "data-analytics", "statistics"]
+}

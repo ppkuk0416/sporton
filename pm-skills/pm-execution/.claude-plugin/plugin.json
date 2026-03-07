@@ -1,0 +1,7 @@
+{
+  "name": "pm-execution",
+  "version": "1.0.0",
+  "description": "Core PM execution skills: PRDs, OKRs, sprint planning, roadmaps, retrospectives, and risk analysis.",
+  "author": "sporton",
+  "keywords": ["prd", "okrs", "sprint", "roadmap", "user-stories", "execution", "pre-mortem"]
+}
