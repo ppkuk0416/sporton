@@ -31,6 +31,7 @@ jobs:
 
       - name: Sync main to master for GitHub Pages
         run: |
-          git checkout master || git checkout -b master
-          git merge -X theirs main
-          git push origin master
+          git fetch origin master || true
+          git checkout -B master origin/master 2>/dev/null || git checkout -B master main
+          git reset --hard main
+          git push origin master --force
