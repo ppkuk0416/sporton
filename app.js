@@ -4224,4 +4224,3 @@ document.addEventListener('DOMContentLoaded', () => {
         app.switchView(initView);
     }
 });
-</script>
