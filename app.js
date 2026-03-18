@@ -2417,11 +2417,23 @@ const FavoriteTeams = {
             list.innerHTML = '<p class="empty-state">즐겨찾기한 팀이 없습니다</p>';
             return;
         }
-        list.innerHTML = [...teams].map(t => `
-            <div class="fav-team-item">
-                <span class="fav-team-name"><i class="fas fa-heart" style="color:#ef476f;margin-right:5px;font-size:10px;"></i>${t}</span>
-                <button class="fav-team-remove" onclick="FavoriteTeams.removeTeam('${t.replace(/'/g,'\\\'')}')" title="제거"><i class="fas fa-times"></i></button>
-            </div>`).join('');
+        list.innerHTML = '';
+        [...teams].forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'fav-team-item';
+            const span = document.createElement('span');
+            span.className = 'fav-team-name';
+            span.innerHTML = '<i class="fas fa-heart" style="color:#ef476f;margin-right:5px;font-size:10px;"></i>';
+            span.appendChild(document.createTextNode(t));
+            const btn = document.createElement('button');
+            btn.className = 'fav-team-remove';
+            btn.title = '제거';
+            btn.innerHTML = '<i class="fas fa-times"></i>';
+            btn.addEventListener('click', () => FavoriteTeams.removeTeam(t));
+            div.appendChild(span);
+            div.appendChild(btn);
+            list.appendChild(div);
+        });
     },
 
     removeTeam(teamName) {
@@ -2710,8 +2722,8 @@ const app = {
         if (AdminMode.isAdmin()) {
             if (!hasKey) { banner?.classList.add('show'); }
             else { banner?.classList.remove('show'); }
-            document.getElementById('settingsBtn').style.display = '';
-            document.getElementById('heroSetupBtn').style.display = '';
+            document.getElementById('settingsBtn')?.style && (document.getElementById('settingsBtn').style.display = '');
+            document.getElementById('heroSetupBtn')?.style && (document.getElementById('heroSetupBtn').style.display = '');
             const adminBtn = document.getElementById('adminDashboardBtn');
             if (adminBtn) adminBtn.style.display = 'flex';
             // GA ID 자동 로드
@@ -2719,14 +2731,14 @@ const app = {
             if (savedGa) Analytics.init(savedGa);
         } else {
             banner?.classList.remove('show');
-            document.getElementById('settingsBtn').style.display = 'none';
-            document.getElementById('heroSetupBtn').style.display = 'none';
+            document.getElementById('settingsBtn')?.style && (document.getElementById('settingsBtn').style.display = 'none');
+            document.getElementById('heroSetupBtn')?.style && (document.getElementById('heroSetupBtn').style.display = 'none');
             const adminBtn = document.getElementById('adminDashboardBtn');
             if (adminBtn) adminBtn.style.display = 'none';
         }
         if (hasKey) {
             statusEl?.classList.add('connected');
-            if (statusEl?.querySelector('.status-text')) statusEl.querySelector('.status-text').textContent = '연결됨';
+            statusEl?.querySelector('.status-text') && (statusEl.querySelector('.status-text').textContent = '연결됨');
         }
     },
 
@@ -4690,7 +4702,7 @@ const DebateBoard = {
         `;
         div.addEventListener('click', () => {
             // 게시판 탭으로 이동해서 해당 포스트 열기
-            CommunityTabs.switchTab('board');
+            if (typeof CommunityTabs !== 'undefined') CommunityTabs.switchTab('board');
             Community.openPost(post.id);
         });
         return div;
