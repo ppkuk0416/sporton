@@ -3899,6 +3899,8 @@ const Community = {
 
     // 커뮤니티 탭 진입 시 호출
     enter() {
+        // 탭 상태 초기화 (게시판 탭으로)
+        if (typeof CommunityTabs !== 'undefined') CommunityTabs.switchTab('board');
         this.showList();
         if (this.db) this.loadPosts();
     },
@@ -4456,6 +4458,350 @@ app.switchView(_initView, false);
 try { history.replaceState({ view: _initView }, '', '#' + _initView); } catch(e) {}
 
 Community.init();
+
+// ===== KBO 팀 데이터 =====
+const KBOTeams = [
+    { id: 'kia',     name: 'KIA 타이거즈',  short: 'KIA',  emoji: '🐯', color: '#E30613', bg: 'rgba(227,6,19,0.12)' },
+    { id: 'samsung', name: '삼성 라이온즈',  short: '삼성', emoji: '🦁', color: '#0645AD', bg: 'rgba(6,69,173,0.12)' },
+    { id: 'lg',      name: 'LG 트윈스',     short: 'LG',   emoji: '👾', color: '#C30452', bg: 'rgba(195,4,82,0.12)' },
+    { id: 'doosan',  name: '두산 베어스',   short: '두산', emoji: '🐻', color: '#1A1A5E', bg: 'rgba(26,26,94,0.15)' },
+    { id: 'kt',      name: 'KT 위즈',       short: 'KT',   emoji: '🧙', color: '#222222', bg: 'rgba(80,80,80,0.15)' },
+    { id: 'ssg',     name: 'SSG 랜더스',    short: 'SSG',  emoji: '🚀', color: '#CE0E2D', bg: 'rgba(206,14,45,0.12)' },
+    { id: 'nc',      name: 'NC 다이노스',   short: 'NC',   emoji: '🦕', color: '#1B4891', bg: 'rgba(27,72,145,0.12)' },
+    { id: 'lotte',   name: '롯데 자이언츠', short: '롯데', emoji: '⚡', color: '#002395', bg: 'rgba(0,35,149,0.12)' },
+    { id: 'hanwha',  name: '한화 이글스',   short: '한화', emoji: '🦅', color: '#FF6600', bg: 'rgba(255,102,0,0.12)' },
+    { id: 'kiwoom',  name: '키움 히어로즈', short: '키움', emoji: '⚔️', color: '#570514', bg: 'rgba(87,5,20,0.15)' },
+];
+
+// ===== KBO 팀 응원방 채팅 =====
+const KBOTeamChat = {
+    db: null,
+    currentTeam: null,
+    unsubscribe: null,
+    presenceInterval: null,
+    myNick: '',
+    _lastSent: 0,
+    RATE_MS: 4000,
+
+    init() {
+        this.myNick = localStorage.getItem('sportsLive_chatNick') || '';
+        try { this.db = firebase.apps.length ? firebase.firestore() : null; } catch(e) { this.db = null; }
+        this._renderTeamGrid();
+        this._bindEvents();
+    },
+
+    _renderTeamGrid() {
+        const grid = document.getElementById('kboTeamGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        KBOTeams.forEach(team => {
+            const card = document.createElement('div');
+            card.className = 'kbo-team-card';
+            card.style.cssText = `border-color:${team.color};background:${team.bg}`;
+            card.innerHTML = `<span class="kbo-team-emoji">${team.emoji}</span><span class="kbo-team-name">${team.short}</span>`;
+            card.addEventListener('click', () => this.enterRoom(team));
+            grid.appendChild(card);
+        });
+    },
+
+    _bindEvents() {
+        document.getElementById('kboBackBtn')?.addEventListener('click', () => this.leaveRoom());
+        document.getElementById('kboChatSendBtn')?.addEventListener('click', () => this.send());
+        document.getElementById('kboChatInput')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); }
+        });
+        document.getElementById('kboChatNick')?.addEventListener('input', e => {
+            this.myNick = e.target.value.trim();
+            localStorage.setItem('sportsLive_chatNick', this.myNick);
+        });
+    },
+
+    enterRoom(team) {
+        this.currentTeam = team;
+        const grid = document.getElementById('kboTeamGrid');
+        const room = document.getElementById('kboChatRoom');
+        const header = document.getElementById('kboChatHeader');
+        if (grid) grid.style.display = 'none';
+        if (room) room.style.display = 'flex';
+        if (header) header.style.background = `linear-gradient(135deg, ${team.color}22, transparent)`;
+        const nameEl = document.getElementById('kboChatTeamName');
+        if (nameEl) nameEl.innerHTML = `${team.emoji} ${team.name} 응원방`;
+        const nickEl = document.getElementById('kboChatNick');
+        if (nickEl && this.myNick) nickEl.value = this.myNick;
+
+        if (!this.db) {
+            const msgs = document.getElementById('kboChatMessages');
+            if (msgs) msgs.innerHTML = '<div class="chat-empty">Firebase 연결 후 채팅 가능합니다</div>';
+            return;
+        }
+        this._subscribe(team.id);
+        this._trackOnline(team.id);
+    },
+
+    leaveRoom() {
+        if (this.unsubscribe) { this.unsubscribe(); this.unsubscribe = null; }
+        if (this.presenceInterval) { clearInterval(this.presenceInterval); this.presenceInterval = null; }
+        this.currentTeam = null;
+        document.getElementById('kboTeamGrid').style.display = 'grid';
+        document.getElementById('kboChatRoom').style.display = 'none';
+    },
+
+    _subscribe(teamId) {
+        if (this.unsubscribe) this.unsubscribe();
+        this.unsubscribe = this.db
+            .collection('kboTeamChat').doc(teamId).collection('messages')
+            .orderBy('createdAt', 'asc').limitToLast(100)
+            .onSnapshot(snap => {
+                const msgs = document.getElementById('kboChatMessages');
+                if (!msgs) return;
+                if (snap.empty) { msgs.innerHTML = '<div class="chat-empty">첫 메시지를 남겨보세요! 응원이든 욕이든 😤</div>'; return; }
+                msgs.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const isSelf = d.nick === this.myNick;
+                    const t = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) : '';
+                    const item = document.createElement('div');
+                    item.className = `chat-msg-item${isSelf?' self':''}`;
+                    item.innerHTML = `<div class="chat-msg-nick${isSelf?' self':''}">${this._esc(d.nick)}</div><div class="chat-msg-text">${this._esc(d.text)}</div><div class="chat-msg-time">${t}</div>`;
+                    msgs.appendChild(item);
+                });
+                msgs.scrollTop = msgs.scrollHeight;
+            });
+    },
+
+    _trackOnline(teamId) {
+        if (this.presenceInterval) clearInterval(this.presenceInterval);
+        const uid = Math.random().toString(36).slice(2);
+        const ref = this.db.collection('kboTeamChat').doc(teamId).collection('presence').doc(uid);
+        const update = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+        update();
+        this.presenceInterval = setInterval(update, 60000);
+        this.db.collection('kboTeamChat').doc(teamId).collection('presence').onSnapshot(snap => {
+            const now = Date.now(); let count = 0;
+            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
+            const el = document.getElementById('kboChatOnline');
+            if (el) el.textContent = count + '명';
+        });
+    },
+
+    async send() {
+        if (!this.db || !this.currentTeam) return;
+        const now = Date.now();
+        if (now - this._lastSent < this.RATE_MS) {
+            Animations.showToast(`${Math.ceil((this.RATE_MS-(now-this._lastSent))/1000)}초 후 전송 가능`, 'info');
+            return;
+        }
+        const nickEl = document.getElementById('kboChatNick');
+        const msgEl  = document.getElementById('kboChatInput');
+        const nick = (nickEl?.value || '').trim() || '익명';
+        const text = (msgEl?.value || '').trim();
+        if (!text) return;
+        this.myNick = nick;
+        localStorage.setItem('sportsLive_chatNick', nick);
+        msgEl.value = '';
+        this._lastSent = now;
+        try {
+            await this.db.collection('kboTeamChat').doc(this.currentTeam.id).collection('messages').add({
+                nick, text,
+                teamId: this.currentTeam.id,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch(e) { Animations.showToast('전송 실패', 'error'); }
+    },
+
+    _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+};
+
+// ===== 설전방 (Debate Board) =====
+const DebateBoard = {
+    db: null,
+    unsubscribe: null,
+
+    init() {
+        try { this.db = firebase.apps.length ? firebase.firestore() : null; } catch(e) { this.db = null; }
+        this._bindEvents();
+    },
+
+    _bindEvents() {
+        document.getElementById('writeDebateBtn')?.addEventListener('click', () => {
+            const form = document.getElementById('debateForm');
+            if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            const w = document.getElementById('debateFormFirebaseWarning');
+            if (w) w.style.display = this.db ? 'none' : 'flex';
+        });
+        document.getElementById('cancelDebateBtn')?.addEventListener('click', () => {
+            document.getElementById('debateForm').style.display = 'none';
+        });
+        document.getElementById('submitDebateBtn')?.addEventListener('click', () => this.submitDebate());
+    },
+
+    enter() {
+        if (this.db) this.loadDebates();
+        else {
+            document.getElementById('debateList').innerHTML = '<p class="empty-state">Firebase 연결 후 설전방을 이용할 수 있습니다</p>';
+        }
+    },
+
+    loadDebates() {
+        if (!this.db) return;
+        const container = document.getElementById('debateList');
+        if (this.unsubscribe) this.unsubscribe();
+        this.unsubscribe = this.db.collection('posts')
+            .where('category', '==', '설전')
+            .orderBy('createdAt', 'desc').limit(30)
+            .onSnapshot(snap => {
+                container.innerHTML = '';
+                if (snap.empty) {
+                    container.innerHTML = '<p class="empty-state">🔥 아직 논쟁이 없습니다. 첫 설전을 시작해보세요!</p>';
+                    return;
+                }
+                snap.forEach(doc => {
+                    const post = { id: doc.id, ...doc.data() };
+                    container.appendChild(this._createDebateCard(post));
+                });
+            }, () => {
+                container.innerHTML = '<p class="empty-state">설전 목록을 불러올 수 없습니다</p>';
+            });
+    },
+
+    _createDebateCard(post) {
+        const div = document.createElement('div');
+        div.className = 'debate-card';
+        const agree = post.debateAgreeVotes || 0;
+        const disagree = post.debateDisagreeVotes || 0;
+        const total = agree + disagree;
+        const agreePct = total ? Math.round(agree/total*100) : 50;
+        const disagreePct = 100 - agreePct;
+        const time = post.createdAt?.toDate ? Community.timeAgo(post.createdAt.toDate()) : '방금';
+        const agreeLabel = post.debateAgree || '찬성';
+        const disagreeLabel = post.debateDisagree || '반대';
+        div.innerHTML = `
+            <div class="debate-card-title"><i class="fas fa-fire-alt" style="color:#ff6b35"></i> ${Community.escape(post.title)}</div>
+            <div class="debate-card-meta"><span><i class="fas fa-user"></i> ${Community.escape(post.nickname)}</span><span><i class="fas fa-clock"></i> ${time}</span><span><i class="fas fa-comment"></i> ${post.commentCount||0}</span></div>
+            <div class="debate-vs-row">
+                <div class="debate-side agree">${Community.escape(agreeLabel)} <span class="debate-pct agree">${agreePct}%</span></div>
+                <div class="debate-mini-bar">
+                    <div class="debate-mini-fill agree" style="width:${agreePct}%"></div>
+                    <div class="debate-mini-fill disagree" style="width:${disagreePct}%"></div>
+                </div>
+                <div class="debate-side disagree"><span class="debate-pct disagree">${disagreePct}%</span> ${Community.escape(disagreeLabel)}</div>
+            </div>
+            <div class="debate-card-footer">${total}명 참여</div>
+        `;
+        div.addEventListener('click', () => {
+            // 게시판 탭으로 이동해서 해당 포스트 열기
+            CommunityTabs.switchTab('board');
+            Community.openPost(post.id);
+        });
+        return div;
+    },
+
+    async submitDebate() {
+        if (!this.db) { Animations.showToast('Firebase를 먼저 연결해주세요', 'error'); return; }
+        const nickname = document.getElementById('debateNickname').value.trim();
+        const title    = document.getElementById('debateTitle').value.trim();
+        const agreeL   = document.getElementById('debateFormAgree').value.trim();
+        const disagreeL = document.getElementById('debateFormDisagree').value.trim();
+        const content  = document.getElementById('debateContent').value.trim();
+        if (!nickname) { Animations.showToast('닉네임을 입력해주세요', 'error'); return; }
+        if (!title)    { Animations.showToast('논쟁 제목을 입력해주세요', 'error'); return; }
+        if (!agreeL || !disagreeL) { Animations.showToast('찬성/반대 주장을 입력해주세요', 'error'); return; }
+        const btn = document.getElementById('submitDebateBtn');
+        btn.disabled = true;
+        try {
+            await this.db.collection('posts').add({
+                nickname, title, content: content || title,
+                category: '설전',
+                debateAgree: agreeL, debateDisagree: disagreeL,
+                debateAgreeVotes: 0, debateDisagreeVotes: 0,
+                likes: 0, views: 0, commentCount: 0, recommends: 0,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('debateForm').style.display = 'none';
+            ['debateNickname','debateTitle','debateFormAgree','debateFormDisagree','debateContent'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+            Animations.showToast('🔥 논쟁이 시작되었습니다!', 'success');
+        } catch(e) { Animations.showToast('등록 실패: ' + e.message, 'error'); }
+        finally { btn.disabled = false; }
+    }
+};
+
+// ===== 커뮤니티 탭 관리 =====
+const CommunityTabs = {
+    currentTab: 'board',
+
+    init() {
+        document.querySelectorAll('.comm-tab').forEach(btn => {
+            btn.addEventListener('click', () => this.switchTab(btn.dataset.tab));
+        });
+        // 설전 카테고리 선택 시 찬반 입력 표시
+        document.getElementById('postCategory')?.addEventListener('change', e => {
+            const debateGroup = document.getElementById('debateTopicGroup');
+            if (debateGroup) debateGroup.style.display = e.target.value === '설전' ? 'block' : 'none';
+        });
+    },
+
+    switchTab(tab) {
+        this.currentTab = tab;
+        document.querySelectorAll('.comm-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.getElementById('commBoardTab').style.display  = tab === 'board'  ? 'block' : 'none';
+        document.getElementById('commKboTab').style.display    = tab === 'kbo'    ? 'block' : 'none';
+        document.getElementById('commDebateTab').style.display = tab === 'debate' ? 'block' : 'none';
+        if (tab === 'kbo') KBOTeamChat.init();
+        if (tab === 'debate') DebateBoard.enter();
+    }
+};
+
+// 커뮤니티 탭 초기화
+CommunityTabs.init();
+DebateBoard.init();
+
+// 설전 게시글 상세보기 시 찬반 투표 섹션 처리 (Community.openPost 확장)
+const _origOpenPost = Community.openPost.bind(Community);
+Community.openPost = async function(postId) {
+    await _origOpenPost(postId);
+    // 설전 카테고리인 경우 찬반 투표 UI 활성화
+    const section = document.getElementById('debateVoteSection');
+    if (!section || !this.db) return;
+    const doc = await this.db.collection('posts').doc(postId).get();
+    if (!doc.exists) return;
+    const post = { id: doc.id, ...doc.data() };
+    if (post.category !== '설전' || !post.debateAgree) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    const agree = post.debateAgreeVotes || 0;
+    const disagree = post.debateDisagreeVotes || 0;
+    const total = agree + disagree;
+    const agreePct = total ? Math.round(agree/total*100) : 50;
+    const disagreePct = 100 - agreePct;
+    const agreeLabel = document.getElementById('debateAgreeLabel');
+    const disagreeLabel = document.getElementById('debateDisagreeLabel');
+    if (agreeLabel) agreeLabel.textContent = post.debateAgree;
+    if (disagreeLabel) disagreeLabel.textContent = post.debateDisagree;
+    document.getElementById('debateAgreePct').textContent = agreePct + '%';
+    document.getElementById('debateDisagreePct').textContent = disagreePct + '%';
+    document.getElementById('debateBarAgree').style.width = agreePct + '%';
+    document.getElementById('debateBarDisagree').style.width = disagreePct + '%';
+    document.getElementById('debateVoteCount').textContent = total + '명 참여';
+    // 이미 투표했는지 확인
+    const voted = JSON.parse(localStorage.getItem('sporton_debateVotes') || '{}');
+    const myVote = voted[postId];
+    document.getElementById('debateAgreeBtn').classList.toggle('voted', myVote === 'agree');
+    document.getElementById('debateDisagreeBtn').classList.toggle('voted', myVote === 'disagree');
+    // 투표 핸들러
+    const voteHandler = async (side) => {
+        if (myVote) { Animations.showToast('이미 투표하셨습니다', 'info'); return; }
+        const field = side === 'agree' ? 'debateAgreeVotes' : 'debateDisagreeVotes';
+        const current = side === 'agree' ? agree : disagree;
+        await this.db.collection('posts').doc(postId).update({ [field]: current + 1 });
+        voted[postId] = side;
+        localStorage.setItem('sporton_debateVotes', JSON.stringify(voted));
+        Animations.showToast(side === 'agree' ? `👍 ${post.debateAgree} 찬성!` : `👎 ${post.debateDisagree} 반대!`, 'success');
+        Community.openPost(postId);
+    };
+    document.getElementById('debateAgreeBtn').onclick = () => voteHandler('agree');
+    document.getElementById('debateDisagreeBtn').onclick = () => voteHandler('disagree');
+};
 
 // ──────────────────────────────────────────────
 // NBA Over/Under 계산기

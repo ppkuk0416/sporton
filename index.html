@@ -561,107 +561,226 @@
 
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
-                    <!-- 광고 슬롯 3: 커뮤니티 상단 -->
-                    <div class="adsense-slot" style="display:none;margin-bottom:16px;text-align:center;">
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                    </div>
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-comments"></i> 스포츠 게시판</h2>
-                        <button class="btn btn-primary" id="writePostBtn"><i class="fas fa-pen"></i> 글쓰기</button>
+
+                    <!-- 커뮤니티 탭 네비게이션 -->
+                    <div class="community-tabs">
+                        <button class="comm-tab active" data-tab="board"><i class="fas fa-list-alt"></i> 게시판</button>
+                        <button class="comm-tab" data-tab="kbo"><span>⚾</span> KBO 응원방</button>
+                        <button class="comm-tab" data-tab="debate"><i class="fas fa-fire-alt"></i> 설전방 🔥</button>
                     </div>
 
-                    <!-- Firebase 설정 안내 배너 -->
-                    <div class="firebase-banner" id="firebaseBanner">
-                        <i class="fas fa-database"></i>
-                        <div>
-                            <strong>Firebase 설정이 필요합니다</strong>
-                            <p>아래 가이드를 따라 Firebase를 연결하면 실제 커뮤니티가 작동합니다.</p>
+                    <!-- ===== 탭 1: 게시판 ===== -->
+                    <div id="commBoardTab">
+                        <div class="section-header">
+                            <h2 class="section-title"><i class="fas fa-comments"></i> 스포츠 게시판</h2>
+                            <button class="btn btn-primary" id="writePostBtn"><i class="fas fa-pen"></i> 글쓰기</button>
                         </div>
-                        <button class="btn btn-primary btn-sm" id="firebaseSetupBtn"><i class="fas fa-cog"></i> 설정하기</button>
-                    </div>
 
-                    <!-- 글쓰기 폼 -->
-                    <div class="post-form" id="postForm" style="display:none">
-                        <div class="form-card">
-                            <h3><i class="fas fa-pen"></i> 새 글 작성</h3>
-                            <!-- Firebase 미연결 경고 -->
-                            <div id="postFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span>Firebase가 연결되지 않았습니다. 등록하려면 먼저 Firebase를 연결해주세요.</span>
-                                <button onclick="document.getElementById('firebaseSetupBtn').click()" style="margin-left:auto; background:var(--gradient-accent); border:none; color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; white-space:nowrap;">지금 연결하기</button>
+                        <!-- Firebase 설정 안내 배너 -->
+                        <div class="firebase-banner" id="firebaseBanner">
+                            <i class="fas fa-database"></i>
+                            <div>
+                                <strong>Firebase 설정이 필요합니다</strong>
+                                <p>아래 가이드를 따라 Firebase를 연결하면 실제 커뮤니티가 작동합니다.</p>
                             </div>
-                            <div class="form-group">
-                                <label>닉네임</label>
-                                <input type="text" id="postNickname" class="form-input" placeholder="닉네임을 입력하세요" maxlength="20">
-                            </div>
-                            <div class="form-group">
-                                <label>카테고리</label>
-                                <select id="postCategory" class="form-input">
-                                    <option value="자유">자유</option>
-                                    <option value="분석">경기 분석</option>
-                                    <option value="정보">정보 공유</option>
-                                    <option value="질문">질문</option>
-                                    <option value="축구">축구</option>
-                                    <option value="야구">야구</option>
-                                    <option value="농구">농구</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>제목</label>
-                                <input type="text" id="postTitle" class="form-input" placeholder="제목을 입력하세요" maxlength="100">
-                            </div>
-                            <div class="form-group">
-                                <label>내용</label>
-                                <textarea id="postContent" class="form-input form-textarea" placeholder="내용을 입력하세요" maxlength="2000"></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button class="btn btn-secondary" id="cancelPostBtn">취소</button>
-                                <button class="btn btn-primary" id="submitPostBtn"><i class="fas fa-paper-plane"></i> 등록</button>
-                            </div>
+                            <button class="btn btn-primary btn-sm" id="firebaseSetupBtn"><i class="fas fa-cog"></i> 설정하기</button>
                         </div>
-                    </div>
 
-                    <!-- 카테고리 필터 -->
-                    <div class="category-filters" id="categoryFilters">
-                        <button class="category-chip active" data-category="전체">전체</button>
-                        <button class="category-chip" data-category="자유">자유</button>
-                        <button class="category-chip" data-category="분석">경기 분석</button>
-                        <button class="category-chip" data-category="정보">정보 공유</button>
-                        <button class="category-chip" data-category="질문">질문</button>
-                        <button class="category-chip" data-category="축구">축구</button>
-                        <button class="category-chip" data-category="야구">야구</button>
-                        <button class="category-chip" data-category="농구">농구</button>
-                    </div>
-
-                    <!-- 게시글 목록 -->
-                    <div id="hotSection" class="hot-section" style="display:none">
-                        <div class="hot-label"><i class="fas fa-fire"></i> 🔥 인기 게시글 (추천 5개 이상)</div>
-                        <div class="post-list" id="hotList"></div>
-                        <hr style="border-color:rgba(255,255,255,0.08);margin:var(--space-3) 0">
-                    </div>
-                    <div class="post-list" id="postList">
-                        <div class="skeleton-card"></div>
-                        <div class="skeleton-card"></div>
-                        <div class="skeleton-card"></div>
-                    </div>
-
-                    <!-- 게시글 상세보기 -->
-                    <div class="post-detail" id="postDetail" style="display:none">
-                        <button class="btn btn-secondary back-btn" id="backToListBtn"><i class="fas fa-arrow-left"></i> 목록으로</button>
-                        <div class="post-detail-card" id="postDetailContent"></div>
-                        <div class="comment-section">
-                            <h3><i class="fas fa-comment"></i> 댓글 <span id="commentCount">0</span>개</h3>
-                            <div class="comment-list" id="commentList"></div>
-                            <div class="comment-form">
-                                <input type="text" id="commentNickname" class="form-input" placeholder="닉네임" maxlength="20" style="width:150px">
-                                <input type="text" id="commentContent" class="form-input" placeholder="댓글을 입력하세요" maxlength="500" style="flex:1">
-                                <button class="btn btn-primary" id="submitCommentBtn"><i class="fas fa-paper-plane"></i></button>
+                        <!-- 글쓰기 폼 -->
+                        <div class="post-form" id="postForm" style="display:none">
+                            <div class="form-card">
+                                <h3><i class="fas fa-pen"></i> 새 글 작성</h3>
+                                <div id="postFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Firebase가 연결되지 않았습니다. 등록하려면 먼저 Firebase를 연결해주세요.</span>
+                                    <button onclick="document.getElementById('firebaseSetupBtn').click()" style="margin-left:auto; background:var(--gradient-accent); border:none; color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; white-space:nowrap;">지금 연결하기</button>
+                                </div>
+                                <div class="form-group">
+                                    <label>닉네임</label>
+                                    <input type="text" id="postNickname" class="form-input" placeholder="닉네임을 입력하세요" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>카테고리</label>
+                                    <select id="postCategory" class="form-input">
+                                        <option value="자유">자유</option>
+                                        <option value="설전">🔥 설전 (토론/논쟁)</option>
+                                        <option value="KBO">⚾ KBO</option>
+                                        <option value="분석">경기 분석</option>
+                                        <option value="정보">정보 공유</option>
+                                        <option value="질문">질문</option>
+                                        <option value="축구">축구</option>
+                                        <option value="야구">야구</option>
+                                        <option value="농구">농구</option>
+                                    </select>
+                                </div>
+                                <!-- 설전 카테고리 선택 시 찬반 주제 입력 -->
+                                <div class="form-group" id="debateTopicGroup" style="display:none">
+                                    <label>찬성 측 주장 <small style="color:var(--text-muted)">(설전 카테고리)</small></label>
+                                    <input type="text" id="debateAgree" class="form-input" placeholder="예: 류현진은 KBO 역대 최고" maxlength="60">
+                                    <label style="margin-top:8px">반대 측 주장</label>
+                                    <input type="text" id="debateDisagree" class="form-input" placeholder="예: 아니다, 선동열이 최고다" maxlength="60">
+                                </div>
+                                <div class="form-group">
+                                    <label>제목</label>
+                                    <input type="text" id="postTitle" class="form-input" placeholder="제목을 입력하세요" maxlength="100">
+                                </div>
+                                <div class="form-group">
+                                    <label>내용</label>
+                                    <textarea id="postContent" class="form-input form-textarea" placeholder="내용을 입력하세요" maxlength="2000"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-secondary" id="cancelPostBtn">취소</button>
+                                    <button class="btn btn-primary" id="submitPostBtn"><i class="fas fa-paper-plane"></i> 등록</button>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- 카테고리 필터 -->
+                        <div class="category-filters" id="categoryFilters">
+                            <button class="category-chip active" data-category="전체">전체</button>
+                            <button class="category-chip chip-debate" data-category="설전">🔥 설전</button>
+                            <button class="category-chip chip-kbo" data-category="KBO">⚾ KBO</button>
+                            <button class="category-chip" data-category="자유">자유</button>
+                            <button class="category-chip" data-category="분석">경기 분석</button>
+                            <button class="category-chip" data-category="정보">정보 공유</button>
+                            <button class="category-chip" data-category="질문">질문</button>
+                            <button class="category-chip" data-category="축구">축구</button>
+                            <button class="category-chip" data-category="야구">야구</button>
+                            <button class="category-chip" data-category="농구">농구</button>
+                        </div>
+
+                        <!-- 인기 게시글 -->
+                        <div id="hotSection" class="hot-section" style="display:none">
+                            <div class="hot-label"><i class="fas fa-fire"></i> 🔥 인기 게시글 (추천 5개 이상)</div>
+                            <div class="post-list" id="hotList"></div>
+                            <hr style="border-color:rgba(255,255,255,0.08);margin:var(--space-3) 0">
+                        </div>
+                        <div class="post-list" id="postList">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+
+                        <!-- 게시글 상세보기 -->
+                        <div class="post-detail" id="postDetail" style="display:none">
+                            <button class="btn btn-secondary back-btn" id="backToListBtn"><i class="fas fa-arrow-left"></i> 목록으로</button>
+                            <div class="post-detail-card" id="postDetailContent"></div>
+                            <!-- 설전 찬반 투표 섹션 -->
+                            <div id="debateVoteSection" style="display:none" class="debate-vote-section">
+                                <div class="debate-vote-title"><i class="fas fa-fire-alt"></i> 이 논쟁, 당신의 선택은?</div>
+                                <div class="debate-vote-bar-wrap">
+                                    <button class="debate-vote-btn agree" id="debateAgreeBtn">
+                                        <span class="debate-vote-label" id="debateAgreeLabel">찬성</span>
+                                        <span class="debate-vote-pct" id="debateAgreePct">50%</span>
+                                    </button>
+                                    <div class="debate-bar">
+                                        <div class="debate-bar-agree" id="debateBarAgree" style="width:50%"></div>
+                                        <div class="debate-bar-disagree" id="debateBarDisagree" style="width:50%"></div>
+                                    </div>
+                                    <button class="debate-vote-btn disagree" id="debateDisagreeBtn">
+                                        <span class="debate-vote-pct" id="debateDisagreePct">50%</span>
+                                        <span class="debate-vote-label" id="debateDisagreeLabel">반대</span>
+                                    </button>
+                                </div>
+                                <div class="debate-vote-count" id="debateVoteCount">0명 참여</div>
+                            </div>
+                            <div class="comment-section">
+                                <h3><i class="fas fa-comment"></i> 댓글 <span id="commentCount">0</span>개</h3>
+                                <div class="comment-list" id="commentList"></div>
+                                <div class="comment-form">
+                                    <input type="text" id="commentNickname" class="form-input" placeholder="닉네임" maxlength="20" style="width:150px">
+                                    <input type="text" id="commentContent" class="form-input" placeholder="댓글을 입력하세요" maxlength="500" style="flex:1">
+                                    <button class="btn btn-primary" id="submitCommentBtn"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- ===== 탭 2: KBO 응원방 ===== -->
+                    <div id="commKboTab" style="display:none">
+                        <div class="section-header">
+                            <h2 class="section-title">⚾ KBO 팀 응원방</h2>
+                            <span class="kbo-season-badge">🔴 2025 KBO 개막!</span>
+                        </div>
+                        <p class="kbo-tab-desc">팀을 선택해 응원방에 입장하세요. 라이벌 팬들과 치열하게 싸워보세요!</p>
+
+                        <!-- KBO 팀 그리드 -->
+                        <div class="kbo-team-grid" id="kboTeamGrid">
+                            <!-- JS로 동적 생성 -->
+                        </div>
+
+                        <!-- KBO 팀 채팅방 -->
+                        <div class="kbo-chat-room" id="kboChatRoom" style="display:none">
+                            <div class="kbo-chat-header" id="kboChatHeader">
+                                <button class="kbo-back-btn" id="kboBackBtn"><i class="fas fa-arrow-left"></i></button>
+                                <span id="kboChatTeamName">팀명</span>
+                                <span class="kbo-online-badge"><i class="fas fa-circle"></i> <span id="kboChatOnline">0명</span></span>
+                            </div>
+                            <div class="kbo-chat-messages" id="kboChatMessages">
+                                <div class="chat-empty">입장하면 채팅이 시작됩니다!</div>
+                            </div>
+                            <div class="kbo-chat-input-row">
+                                <input type="text" id="kboChatNick" class="form-input" placeholder="닉네임" maxlength="15" style="width:90px;flex-shrink:0;">
+                                <input type="text" id="kboChatInput" class="form-input" placeholder="메시지 입력... (Enter)" maxlength="200" style="flex:1;">
+                                <button class="btn btn-primary" id="kboChatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== 탭 3: 설전방 ===== -->
+                    <div id="commDebateTab" style="display:none">
+                        <div class="section-header">
+                            <h2 class="section-title"><i class="fas fa-fire-alt" style="color:#ff6b35"></i> 설전방</h2>
+                            <button class="btn btn-primary" id="writeDebateBtn"><i class="fas fa-bolt"></i> 논쟁 올리기</button>
+                        </div>
+                        <p class="kbo-tab-desc" style="color:var(--accent-orange,#f4a261)">뜨거운 스포츠 논쟁을 올리고 찬반 투표로 승부를 가리세요!</p>
+
+                        <!-- 설전 글쓰기 폼 -->
+                        <div class="post-form" id="debateForm" style="display:none">
+                            <div class="form-card" style="border-color:rgba(255,107,53,0.3)">
+                                <h3><i class="fas fa-fire-alt" style="color:#ff6b35"></i> 논쟁 주제 올리기</h3>
+                                <div id="debateFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Firebase가 연결되지 않았습니다.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label>닉네임</label>
+                                    <input type="text" id="debateNickname" class="form-input" placeholder="닉네임" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>논쟁 제목</label>
+                                    <input type="text" id="debateTitle" class="form-input" placeholder="예: KBO 역대 최고 투수는 누구?" maxlength="100">
+                                </div>
+                                <div class="debate-sides-form">
+                                    <div class="form-group">
+                                        <label class="debate-side-label agree">🔵 찬성 측</label>
+                                        <input type="text" id="debateFormAgree" class="form-input" placeholder="예: 류현진" maxlength="50">
+                                    </div>
+                                    <div class="debate-vs">VS</div>
+                                    <div class="form-group">
+                                        <label class="debate-side-label disagree">🔴 반대 측</label>
+                                        <input type="text" id="debateFormDisagree" class="form-input" placeholder="예: 선동열" maxlength="50">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>내용 (선택)</label>
+                                    <textarea id="debateContent" class="form-input form-textarea" placeholder="논쟁 배경을 설명해주세요" maxlength="1000" style="height:80px"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-secondary" id="cancelDebateBtn">취소</button>
+                                    <button class="btn btn-primary" id="submitDebateBtn" style="background:linear-gradient(135deg,#ff6b35,#ef476f)"><i class="fas fa-fire-alt"></i> 논쟁 시작!</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 설전 목록 -->
+                        <div class="debate-list" id="debateList">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+
                 </section>
 
                 <!-- ===== 리더보드 섹션 ===== -->
