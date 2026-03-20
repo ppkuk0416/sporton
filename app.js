@@ -1439,149 +1439,45 @@ const AdminMode = {
 };
 
 // ===== 소셜 로그인 & 유저 관리 =====
+// ===== 로그인 없이 자동 게스트 모드 =====
 const UserAuth = {
     SK_GUEST: 'sporton_guest_v1',
     currentUser: null,   // { uid, displayName, photoURL, isGuest, points, votes, winRate, streak }
 
-    getDb() { try { return firebase.apps.length ? firebase.firestore() : null; } catch(e) { return null; } },
-    getAuth() { try { return firebase.apps.length ? firebase.auth() : null; } catch(e) { return null; } },
+    // 랜덤 닉네임 생성
+    _randomNick() {
+        const animals = ['호랑이','사자','독수리','늑대','여우','팬더','치타','매','곰','상어'];
+        const nums = Math.floor(Math.random() * 9000) + 1000;
+        return animals[Math.floor(Math.random() * animals.length)] + nums;
+    },
 
     init() {
-        // Firebase Auth 상태 감지
-        const auth = this.getAuth();
-        if (auth) {
-            auth.onAuthStateChanged((fbUser) => {
-                if (fbUser) {
-                    this.currentUser = { uid: fbUser.uid, displayName: fbUser.displayName || fbUser.email?.split('@')[0] || '유저', photoURL: fbUser.photoURL || '', isGuest: false, points: 0, votes: 0, winRate: 0, streak: 0 };
-                    this._loadUserStats(fbUser.uid);
-                    this._updateHeaderUI();
-                } else {
-                    // 게스트 복원
-                    const g = this._getGuest();
-                    if (g) { this.currentUser = g; this._updateHeaderUI(); }
-                    else { this.currentUser = null; this._updateHeaderUI(); }
-                }
-            });
-        } else {
-            const g = this._getGuest();
-            if (g) { this.currentUser = g; this._updateHeaderUI(); }
+        // 저장된 게스트 복원 또는 자동 생성
+        let g = null;
+        try { g = JSON.parse(localStorage.getItem(this.SK_GUEST)); } catch {}
+        if (!g || !g.uid) {
+            const nick = this._randomNick();
+            const uid = 'guest_' + Date.now();
+            g = { uid, displayName: nick, photoURL: '', isGuest: true, points: 0, votes: 0, winRate: 0, streak: 0 };
+            localStorage.setItem(this.SK_GUEST, JSON.stringify(g));
+        }
+        this.currentUser = g;
+    },
+
+    // 닉네임 변경 (채팅 입력창에서 직접 변경 가능)
+    updateNick(nick) {
+        if (!nick) return;
+        if (this.currentUser) {
+            this.currentUser.displayName = nick;
+            localStorage.setItem(this.SK_GUEST, JSON.stringify(this.currentUser));
         }
     },
 
-    _getGuest() {
-        try { return JSON.parse(localStorage.getItem(this.SK_GUEST)); } catch { return null; }
-    },
-
-    async _loadUserStats(uid) {
-        const db = this.getDb();
-        if (!db) return;
-        try {
-            const doc = await db.collection('users').doc(uid).get();
-            if (doc.exists) {
-                const d = doc.data();
-                Object.assign(this.currentUser, { points: d.points||0, votes: d.votes||0, winRate: d.winRate||0, streak: d.streak||0 });
-                this._updateHeaderUI();
-            }
-        } catch(e) {}
-    },
-
-    _updateHeaderUI() {
-        const loginBtn = document.getElementById('headerLoginBtn');
-        const profileEl = document.getElementById('headerProfile');
-        const u = this.currentUser;
-        if (!u) {
-            if (loginBtn) loginBtn.style.display = '';
-            if (profileEl) profileEl.style.display = 'none';
-            return;
-        }
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (profileEl) profileEl.style.display = '';
-        const avatarEl = document.getElementById('headerAvatar');
-        if (avatarEl) { avatarEl.src = u.photoURL || ''; avatarEl.style.display = u.photoURL ? '' : 'none'; }
-        const nickEl = document.getElementById('headerNickname');
-        if (nickEl) nickEl.textContent = u.displayName;
-        const ptsEl = document.getElementById('headerPoints');
-        if (ptsEl) ptsEl.textContent = u.points ? `${u.points}pt` : '';
-    },
-
-    async loginGoogle() {
-        const auth = this.getAuth();
-        if (!auth) {
-            document.getElementById('loginFirebaseWarn').style.display = '';
-            return;
-        }
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            await auth.signInWithPopup(provider);
-            this.closeModal();
-            Analytics.socialLogin('google');
-            Animations.showToast('로그인 성공! 🎉', 'success');
-        } catch(e) {
-            if (e.code === 'auth/popup-closed-by-user') return;
-            if (e.code === 'auth/unauthorized-domain') {
-                Animations.showToast('Firebase 콘솔 > Authentication > 승인된 도메인에 현재 도메인을 추가해주세요', 'error', 6000);
-            } else if (e.code === 'auth/operation-not-allowed') {
-                Animations.showToast('Firebase 콘솔에서 Google 로그인을 활성화해주세요', 'error', 5000);
-            } else {
-                Animations.showToast('로그인 실패: ' + e.message, 'error');
-            }
-        }
-    },
-
-    loginGuest() {
-        const nick = document.getElementById('guestNickInput')?.value.trim();
-        if (!nick) { Animations.showToast('닉네임을 입력해주세요', 'error'); return; }
-        const uid = 'guest_' + Date.now();
-        const guest = { uid, displayName: nick, photoURL: '', isGuest: true, points: 0, votes: 0, winRate: 0, streak: 0 };
-        localStorage.setItem(this.SK_GUEST, JSON.stringify(guest));
-        this.currentUser = guest;
-        this._updateHeaderUI();
-        this.closeModal();
-        Animations.showToast(`${nick}님, 환영합니다! 🎉`, 'success');
-    },
-
-    async logout() {
-        const auth = this.getAuth();
-        if (auth && !this.currentUser?.isGuest) {
-            try { await auth.signOut(); } catch(e) {}
-        }
-        localStorage.removeItem(this.SK_GUEST);
-        this.currentUser = null;
-        this._updateHeaderUI();
-        this.closeProfile();
-        Animations.showToast('로그아웃되었습니다', 'info');
-    },
-
-    openModal() {
-        const warn = document.getElementById('loginFirebaseWarn');
-        if (warn) warn.style.display = this.getAuth() ? 'none' : '';
-        document.getElementById('loginModal')?.classList.add('show');
-    },
-    closeModal() { document.getElementById('loginModal')?.classList.remove('show'); },
-
-    openProfile() {
-        const u = this.currentUser;
-        if (!u) { this.openModal(); return; }
-        document.getElementById('profileAvatar').src = u.photoURL || '';
-        document.getElementById('profileName').textContent = u.displayName;
-        document.getElementById('profileEmail').textContent = u.isGuest ? '게스트' : '';
-        document.getElementById('profilePoints').textContent = u.points || 0;
-        document.getElementById('profileVotes').textContent = u.votes || 0;
-        const wr = u.votes > 0 ? Math.round(u.winRate * 100) + '%' : '-';
-        document.getElementById('profileWinRate').textContent = wr;
-        document.getElementById('profileStreak').textContent = u.streak || 0;
-        // 예측 히스토리
-        const hist = PredictionGame.getAll();
-        const entries = Object.entries(hist).slice(-5).reverse();
-        const histEl = document.getElementById('profileHistory');
-        if (histEl) {
-            histEl.innerHTML = entries.length ? entries.map(([id, v]) =>
-                `<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">${id.substring(0,12)}…</span><span style="color:var(--accent-gold);font-weight:700">${{home:'홈 승',draw:'무승부',away:'원정 승'}[v.choice]||v.choice}</span></div>`
-            ).join('') : '<p style="color:var(--text-muted)">예측 기록이 없습니다.</p>';
-        }
-        document.getElementById('profileModal')?.classList.add('show');
-    },
-    closeProfile() { document.getElementById('profileModal')?.classList.remove('show'); },
+    // 하위 호환 - 아무것도 안 함
+    openModal() {},
+    closeModal() {},
+    openProfile() {},
+    closeProfile() {},
 
     // 예측 적중 시 포인트 지급
     async awardPoints(uid, points, isWin) {
@@ -4226,9 +4122,15 @@ const HomeDashboard = {
     async init() {
         if (this.initialized) return;
         this.initialized = true;
-        this.myNick = localStorage.getItem('sportsLive_chatNick') || '';
+        // 저장된 닉네임 또는 자동 할당 닉네임 사용
+        this.myNick = localStorage.getItem('sportsLive_chatNick') || UserAuth.currentUser?.displayName || '';
+        if (!this.myNick) {
+            const animals = ['호랑이','사자','독수리','늑대','여우','팬더','치타','매','곰','상어'];
+            this.myNick = animals[Math.floor(Math.random() * animals.length)] + (Math.floor(Math.random() * 9000) + 1000);
+            localStorage.setItem('sportsLive_chatNick', this.myNick);
+        }
         const nickEl = document.getElementById('homeChatNick');
-        if (nickEl && this.myNick) nickEl.value = this.myNick;
+        if (nickEl) nickEl.value = this.myNick;
         this.bindEvents();
         await this.fetchAndRender();
         this.startAutoRefresh();

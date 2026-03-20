@@ -308,7 +308,7 @@ body.view-home .hero { display: none !important; }
 body.view-home .sport-tabs { display: none !important; }
 body.view-home .sidebar { display: none !important; }
 body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
-.home-dashboard { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; }
+.home-dashboard { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
 .home-sports-feed { min-width: 0; }
 .home-feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
 .home-feed-header h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 8px; margin: 0; }
@@ -357,16 +357,16 @@ body.view-home .content-wrapper { grid-template-columns: 1fr !important; }
 .card-odds-chip.ou { color: #a78bfa; border-color: rgba(167,139,250,0.3); }
 .card-odds-chip.spread { color: #60a5fa; border-color: rgba(96,165,250,0.3); }
 /* 홈 임베드 채팅 */
-.home-chat-embed { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); display: flex; flex-direction: column; height: 480px; position: sticky; top: 76px; overflow: hidden; }
-.home-chat-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; font-weight: 700; flex-shrink: 0; }
-.home-chat-online { margin-left: auto; font-size: 10px; background: rgba(0,255,136,0.1); color: #00ff88; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
-.home-chat-messages { flex: 1; overflow-y: auto; padding: 8px 10px; scroll-behavior: smooth; }
+.home-chat-embed { background: var(--gradient-card); backdrop-filter: blur(16px); border: 1px solid rgba(0,255,136,0.2); border-radius: var(--radius-lg); display: flex; flex-direction: column; height: 580px; position: sticky; top: 76px; overflow: hidden; box-shadow: 0 0 20px rgba(0,255,136,0.05); }
+.home-chat-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 700; flex-shrink: 0; background: rgba(0,255,136,0.04); }
+.home-chat-online { margin-left: auto; font-size: 11px; background: rgba(0,255,136,0.15); color: #00ff88; padding: 3px 9px; border-radius: 10px; white-space: nowrap; font-weight: 600; }
+.home-chat-messages { flex: 1; overflow-y: auto; padding: 10px 12px; scroll-behavior: smooth; }
 .home-chat-messages::-webkit-scrollbar { width: 3px; }
 .home-chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-.home-chat-input { padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+.home-chat-input { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; background: rgba(0,0,0,0.1); }
 @media (max-width: 860px) {
     .home-dashboard { grid-template-columns: 1fr; }
-    .home-chat-embed { position: static; height: 340px; }
+    .home-chat-embed { position: static; height: 420px; }
 }
 .section-title { font-size: var(--text-2xl); display: flex; align-items: center; gap: 0.75rem; }
 .live-indicator { width: 12px; height: 12px; background: var(--color-danger); border-radius: 50%; animation: pulse 2s infinite; }
