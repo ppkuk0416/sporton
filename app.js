@@ -4209,43 +4209,62 @@ const HomeDashboard = {
             return;
         }
 
-        container.innerHTML = '';
+        // 모든 경기를 live / non-live로 분리
+        const allLiveGames = [];
         sorted.forEach(group => {
-            const games = [...group.games].sort((a, b) => {
-                const o = { live:0, upcoming:1, finished:2 };
-                return (o[a.status] ?? 1) - (o[b.status] ?? 1);
+            group.games.forEach(game => { if (game.status === 'live') allLiveGames.push({ ...game, _groupIcon: group.icon, _groupSport: group.sport }); });
+        });
+
+        const makeGameRow = (game, isLive) => {
+            const hasScore = game.homeScore != null && game.awayScore != null;
+            const homeWin = hasScore && Number(game.homeScore) > Number(game.awayScore);
+            const awayWin = hasScore && Number(game.awayScore) > Number(game.homeScore);
+            const row = document.createElement('div');
+            row.className = `home-game-row${isLive ? ' live-game' : ''}`;
+            row.innerHTML = `
+                <div class="home-game-status">
+                    ${isLive
+                        ? `<span class="live-badge">LIVE</span><div class="time-text" style="margin-top:2px;">${this._esc(game.timeStr)}</div>`
+                        : `<span class="${game.status==='finished'?'finished-badge':'time-text'}">${this._esc(game.timeStr)}</span>`}
+                </div>
+                <div class="home-game-teams">
+                    <div class="home-game-team${homeWin?' winner':''}">
+                        ${game.homeLogo?`<img class="home-team-logo" src="${game.homeLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                        <span class="home-team-name">${this._esc(game.homeTeam)}</span>
+                    </div>
+                    <div class="home-game-team${awayWin?' winner':''}">
+                        ${game.awayLogo?`<img class="home-team-logo" src="${game.awayLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                        <span class="home-team-name">${this._esc(game.awayTeam)}</span>
+                    </div>
+                </div>
+                <div class="home-game-score">${hasScore ? `${game.homeScore}<br>${game.awayScore}` : ''}</div>
+                <div class="home-game-league">${this._esc(game.league)}</div>`;
+            row.addEventListener('click', () => app.showGameDetail(game));
+            return row;
+        };
+
+        container.innerHTML = '';
+
+        // 1) 라이브 경기 섹션 (스포츠 구분 없이 최상단)
+        if (allLiveGames.length > 0) {
+            const liveGroupEl = document.createElement('div');
+            liveGroupEl.className = 'home-sport-group';
+            liveGroupEl.innerHTML = `<div class="home-sport-group-header" style="color:var(--accent,#f04);"><span>🔴</span><span>지금 라이브</span><span style="margin-left:auto;font-size:10px;color:var(--accent,#f04);">${allLiveGames.length}경기 진행중</span></div>`;
+            allLiveGames.forEach(game => liveGroupEl.appendChild(makeGameRow(game, true)));
+            container.appendChild(liveGroupEl);
+        }
+
+        // 2) 나머지 경기 스포츠별 그룹
+        sorted.forEach(group => {
+            const games = group.games.filter(g => g.status !== 'live').sort((a, b) => {
+                const o = { upcoming:0, finished:1 };
+                return (o[a.status] ?? 0) - (o[b.status] ?? 0);
             });
+            if (!games.length) return;
             const groupEl = document.createElement('div');
             groupEl.className = 'home-sport-group';
             groupEl.innerHTML = `<div class="home-sport-group-header"><span>${group.icon}</span><span>${group.sport}</span><span style="margin-left:auto;font-size:10px;color:var(--text-muted);">${games.length}경기</span></div>`;
-            games.forEach(game => {
-                const isLive = game.status === 'live';
-                const hasScore = game.homeScore != null && game.awayScore != null;
-                const homeWin = hasScore && Number(game.homeScore) > Number(game.awayScore);
-                const awayWin = hasScore && Number(game.awayScore) > Number(game.homeScore);
-                const row = document.createElement('div');
-                row.className = `home-game-row${isLive ? ' live-game' : ''}`;
-                row.innerHTML = `
-                    <div class="home-game-status">
-                        ${isLive
-                            ? `<span class="live-badge">LIVE</span><div class="time-text" style="margin-top:2px;">${this._esc(game.timeStr)}</div>`
-                            : `<span class="${game.status==='finished'?'finished-badge':'time-text'}">${this._esc(game.timeStr)}</span>`}
-                    </div>
-                    <div class="home-game-teams">
-                        <div class="home-game-team${homeWin?' winner':''}">
-                            ${game.homeLogo?`<img class="home-team-logo" src="${game.homeLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-                            <span class="home-team-name">${this._esc(game.homeTeam)}</span>
-                        </div>
-                        <div class="home-game-team${awayWin?' winner':''}">
-                            ${game.awayLogo?`<img class="home-team-logo" src="${game.awayLogo}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-                            <span class="home-team-name">${this._esc(game.awayTeam)}</span>
-                        </div>
-                    </div>
-                    <div class="home-game-score">${hasScore ? `${game.homeScore}<br>${game.awayScore}` : ''}</div>
-                    <div class="home-game-league">${this._esc(game.league)}</div>`;
-                row.addEventListener('click', () => app.showGameDetail(game));
-                groupEl.appendChild(row);
-            });
+            games.forEach(game => groupEl.appendChild(makeGameRow(game, false)));
             container.appendChild(groupEl);
         });
     },
