@@ -92,11 +92,11 @@
         pending.set(key, task); return task;
     }
     const Scores = {
-        async load(date, region = 'all', sport = 'all') {
+        async load(date, region = 'all', sport = 'all', onProgress) {
             const requests = [];
             if (region !== 'world') requests.push(domestic(date).then(fs => fs.filter(l => sport === 'all' || l.sport === sport)));
             if (region !== 'kr') requests.push(world(date, sport));
-            return (await Promise.all(requests)).flat();
+            return (await Promise.all(requests.map(async request => { const feeds=await request; onProgress?.(feeds); return feeds; }))).flat();
         },
         invalidate() { for (const value of memo.values()) value.at = 0; }
     };
@@ -225,7 +225,12 @@
             if (force) Scores.invalidate();
             this.busy = true; this.render();
             const date = this.date, region = this.region, sport = app.currentSport;
-            const feeds = await Scores.load(date, region, sport);
+            const feeds = await Scores.load(date, region, sport, partial => {
+                if (token !== this.sequence) return;
+                const ids=new Set(partial.map(f=>f.id));
+                this.feeds=[...(this.lastDate===date?this.feeds.filter(f=>!ids.has(f.id)):[]),...partial];
+                this.lastDate=date;this.render();
+            });
             if (token !== this.sequence) return;
             this.feeds = feeds; this.lastDate = date; this.busy = false; this.render();
         },
@@ -268,8 +273,12 @@
             document.getElementById('homeUpdateTime').textContent = dates.length ? clock(Math.min(...dates)) : '확인 중';
             const sourceStatus = document.getElementById('scoreSourceStatus');
             sourceStatus.textContent = this.busy ? '데이터 확인 중…' : !feeds.length || issues.length === feeds.length ? '데이터 연결 확인 필요' : issues.length ? '일부 공급 연결 지연' : snapshots.length ? '주기 수집본 사용 · 수집 시간 확인' : live ? '진행 경기 5초마다 확인' : '10초마다 데이터 확인';
-            container.replaceChildren();
+            if (!this.rows) this.rows=new Map();
+            if (!this.groups) this.groups=new Map();
             if (!filtered.length) {
+                const emptyKey=JSON.stringify([this.busy,feeds.length,issues.length,this.query,this.status,this.favoriteTeams.size]);
+                if(this.emptyKey===emptyKey&&container.querySelector('.score-empty'))return;
+                this.emptyKey=emptyKey;container.replaceChildren();
                 const empty = document.createElement('div'); empty.className = 'score-empty';
                 const title = document.createElement('strong');
                 title.textContent = this.busy ? '경기를 불러오고 있습니다' : !feeds.length || issues.length === feeds.length ? '경기 데이터를 확인할 수 없습니다' : this.query || this.status !== 'all' ? '조건에 맞는 경기가 없습니다' : '이 날짜에 등록된 경기가 없습니다';
@@ -277,18 +286,24 @@
                 text.textContent = this.busy ? '국내·해외 공급 데이터를 확인하고 있어요.' : this.status==='myteams' && !this.favoriteTeams.size ? '경기 상세의 ♡ 버튼으로 관심 팀을 등록해보세요.' : '날짜나 종목을 바꿔보세요. 연결 상태와 마지막 수집 시간도 확인할 수 있습니다.';
                 empty.append(title, text); container.append(empty); return;
             }
+            this.emptyKey='';
             const groups = new Map();
             filtered.forEach(m => { const key = m.leagueId; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(m); });
+            const visibleGroups=[],visibleRows=new Set();
             for (const [id, games] of groups) {
-                const feed = feeds.find(f => f.id === id), group = document.createElement('section');
-                group.className = 'score-league';
-                const header = document.createElement('div'); header.className = 'score-league-heading';
-                const name = document.createElement('h3'); name.textContent = (feed.region === 'kr' ? '🇰🇷 ' : '') + feed.name;
-                const meta = document.createElement('span');
+                const feed = feeds.find(f => f.id === id);
+                let saved=this.groups.get(id);
+                if(!saved){const group=document.createElement('section');group.className='score-league';const header=document.createElement('div');header.className='score-league-heading';const name=document.createElement('h3');name.textContent=(feed.region==='kr'?'🇰🇷 ':'')+feed.name;const meta=document.createElement('span');header.append(name,meta);group.append(header);saved={group,header,meta};this.groups.set(id,saved);}
+                const {group,header,meta}=saved;
                 meta.textContent = (feed.region === 'kr' ? '네이버 스포츠' : 'ESPN') + ' · ' + (feed.fetchedAt ? clock(feed.fetchedAt) : '미연결') + (feed.state === 'stale' ? ' · 갱신 지연' : feed.mode === 'snapshot' ? ' · 수집본' : '');
-                header.append(name, meta); group.append(header);
-                games.forEach(m => group.append(this.row(m))); container.append(group);
+                const rowNodes=games.map(m=>{const key=m.leagueId+':'+m.id;visibleRows.add(key);const signature=JSON.stringify({...m,fetchedAt:undefined,favorite:this.favorites.has(m.id)});let savedRow=this.rows.get(key);if(!savedRow||savedRow.signature!==signature){savedRow={signature,node:this.row(m)};this.rows.set(key,savedRow);}savedRow.node._match=m;return savedRow.node;});
+                const desired=[header,...rowNodes];
+                if(desired.length!==group.children.length||desired.some((node,i)=>group.children[i]!==node))group.replaceChildren(...desired);
+                visibleGroups.push(group);
             }
+            if(visibleGroups.length!==container.children.length||visibleGroups.some((node,i)=>container.children[i]!==node))container.replaceChildren(...visibleGroups);
+            for(const key of this.rows.keys())if(!visibleRows.has(key))this.rows.delete(key);
+            for(const id of this.groups.keys())if(!groups.has(id))this.groups.delete(id);
         },
         row(m) {
             const row = document.createElement('div'); row.className = 'score-row' + (m.status === 'live' ? ' is-live' : '');
@@ -312,7 +327,7 @@
                 const value = document.createElement('b'); value.textContent = m[side + 'Score'] == null ? '—' : String(m[side + 'Score']); team.append(value); teams.append(team);
             }
             const source = document.createElement('span'); source.className = 'score-row-meta'; source.textContent = m.feedState !== 'ok' ? '갱신 지연' : m.mode === 'snapshot' ? '수집 기록' : C.LABELS[m.status];
-            detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(m));
+            detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(row._match || m));
             row.append(star, detail); return row;
         }
     };
