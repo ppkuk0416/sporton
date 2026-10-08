@@ -283,8 +283,8 @@
             const notice = document.getElementById('scoreNotice');
             const messages = [];
             if (!navigator.onLine) messages.push('인터넷 연결이 끊겼습니다. 마지막으로 받은 정보를 표시합니다.');
-            if (issues.length) messages.push(issues.length+'개 리그 갱신 지연 · 마지막 기록');
-            if (snapshots.length) messages.push(this.busy?'수집본 표시 · 최신 점수 확인 중':'수집본 · 수집 시각 확인');
+            if (issues.length) messages.push(issues.length+'개 리그 지연 · '+(snapshots.length?'수집본':'마지막 기록'));
+            if (snapshots.length && !issues.length) messages.push(this.busy?'수집본 · 최신 점수 확인 중':'수집본');
             notice.title=issues.map(f=>f.name).join(' · '); notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
             container.setAttribute('aria-busy', String(this.busy));
             const statusEl = document.getElementById('apiStatus');
