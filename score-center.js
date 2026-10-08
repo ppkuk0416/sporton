@@ -6,7 +6,7 @@
     const memo = new Map();
     const pending = new Map();
     const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-    const clock = date => new Date(date).toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const clock = date => new Date(date).toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hourCycle: 'h23', hour: '2-digit', minute: '2-digit', second: '2-digit' });
     async function json(url) {
         const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
         if (!res.ok) throw new Error('HTTP ' + res.status);
