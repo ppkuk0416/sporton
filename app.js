@@ -1146,7 +1146,6 @@ const LiveChat = {
             return;
         }
         this.subscribe();
-        this.trackOnline();
     },
 
     subscribe() {
@@ -1178,26 +1177,6 @@ const LiveChat = {
             });
     },
 
-    trackOnline() {
-        if (!this.db) return;
-        // 간단한 온라인 카운트: 5분마다 presence 문서 갱신
-        const uid = Math.random().toString(36).slice(2);
-        const ref = this.db.collection('chatPresence').doc(uid);
-        const update = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() });
-        update();
-        setInterval(update, 60000);
-        // 온라인 수 표시
-        this.db.collection('chatPresence').onSnapshot(snap => {
-            const now = Date.now();
-            let count = 0;
-            snap.forEach(doc => {
-                const t = doc.data().t?.toDate?.()?.getTime?.() || 0;
-                if (now - t < 5 * 60 * 1000) count++;
-            });
-            const el = document.getElementById('chatOnlineCount');
-            if (el) el.textContent = count + '명';
-        });
-    },
 
     async send() {
         if (!this.db) { Animations.showToast('Firebase 연결이 필요합니다', 'error'); return; }
@@ -1275,7 +1254,6 @@ const GameDetailChat = {
 
         this._bindEvents();
         this._subscribe();
-        this._trackOnline();
     },
 
     destroy() {
@@ -1332,20 +1310,6 @@ const GameDetailChat = {
             });
     },
 
-    _trackOnline() {
-        if (!this.db || !this.gameId) return;
-        const uid = Math.random().toString(36).slice(2);
-        const ref = this.db.collection('chats').doc(this.gameId).collection('presence').doc(uid);
-        const update = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
-        update();
-        this._presenceInterval = setInterval(update, 60000);
-        this.db.collection('chats').doc(this.gameId).collection('presence').onSnapshot(snap => {
-            const now = Date.now(); let count = 0;
-            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
-            const el = document.getElementById('gdChatOnline');
-            if (el) el.textContent = count + '명';
-        });
-    },
 
     _hasBadWord(text) {
         const lower = text.toLowerCase();
@@ -1781,65 +1745,6 @@ const AdSenseManager = {
     autoInit() {
         const saved = localStorage.getItem(this.SK);
         if (saved) this.init(saved);
-    }
-};
-
-// ===== CCU 실시간 접속자 추적 =====
-const CCUTracker = {
-    _uid: null,
-    _db: null,
-    _unsub: null,
-    _interval: null,
-
-    init() {
-        // Firebase 연결 시 시작
-        const tryStart = () => {
-            if (typeof firebase === 'undefined' || !firebase.apps?.length) return false;
-            try {
-                this._db = firebase.firestore();
-                this._start();
-                return true;
-            } catch(e) { return false; }
-        };
-        if (!tryStart()) {
-            // Firebase 연결 대기
-            const poll = setInterval(() => { if (tryStart()) clearInterval(poll); }, 3000);
-        }
-    },
-
-    _start() {
-        if (!this._db) return;
-        this._uid = 'ccu_' + Math.random().toString(36).slice(2) + Date.now();
-        const ref = this._db.collection('_ccu').doc(this._uid);
-
-        // 현재 접속자로 등록
-        const heartbeat = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-        heartbeat();
-        this._interval = setInterval(heartbeat, 30000);
-
-        // 창 닫을 때 제거
-        window.addEventListener('beforeunload', () => ref.delete());
-
-        // 실시간 카운팅 (1분 내 활성 세션)
-        this._unsub = this._db.collection('_ccu').onSnapshot(snap => {
-            const cutoff = Date.now() - 90000; // 90초
-            let count = 0;
-            snap.forEach(doc => {
-                const t = doc.data().t?.toDate?.()?.getTime?.() || 0;
-                if (t > cutoff) count++;
-            });
-            this._updateDisplay(count);
-        });
-    },
-
-    _updateDisplay(count) {
-        const el = document.getElementById('ccuDisplay');
-        const numEl = document.getElementById('ccuCount');
-        if (!el || !numEl) return;
-        numEl.textContent = count;
-        el.style.display = count > 1 ? '' : 'none'; // 1명(자신)이면 숨김
-        // 관리자 대시보드 CCU 동기화
-        AdminDashboard.updateCcu(count);
     }
 };
 
@@ -3231,7 +3136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     app.init();
     FavoriteTeams.init();         // 팀 팔로우 초기화
     UserAuth.init();              // 소셜 로그인 초기화
-    CCUTracker.init();            // 실시간 접속자 추적
     InviteSystem.checkIncoming(); // 친구 초대 레퍼럴 코드 감지
     NotificationManager.init();   // 웹 푸시 알림 초기화
     AdSenseManager.autoInit();    // Google AdSense 자동 로드
@@ -4292,7 +4196,6 @@ const HomeDashboard = {
             return;
         }
         this.subscribeChat();
-        this.trackChatOnline();
     },
 
     subscribeChat() {
@@ -4316,15 +4219,6 @@ const HomeDashboard = {
             });
     },
 
-    trackChatOnline() {
-        if (!this.chatDb) return;
-        this.chatDb.collection('chatPresence').onSnapshot(snap => {
-            const now = Date.now(); let count = 0;
-            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
-            const el = document.getElementById('homeChatOnline');
-            if (el) el.textContent = count + '명 접속중';
-        });
-    },
 
     async sendMsg() {
         if (!this.chatDb) { alert('Firebase 연결이 필요합니다. API 키 설정에서 Firebase를 설정해주세요.'); return; }
@@ -4476,7 +4370,6 @@ const KBOTeamChat = {
             return;
         }
         this._subscribe(team.id);
-        this._trackOnline(team.id);
     },
 
     leaveRoom() {
@@ -4510,20 +4403,6 @@ const KBOTeamChat = {
             });
     },
 
-    _trackOnline(teamId) {
-        if (this.presenceInterval) clearInterval(this.presenceInterval);
-        const uid = Math.random().toString(36).slice(2);
-        const ref = this.db.collection('kboTeamChat').doc(teamId).collection('presence').doc(uid);
-        const update = () => ref.set({ t: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
-        update();
-        this.presenceInterval = setInterval(update, 60000);
-        this.db.collection('kboTeamChat').doc(teamId).collection('presence').onSnapshot(snap => {
-            const now = Date.now(); let count = 0;
-            snap.forEach(doc => { const t = doc.data().t?.toDate?.()?.getTime?.() || 0; if (now - t < 5*60*1000) count++; });
-            const el = document.getElementById('kboChatOnline');
-            if (el) el.textContent = count + '명';
-        });
-    },
 
     async send() {
         if (!this.db || !this.currentTeam) return;
