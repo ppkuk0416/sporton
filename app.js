@@ -938,7 +938,7 @@ const StandingsService = {
 
 // ===== The Odds API 서비스 =====
 const OddsService = {
-    API_KEY: '043ac55ece2cf5b315d2fd7b2b94c364',
+    API_KEY: '', // 공개 코드에 API 비밀키를 저장하지 않습니다. 배당 연동은 기본 비활성화.,
     BASE: 'https://api.the-odds-api.com/v4',
     CACHE_TTL: 6 * 60 * 60 * 1000, // 6시간 캐시 (크레딧 절약)
     cache: {},
@@ -966,7 +966,7 @@ const OddsService = {
     },
 
     async _fetch(key) {
-        if (!key) return null;
+        if (!key || !this.API_KEY) return null;
         const c = this.cache[key];
         if (c && Date.now() - c.ts < this.CACHE_TTL) return c.data;
         try {
@@ -1393,19 +1393,13 @@ const GameDetailChat = {
 
 // ===== 관리자 모드 =====
 const AdminMode = {
-    PASSWORD: 'sporton2025', // ← 비밀번호 변경 가능
+    // 관리자 권한은 서버 인증으로만 부여해야 합니다. 공개 비밀번호 방식은 비활성화했습니다.
     STORAGE_KEY: 'sportsLive_adminMode',
 
     isAdmin() {
-        return localStorage.getItem(this.STORAGE_KEY) === 'true';
-    },
-    activate(pw) {
-        if (pw === this.PASSWORD) {
-            localStorage.setItem(this.STORAGE_KEY, 'true');
-            return true;
-        }
         return false;
     },
+    activate() { return false; },
     deactivate() {
         localStorage.removeItem(this.STORAGE_KEY);
     },
@@ -2501,7 +2495,7 @@ const PredictionGame = {
 
 // ===== Main App =====
 const app = {
-    currentView: 'live',
+    currentView: 'home',
     currentSport: 'all',
     autoRefreshInterval: null,
     _prevView: 'live',
@@ -2639,6 +2633,7 @@ const app = {
     },
 
     async loadAllData() {
+        if (this.currentView === 'home') return;
         try { await Promise.all([this.loadLiveMatches(), this.loadUpcomingMatches()]); }
         catch(error) { Animations.showToast('데이터 로드에 실패했습니다','error'); }
     },
@@ -2656,6 +2651,7 @@ const app = {
             ]);
             this._currentOdds = oddsData;
             this.renderByLeague(wrapper, data, 'live');
+            this.showFeedIssues(wrapper, data);
             this.updateTimestamp('liveUpdateTime');
             this.updateLeagueSidebar(data);
         } catch(e) {
@@ -2677,11 +2673,20 @@ const app = {
             ]);
             this._currentOdds = oddsData;
             this.renderUpcomingByDate(wrapper, data);
+            this.showFeedIssues(wrapper, data);
             this.updateTimestamp('upcomingUpdateTime');
         } catch(e) {
             this.updateTimestamp('upcomingUpdateTime');
             wrapper.innerHTML = `<p class="empty-state">데이터를 불러올 수 없습니다<br><small style="color:var(--text-muted)">잠시 후 새로고침을 시도해보세요</small></p>`;
         }
+    },
+
+    showFeedIssues(wrapper, data) {
+        const failed = Object.values(data).flatMap(s => s.leagues || []).filter(l => l.state !== 'ok');
+        if (!failed.length) return;
+        const notice = document.createElement('p'); notice.className = 'score-notice';
+        notice.textContent = failed.map(l => l.name).join(' · ') + ': 데이터 연결 실패 또는 갱신 지연. 홈 스코어보드에서 마지막 수집 시간을 확인하세요.';
+        wrapper.prepend(notice);
     },
 
     // 예정 탭: 날짜별 그룹 렌더링
@@ -2703,7 +2708,7 @@ const app = {
 
         if (allMatches.length === 0) {
             wrapper.innerHTML = `<p class="empty-state">예정된 경기 정보가 없습니다.<br>
-                <small style="color:var(--text-muted)">API 키를 설정하면 더 많은 경기 일정을 볼 수 있습니다.</small></p>`;
+                <small style="color:var(--text-muted)">일정이 등록되지 않았거나 일부 데이터 공급 연결이 지연될 수 있습니다.</small></p>`;
             return;
         }
 
@@ -2790,7 +2795,7 @@ const app = {
                 if (!lg.matches || lg.matches.length === 0) continue;
                 totalMatches += lg.matches.length;
 
-                const sourceBadge = '<span class="source-badge espn">ESPN</span>';
+                const sourceBadge = '<span class="source-badge espn">' + (lg.source === 'naver' ? '네이버 스포츠' : 'ESPN') + (lg.state !== 'ok' ? ' · 연결 지연' : '') + '</span>';
 
                 const group = document.createElement('div');
                 group.className = 'league-group';
@@ -2939,7 +2944,7 @@ const app = {
 
         // 농구 라이브 경기: O/U 미니 위젯
         let ouHtml = '';
-        if (match.sport === 'basketball' && match.status === 'live') {
+        if (match.leagueId === 'nba' && match.status === 'live') {
             const ou = this.calcNBALiveOU(match);
             if (ou) {
                 ouHtml = `
@@ -3019,7 +3024,7 @@ const app = {
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='home' || view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam' || view==='leaderboard') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam' || view==='leaderboard') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
         // 내 팀 뷰: 팔로우 경기 로드
@@ -3234,7 +3239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // GA4 초기화 (측정 ID는 운영자가 교체, 또는 관리자 대시보드에서 입력)
     const _savedGaId = localStorage.getItem(AdminDashboard.SK_GA);
     if (_savedGaId) Analytics.init(_savedGaId);
-    AdminMode.setupLogoTrigger(); // 로고 5번 클릭 → 관리자 모드
+    // 공개 비밀번호 기반 관리자 진입 비활성화
     LiveChat.init();              // 실시간 채팅
 
     // 히어로 API 설정 버튼
@@ -3710,6 +3715,7 @@ const Community = {
     // Firebase 초기화
     init() {
         const saved = localStorage.getItem('sportsLive_firebaseConfig');
+        if (typeof firebase !== 'undefined' && firebase.apps?.length) this.db = firebase.firestore();
         if (saved) {
             try {
                 const config = JSON.parse(saved);
@@ -4339,7 +4345,7 @@ const HomeDashboard = {
     },
 
     bindEvents() {
-        document.getElementById('homeRefreshBtn')?.addEventListener('click', () => this.fetchAndRender());
+        document.getElementById('homeRefreshBtn')?.addEventListener('click', () => window.SportonCenter ? SportonCenter.load(true) : this.fetchAndRender());
         document.getElementById('homeChatSendBtn')?.addEventListener('click', () => this.sendMsg());
         document.getElementById('homeChatMsgInput')?.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMsg(); }
@@ -4386,9 +4392,11 @@ window.addEventListener('popstate', function(e) {
 });
 
 // 초기 뷰: URL 해시 있으면 해당 뷰로, 없으면 홈
-const _initView = location.hash ? location.hash.replace('#','') : 'home';
-app.switchView(_initView, false);
-try { history.replaceState({ view: _initView }, '', '#' + _initView); } catch(e) {}
+document.addEventListener('DOMContentLoaded', () => {
+    const initialView = location.hash ? location.hash.replace('#','') : 'home';
+    app.switchView(initialView, false);
+    try { history.replaceState({ view: initialView }, '', '#' + initialView); } catch {}
+});
 
 Community.init();
 

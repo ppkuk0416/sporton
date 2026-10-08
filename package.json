@@ -1,0 +1,15 @@
+{
+  "name": "sporton",
+  "version": "2.0.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/server.cjs",
+    "test": "node --test tests/*.test.cjs",
+    "collect": "node scripts/collect-domestic.cjs",
+    "check": "node --check app.js && node --check score-center.js && node --check sports-core.js && npm test"
+  }
+}
