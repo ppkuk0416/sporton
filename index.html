@@ -74,8 +74,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css?v=20261008-menu4">
-    <link rel="stylesheet" href="/score-center.css?v=20261008-menu4">
+    <link rel="stylesheet" href="/styles.css?v=20261008-nocalc5">
+    <link rel="stylesheet" href="/score-center.css?v=20261008-nocalc5">
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -91,7 +91,7 @@
                 <i class="fas fa-bolt"></i>
                 <span>SPORTON</span>
             </div>
-            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button><a class="score-nav-item" data-calculator-link href="/?tool=overunder#overunder">언오버 계산기</a></nav>
+            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button></nav>
             <div class="header-actions">
                 <button class="admin-dashboard-btn" id="adminDashboardBtn" onclick="AdminDashboard.open()" title="관리자 대시보드"><i class="fas fa-chart-bar"></i> 대시보드</button>
                 <button class="icon-btn" id="notifBellBtn" title="경기 알림 받기" onclick="NotificationManager.requestPermission()" style="position:relative;">
@@ -314,28 +314,6 @@
                 </section>
 
                 <!-- 캘린더 위젯 섹션 -->
-                
-
-                <!-- 공통 언오버 계산기 -->
-                <section class="content-section" id="overUnderSection">
- <div class="section-header"><h2 class="section-title">언오버 계산기</h2></div>
- <div class="ou-layout">
- <form id="ouForm" class="ou-card" novalidate>
- <p id="ouMatchName" class="ou-match-name"></p>
- <label>종목<select id="ouSport"><option value="nba">농구 · NBA</option><option value="basketball">농구 · 40분 경기</option><option value="soccer">축구</option><option value="baseball">야구</option><option value="hockey">아이스하키</option><option value="football">미식축구</option><option value="custom">배구·기타 / 직접 설정</option></select></label>
- <div class="ou-fields"><label>홈 점수<input id="ouHome" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label><label>원정 점수<input id="ouAway" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label></div>
- <label>기준점 (O/U)<input id="ouLine" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 220.5"></label>
- <label>경기·구간 전체 (<span data-ou-unit>분</span>)<input id="ouTotal" type="number" min="0.001" step="any" inputmode="decimal"></label>
- <div class="ou-fields"><label>진행 방식<select id="ouTimeMode"><option value="elapsed">경과</option><option value="remaining">남은 구간</option></select></label><label>현재 진행량 (<span data-ou-unit>분</span>)<input id="ouProgress" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 24.5"></label></div>
- <p class="ou-hint">분은 소수로 입력: 24.5 = 24분 30초. 구간 경기·연장은 전체 진행량을 조정하세요.</p>
- <p id="ouError" class="ou-error" role="alert"></p><button class="btn btn-primary ou-submit" type="submit">계산하기</button>
- </form>
- <div class="ou-card ou-result" id="ouResult" hidden aria-live="polite">
- <p id="ouResultCaption" class="ou-hint"></p><strong id="ouComparison" class="ou-comparison"></strong>
- <div class="ou-values"><div><span>현재 합계</span><b id="ouCurrent">—</b></div><div><span>예상 합계</span><b id="ouProjected">—</b></div><div><span>기준점 대비</span><b id="ouDifference">—</b></div></div>
- <dl><div><dt>득점 속도</dt><dd id="ouPace">—</dd></div><div><dt>남은 구간</dt><dd id="ouRemaining">—</dd></div><div><dt>오버까지 필요한 추가 점수</dt><dd id="ouNeeded">—</dd></div></dl>
- </div></div>
- </section>
 
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
@@ -605,7 +583,7 @@
     <button class="score-nav-item" data-score-nav="live"><span aria-hidden="true">●</span><span>진행 중</span></button>
     <button class="score-nav-item" data-score-nav="myteams"><span aria-hidden="true">♡</span><span>내 팀</span></button>
     <button class="score-nav-item" data-score-nav="date"><span aria-hidden="true">▦</span><span>날짜 선택</span></button>
-    <a class="score-nav-item" data-calculator-link href="/?tool=overunder#overunder"><span aria-hidden="true">±</span><span>계산기</span></a>
+    
 </nav>
 
 <!-- 로그인 모달 제거됨 - 로그인 없이 바로 채팅 가능 -->
@@ -810,11 +788,9 @@
     </div>
 </div>
 
-<script src="/sporton-config.js?v=20261008-menu4"></script>
-<script src="/sports-core.js?v=20261008-menu4"></script>
-<script src="/over-under.js?v=20261008-menu4"></script>
-<script src="/app.js?v=20261008-menu4"></script>
-<script src="/over-under-ui.js?v=20261008-menu4"></script>
-<script src="/score-center.js?v=20261008-menu4"></script>
+<script src="/sporton-config.js?v=20261008-nocalc5"></script>
+<script src="/sports-core.js?v=20261008-nocalc5"></script>
+<script src="/app.js?v=20261008-nocalc5"></script>
+<script src="/score-center.js?v=20261008-nocalc5"></script>
 </body>
 </html>

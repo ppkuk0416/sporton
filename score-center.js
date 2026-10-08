@@ -396,7 +396,7 @@
             }
             const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);
             const actions=el('div',null,'score-detail-actions');const refresh=el('button',this.busy?'조회 중':'기록 새로고침','score-follow');refresh.disabled=this.busy;refresh.onclick=()=>this.load();actions.append(refresh);
-            if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}const calc=el('button','언오버 계산','score-follow');calc.addEventListener('click',()=>window.SportonOverUnder.useMatch(m));actions.append(calc);box.append(actions);
+            if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
             const state=C.feedState({...data,mode:'poll',matches:[m]});
             box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(m.status==='live'?'5초':'10초')+'마다 확인'));

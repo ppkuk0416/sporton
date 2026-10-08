@@ -1099,13 +1099,6 @@ const OddsService = {
         return chips.length ? `<div class="card-odds-mini">${chips.join('')}</div>` : '';
     },
 
-    applyToCalc(line) {
-        const el = document.getElementById('ouLine');
-        if (el) el.value = line;
-        app.switchView('overunder');
-        window.SportonOverUnder?.calculate(false);
-        Animations.showToast(`O/U 라인 ${line} 이(가) 계산기에 적용됐습니다 ✓`, 'success');
-    },
 };
 
 // ===== 실시간 채팅 =====
@@ -2923,11 +2916,11 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', overunder:'overUnderSection', gameDetail:'gameDetailSection' };
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', gameDetail:'gameDetailSection' };
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='community' || view==='textrelay' || view==='overunder' || view==='gameDetail' || view==='myteam') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='community' || view==='textrelay' || view==='gameDetail' || view==='myteam') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
         // 내 팀 뷰: 팔로우 경기 로드
@@ -2943,7 +2936,6 @@ const app = {
             upcoming:    '예정 경기 | SPORTON',
             community:   '커뮤니티 | SPORTON',
             myteam:      '내 팀 경기 | SPORTON',
-            overunder:   '언오버 계산기 | SPORTON',
         };
         if (view !== 'gameDetail') {
             document.title = viewTitles[view] || 'SPORTON';
@@ -4253,11 +4245,10 @@ const HomeDashboard = {
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view, _pushHistory) {
     const requestedView=view;
-    if (view === 'nbacalc') view = 'overunder';
+    if (view === 'nbacalc' || view === 'overunder') view = 'home';
     if (view === 'leaderboard' || view === 'calendar') view = 'home';
     if(view!==requestedView){try{history.replaceState({view},'','#'+view);}catch{}}
     _origSwitchView(view);
-    document.querySelectorAll('[data-calculator-link]').forEach(link=>link.classList.toggle('active',view==='overunder'));
     document.querySelectorAll('[data-score-nav]').forEach(link => {
         const status=window.SportonCenter?.status;
         link.classList.toggle('active',view==='home'&&link.dataset.scoreNav===(status==='live'?'live':status==='myteams'?'myteams':'today'));
@@ -4674,7 +4665,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL 파라미터로 뷰 초기화 (?view=live 등)
     const params = new URLSearchParams(location.search);
     const initView = params.get('view');
-    if (initView && ['live','upcoming','community','myteam','overunder'].includes(initView)) {
+    if (initView && ['live','upcoming','community','myteam','overunder','nbacalc'].includes(initView)) {
         app.switchView(initView);
     }
 });

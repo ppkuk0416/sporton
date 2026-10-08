@@ -9,7 +9,7 @@ const { getDetail, validRequest } = require('./details.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['index.html', 'app.js', 'styles.css', 'sports-core.js', 'over-under.js', 'over-under-ui.js', 'score-center.js', 'score-center.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['index.html', 'app.js', 'styles.css', 'sports-core.js', 'score-center.js', 'score-center.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': mime['.json'], 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }

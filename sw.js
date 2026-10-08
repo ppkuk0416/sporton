@@ -1,6 +1,6 @@
 // Static shell updates must never cache live scores or collected JSON.
-const CACHE_NAME = 'sporton-shell-v4';
-const SHELL = ['/', '/index.html', '/styles.css', '/sports-core.js', '/over-under.js', '/over-under-ui.js', '/app.js', '/score-center.js', '/score-center.css', '/sporton-config.js', '/manifest.json'];
+const CACHE_NAME = 'sporton-shell-v5';
+const SHELL = ['/', '/index.html', '/styles.css', '/sports-core.js', '/app.js', '/score-center.js', '/score-center.css', '/sporton-config.js', '/manifest.json'];
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)));
     self.skipWaiting();
