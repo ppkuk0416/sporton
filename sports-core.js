@@ -60,6 +60,7 @@
                 id: 'naver:' + g.gameId, providerId: String(g.gameId), source: '네이버 스포츠',
                 leagueId: league.id, league: league.name, sport: league.sport, region: 'kr',
                 homeTeam: String(g.homeTeamName), awayTeam: String(g.awayTeamName),
+                homeTeamId: String(g.homeTeamCode || g.homeTeamName), awayTeamId: String(g.awayTeamCode || g.awayTeamName),
                 homeScore: scored ? score(g.homeTeamScore) : null, awayScore: scored ? score(g.awayTeamScore) : null,
                 homeLogoUrl: safeUrl(g.homeTeamEmblemUrl), awayLogoUrl: safeUrl(g.awayTeamEmblemUrl),
                 status, time: status === 'live' || status === 'suspended' || status === 'delayed'
@@ -87,6 +88,7 @@
                 sport: league.sport, region: 'world', status, time, rawDate: kstDate(ev.date), isoDate: ev.date,
                 homeTeam: translate(h.team.displayName || h.team.shortDisplayName || ''),
                 awayTeam: translate(a.team.displayName || a.team.shortDisplayName || ''),
+                homeTeamId: String(h.team.id || h.team.displayName || ''), awayTeamId: String(a.team.id || a.team.displayName || ''),
                 homeScore: hasScore ? score(h.score) : null, awayScore: hasScore ? score(a.score) : null,
                 homeLogoUrl: safeUrl(h.team.logo), awayLogoUrl: safeUrl(a.team.logo),
                 period: ev.status?.period || 0, clock: ev.status?.displayClock || '',
@@ -94,14 +96,23 @@
             };
         }).filter(Boolean);
     }
+    function teamKey(match, side) { return match.leagueId + ':' + (match[side + 'TeamId'] || match[side + 'Team']); }
+    function feedState(feed, now = Date.now()) {
+        if (feed.state === 'error' || !Number.isFinite(Date.parse(feed.fetchedAt))) return 'error';
+        const maxAge = feed.mode === 'snapshot' ? 600000 : feed.matches?.some(m => m.status === 'live') ? 20000 : 120000;
+        return feed.state === 'stale' || now - Date.parse(feed.fetchedAt) > maxAge ? 'stale' : 'ok';
+    }
     function filterMatches(matches, options = {}) {
         const query = (options.query || '').trim().toLocaleLowerCase('ko-KR');
         return matches.filter(m =>
             (!options.date || m.rawDate === options.date) &&
             (!options.region || options.region === 'all' || m.region === options.region) &&
             (!options.sport || options.sport === 'all' || m.sport === options.sport) &&
+            (!options.leagueId || m.leagueId === options.leagueId) &&
+            (!options.team || [teamKey(m, 'home'), teamKey(m, 'away')].includes(options.team)) &&
             (!options.status || options.status === 'all' || m.status === options.status ||
-                (options.status === 'favorites' && options.favorites?.has(m.id))) &&
+                (options.status === 'favorites' && options.favorites?.has(m.id)) ||
+                (options.status === 'myteams' && [teamKey(m,'home'),teamKey(m,'away')].some(k => options.favoriteTeams?.has(k)))) &&
             (!query || [m.homeTeam, m.awayTeam, m.league].join(' ').toLocaleLowerCase('ko-KR').includes(query))
         ).sort((a, b) => {
             const order = { live: 0, delayed: 1, suspended: 2, upcoming: 3, finished: 4, postponed: 5, cancelled: 6, unknown: 7 };
@@ -109,5 +120,5 @@
                 || a.league.localeCompare(b.league, 'ko') || a.isoDate.localeCompare(b.isoDate);
         });
     }
-    return { LEAGUES, LABELS, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches };
+    return { LEAGUES, LABELS, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState };
 });

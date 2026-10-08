@@ -21,6 +21,15 @@
 .score-date-row,.score-filter-row,.score-region-tabs,.score-status-tabs { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
 .score-date-row { margin-bottom:14px; }
 .score-region-tabs { margin-bottom:12px; }
+.score-quick-leagues,.score-favorite-teams { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px; }
+.score-favorite-teams:empty { display:none; }
+.score-quick-leagues { padding-top:2px; }
+.score-team-follow { min-height:44px;padding:8px 12px;border:1px solid #a4cdbd;border-radius:8px;background:#fff;color:#007b60;font:inherit;cursor:pointer; }
+.score-team-follow[aria-pressed=true] { background:#def5eb; }
+.score-detail-actions { display:flex;gap:8px;flex-wrap:wrap;margin:14px 0; }
+.score-nav-item { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;background:transparent;border:0;color:#62748b;font:inherit;font-size:11px;cursor:pointer; }
+.score-nav-item>span:first-child { font-size:21px; }
+.score-nav-item.active { color:#007b60;font-weight:700; }
 .score-date-label { display:flex;align-items:center;gap:10px;font-size:12px;color:#526982; }
 .score-date-label input,.score-search input { font:inherit;color:#172b45;background:transparent;border:0;outline:none;min-width:0; }
 .score-date-label input { color-scheme:light; font-size:15px; }
@@ -64,6 +73,12 @@ button:focus-visible,a:focus-visible,input:focus-visible { outline:2px solid var
 @keyframes score-spin { to { transform:rotate(360deg); } }
 @media(max-width:1200px) { .home-dashboard { grid-template-columns:minmax(0,1fr)!important; } .home-chat-embed { display:none; } }
 @media(max-width:768px) {
+    .mobile-nav { background:#fff!important;border-top:1px solid var(--score-line);padding-bottom:env(safe-area-inset-bottom); }
+    .score-chip,.score-star,.score-icon-button { min-height:44px; }
+    .score-icon-button { min-width:44px; }
+    .score-date-label { flex:1; }.score-date-label input { width:125px; }
+    .score-quick-leagues { flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px; }.score-quick-leagues .score-chip { flex-shrink:0; }
+    .score-status-tabs { width:100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px; }
     .hero { padding:18px 0!important; }.hero-subtitle { font-size:12px!important; }
     .score-summary { gap:8px; }.score-summary div { padding:10px;gap:7px; }.score-summary b { font-size:22px; }.score-summary span { font-size:10px; }
     .score-toolbar { padding:12px; }.score-timezone { width:100%;margin:0; }
@@ -90,3 +105,5 @@ body.view-home .hero { min-height:0!important;height:auto!important; }
 .hero-title { text-shadow:none!important; }
 body.view-home .sport-tab.active { background:#007b60!important; }
 @media(min-width:769px) { .hero-title { font-size:28px!important; } }
+
+.score-detail-table{overflow-x:auto;max-width:100%;margin:16px 0}.score-detail-table table{border-collapse:collapse;min-width:100%;font-size:14px}.score-detail-table th,.score-detail-table td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:center;white-space:nowrap}.score-detail-table th:first-child{text-align:left}.score-warning{padding:12px;background:#fff3cd;color:#654b00;border-radius:8px}.gd-team .score-follow{display:block;margin:10px auto}.score-detail{min-width:0}@media(max-width:600px){.gd-team{font-size:14px!important}.gd-score{font-size:28px!important}.game-detail-scoreboard{gap:8px!important}}

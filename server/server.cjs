@@ -5,6 +5,7 @@ const path = require('node:path');
 const core = require('../sports-core.js');
 const { getScores } = require('./domestic.cjs');
 const { collectLeague } = require('./overseas.cjs');
+const { getDetail, validRequest } = require('./details.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
@@ -28,7 +29,13 @@ const server = http.createServer(async (req, res) => {
         if (rate.size > 1000) for (const [ip,v] of rate) if (now-v.at>60000) rate.delete(ip);
         if (count>120) { json(res,429,{error:'Too many requests'});return; }
     }
-    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', mode: 'poll', intervalSeconds: 10 }); return; }
+    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
+    if (url.pathname === '/api/detail') {
+        if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
+        const league=url.searchParams.get('league'),id=url.searchParams.get('id');
+        if(!validRequest(league,id)){json(res,400,{error:'Invalid league or match'});return;}
+        const value=await getDetail(league,id);json(res,value.state==='error'?502:200,value);return;
+    }
     if (url.pathname === '/api/domestic') {
         if (origin && !allowedOrigins.has(origin)) { json(res, 403, { error: 'Origin not allowed' }); return; }
         const from = url.searchParams.get('from') || core.kstDate();
@@ -42,6 +49,12 @@ const server = http.createServer(async (req, res) => {
         if (origin && !allowedOrigins.has(origin)) { json(res, 403, { error: 'Origin not allowed' }); return; }
         const date = url.searchParams.get('date') || core.kstDate();
         const leagueId = url.searchParams.get('league');
+        if(!leagueId&&core.validDate(date)){
+            const sport=url.searchParams.get('sport')||'all',leagues=core.LEAGUES.filter(l=>l.region==='world'&&(sport==='all'||l.sport===sport));
+            if(!leagues.length){json(res,400,{error:'Invalid sport'});return;}
+            const feeds=[];for(let i=0;i<leagues.length;i+=2)feeds.push(...await Promise.all(leagues.slice(i,i+2).map(l=>collectLeague(l.id,date))));
+            json(res,feeds.every(f=>f.state==='error')?502:200,{version:1,source:'ESPN',from:date,to:date,generatedAt:new Date().toISOString(),feeds});return;
+        }
         if (!core.validDate(date) || !core.LEAGUES.some(l => l.id === leagueId && l.region === 'world')) { json(res, 400, { error: 'Invalid league or date' }); return; }
         const value = await collectLeague(leagueId, date);
         json(res, value.state === 'error' ? 502 : 200, value);
