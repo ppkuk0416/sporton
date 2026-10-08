@@ -4257,6 +4257,7 @@ app.switchView = function(view, _pushHistory) {
     if (view === 'leaderboard' || view === 'calendar') view = 'home';
     if(view!==requestedView){try{history.replaceState({view},'','#'+view);}catch{}}
     _origSwitchView(view);
+    document.querySelectorAll('[data-calculator-link]').forEach(link=>link.classList.toggle('active',view==='overunder'));
     document.querySelectorAll('[data-score-nav]').forEach(link => {
         const status=window.SportonCenter?.status;
         link.classList.toggle('active',view==='home'&&link.dataset.scoreNav===(status==='live'?'live':status==='myteams'?'myteams':'today'));

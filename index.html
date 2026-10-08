@@ -74,8 +74,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/score-center.css">
+    <link rel="stylesheet" href="/styles.css?v=20261008-menu4">
+    <link rel="stylesheet" href="/score-center.css?v=20261008-menu4">
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -91,7 +91,7 @@
                 <i class="fas fa-bolt"></i>
                 <span>SPORTON</span>
             </div>
-            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button><button class="score-nav-item" data-view="overunder">언오버 계산기</button></nav>
+            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button><a class="score-nav-item" data-calculator-link href="/?tool=overunder#overunder">언오버 계산기</a></nav>
             <div class="header-actions">
                 <button class="admin-dashboard-btn" id="adminDashboardBtn" onclick="AdminDashboard.open()" title="관리자 대시보드"><i class="fas fa-chart-bar"></i> 대시보드</button>
                 <button class="icon-btn" id="notifBellBtn" title="경기 알림 받기" onclick="NotificationManager.requestPermission()" style="position:relative;">
@@ -605,7 +605,7 @@
     <button class="score-nav-item" data-score-nav="live"><span aria-hidden="true">●</span><span>진행 중</span></button>
     <button class="score-nav-item" data-score-nav="myteams"><span aria-hidden="true">♡</span><span>내 팀</span></button>
     <button class="score-nav-item" data-score-nav="date"><span aria-hidden="true">▦</span><span>날짜 선택</span></button>
-    <button class="score-nav-item" data-view="overunder"><span aria-hidden="true">±</span><span>계산기</span></button>
+    <a class="score-nav-item" data-calculator-link href="/?tool=overunder#overunder"><span aria-hidden="true">±</span><span>계산기</span></a>
 </nav>
 
 <!-- 로그인 모달 제거됨 - 로그인 없이 바로 채팅 가능 -->
@@ -810,11 +810,11 @@
     </div>
 </div>
 
-<script src="/sporton-config.js"></script>
-<script src="/sports-core.js"></script>
-<script src="/over-under.js"></script>
-<script src="/app.js"></script>
-<script src="/over-under-ui.js"></script>
-<script src="/score-center.js"></script>
+<script src="/sporton-config.js?v=20261008-menu4"></script>
+<script src="/sports-core.js?v=20261008-menu4"></script>
+<script src="/over-under.js?v=20261008-menu4"></script>
+<script src="/app.js?v=20261008-menu4"></script>
+<script src="/over-under-ui.js?v=20261008-menu4"></script>
+<script src="/score-center.js?v=20261008-menu4"></script>
 </body>
 </html>
