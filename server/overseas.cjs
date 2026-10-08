@@ -4,7 +4,7 @@ const rawCache = new Map(), rawPending = new Map(), feedCache = new Map();
 async function raw(league, date, fetcher = fetch) {
     const key = league.id + ':' + date;
     const old = rawCache.get(key);
-    if (old && Date.now() - old.at < 20000) return old.data;
+    if (old && Date.now() - old.at < 8000) return old.data;
     if (rawPending.has(key)) return rawPending.get(key);
     const task = (async () => {
         const url = 'https://site.api.espn.com/apis/site/v2/sports/' + league.path + '/scoreboard?dates=' + date.replaceAll('-', '') + '&limit=100';

@@ -15,7 +15,7 @@
     async function domestic(date) {
         const key = 'kr:' + date;
         const old = memo.get(key);
-        if (old && Date.now() - old.at < 20000) return old.feeds;
+        if (old && Date.now() - old.at < 8000) return old.feeds;
         if (pending.has(key)) return pending.get(key);
         const promise = (async () => {
             let data, mode = 'poll';
@@ -30,7 +30,7 @@
                 const f = data.feeds.find(f => f.leagueId === l.id);
                 if (!f || !Array.isArray(f.matches) || !Number.isFinite(Date.parse(f.fetchedAt))) return { ...l, state: 'error', matches: [], mode };
                 const age = Date.now() - Date.parse(f.fetchedAt);
-                const state = f.state === 'error' ? 'error' : age > (mode === 'snapshot' ? 10 * 60000 : 90000) || f.state === 'stale' ? 'stale' : 'ok';
+                const state = f.state === 'error' ? 'error' : age > (mode === 'snapshot' ? 10 * 60000 : 45000) || f.state === 'stale' ? 'stale' : 'ok';
                 return { ...l, state, mode, fetchedAt: f.fetchedAt, matches: f.matches.filter(m => m.leagueId === l.id && m.rawDate === date) };
             });
             memo.set(key, { at: Date.now(), feeds });
@@ -48,7 +48,7 @@
     async function worldSnapshot(date) {
         const key = 'snapshot-world:' + date;
         const old = memo.get(key);
-        if (old && Date.now()-old.at < 20000) return old.data;
+        if (old && Date.now()-old.at < 8000) return old.data;
         if (pending.has(key)) return pending.get(key);
         const task = json('/data/overseas/' + date + '.json').then(data => {
             if (data.version !== 1 || data.from !== date || !Array.isArray(data.feeds)) throw new Error('ESPN 수집본 형식 오류');
@@ -59,7 +59,7 @@
     async function overseas(l, date) {
         const key = l.id + ':' + date;
         const old = memo.get(key);
-        if (old && Date.now() - old.at < 20000) return old.feed;
+        if (old && Date.now() - old.at < 8000) return old.feed;
         if (pending.has(key)) return pending.get(key);
         const task = (async () => {
             try {
@@ -73,7 +73,7 @@
                 }
                 if (!data || !Array.isArray(data.matches) || !Number.isFinite(Date.parse(data.fetchedAt))) throw new Error('ESPN 데이터 오류');
                 const age=Date.now()-Date.parse(data.fetchedAt);
-                const state=data.state==='error'?'error': data.state==='stale'||age>(mode==='snapshot'?600000:90000)?'stale':'ok';
+                const state=data.state==='error'?'error': data.state==='stale'||age>(mode==='snapshot'?600000:45000)?'stale':'ok';
                 const matches=data.matches.filter(m=>m.rawDate===date&&m.leagueId===l.id).map(m=>({...m,homeTeam:KoreanNames.translateTeam(m.homeTeam),awayTeam:KoreanNames.translateTeam(m.awayTeam)}));
                 const feed={...l,state,mode,fetchedAt:data.fetchedAt,matches};
                 memo.set(key, { at: Date.now(), feed });
@@ -219,7 +219,7 @@
             const dates = feeds.filter(f => f.fetchedAt).map(f => Date.parse(f.fetchedAt));
             document.getElementById('homeUpdateTime').textContent = dates.length ? clock(Math.min(...dates)) : '확인 중';
             const sourceStatus = document.getElementById('scoreSourceStatus');
-            sourceStatus.textContent = this.busy ? '데이터 확인 중…' : !feeds.length || issues.length === feeds.length ? '데이터 연결 확인 필요' : issues.length ? '일부 공급 연결 지연' : snapshots.length ? '주기 수집본 사용 · 수집 시간 확인' : '30초마다 데이터 확인';
+            sourceStatus.textContent = this.busy ? '데이터 확인 중…' : !feeds.length || issues.length === feeds.length ? '데이터 연결 확인 필요' : issues.length ? '일부 공급 연결 지연' : snapshots.length ? '주기 수집본 사용 · 수집 시간 확인' : '10초마다 데이터 확인';
             container.replaceChildren();
             if (!filtered.length) {
                 const empty = document.createElement('div'); empty.className = 'score-empty';
@@ -273,7 +273,7 @@
     HomeDashboard.fetchAndRender = () => Center.load();
     HomeDashboard.startAutoRefresh = function () {
         this.stopAutoRefresh();
-        this.refreshTimer = setInterval(() => { if (!document.hidden && !Center.busy) Center.load(); }, 30000);
+        this.refreshTimer = setInterval(() => { if (!document.hidden && !Center.busy) Center.load(); }, 10000);
     };
     const oldFilter = app.filterSport.bind(app);
     app.filterSport = function (sport) { oldFilter(sport); if (this.currentView === 'home') Center.load(); };

@@ -15,14 +15,14 @@ npm run check
 
 네이버 스포츠가 제공하는 경기 일정 JSON의 실제 응답을 확인했습니다. 제3자 공개 웹 엔드포인트로 SLA나 장기 호환성은 보장되지 않습니다. 운영 전 데이터 사용·재배포 조건을 확인하고, 규모가 커지면 K리그 공식 API 또는 계약된 공급자로 전환하십시오. 공식 K리그 API는 인증키와 파트너 접근 권한이 필요합니다: https://api.kleague.com/docs/index.jsp
 
-### 1. Node 서버에서 사이트 전체 실행 (30초 확인)
-`node server/server.cjs` 실행이 가능한 호스팅에 저장소를 배포합니다. `PORT` 환경변수를 지원합니다. 프런트엔드는 같은 서버의 `/api/domestic`과 `/api/overseas`에서 국내·해외 경기를 30초마다 확인합니다. ESPN도 브라우저 CORS 제한을 확인해 서버에서 조회합니다. 서버는 공급 요청을 20초 캐시·동시 요청 통합합니다. 실제 기록 지연은 공급자에 따라 달라집니다.
+### 1. Node 서버에서 사이트 전체 실행 (10초 확인)
+`node server/server.cjs` 실행이 가능한 호스팅에 저장소를 배포합니다. `PORT` 환경변수를 지원합니다. 프런트엔드는 같은 서버의 `/api/domestic`과 `/api/overseas`에서 국내·해외 경기를 10초마다 확인합니다. ESPN도 브라우저 CORS 제한을 확인해 서버에서 조회합니다. 서버는 공급 요청을 8초 캐시·동시 요청 통합합니다. 실제 기록 지연은 공급자에 따라 달라집니다.
 
 ### 2. GitHub Pages 유지 + 별도 데이터 서버
 위 서버를 배포한 뒤 `sporton-config.js`의 `domesticApiBase`에 HTTPS 서버 주소를 지정합니다. 서버의 `ALLOWED_ORIGINS` 기본값은 `https://sporton.live`입니다. 여러 도메인은 쉼표로 구분합니다. 외부 API 키는 이 공개 설정 파일에 넣지 마세요.
 
 ### 3. 서버 없이 GitHub Pages에서 주기 수집본 사용
-`Collect Korean scores` 워크플로가 기본 브랜치에 들어가면 GitHub Actions에서 약 5분 간격으로 국내·해외 데이터를 수집해 `data/domestic/YYYY-MM-DD.json`과 `data/overseas/YYYY-MM-DD.json`을 커밋합니다. 어제부터 6일 뒤까지 조회 가능하며, 7일보다 오래된 파일은 정리합니다. Actions 예약 실행은 지연될 수 있고 장기간 비활성 저장소에서는 중단될 수 있습니다. 이 방식은 30초 실시간 중계가 아니며 화면에 수집본·수집 시간·갱신 지연을 표시합니다.
+`Collect Korean scores` 워크플로가 기본 브랜치에 들어가면 GitHub Actions에서 약 5분 간격으로 국내·해외 데이터를 수집해 `data/domestic/YYYY-MM-DD.json`과 `data/overseas/YYYY-MM-DD.json`을 커밋합니다. 어제부터 6일 뒤까지 조회 가능하며, 7일보다 오래된 파일은 정리합니다. Actions 예약 실행은 지연될 수 있고 장기간 비활성 저장소에서는 중단될 수 있습니다. 이 방식은 10초 실시간 중계가 아니며 화면에 수집본·수집 시간·갱신 지연을 표시합니다.
 
 저장소 Settings → Pages → Source를 GitHub Actions로 설정합니다. 포함된 Deploy score site 워크플로가 main 코드 변경과 국내 수집 작업 완료 후 공개 파일만 배포합니다. Actions 토큰 커밋이 push 이벤트를 만들지 않는 문제는 workflow_run으로 처리합니다. 배포 후 Actions/Pages 기록과 실제 JSON 변경 반영을 확인하세요. GitHub 설정에서 Actions의 콘텐츠 쓰기 권한이 필요할 수 있습니다. 수동 실행도 가능합니다.
 

@@ -31,7 +31,7 @@ async function collect(from, to, fetcher = fetch) {
 async function getScores(from, to) {
     const key = from + ':' + to;
     const cached = cache.get(key);
-    if (cached && Date.now() - cached.at < 20000) return cached.value;
+    if (cached && Date.now() - cached.at < 8000) return cached.value;
     if (inflight.has(key)) return inflight.get(key);
     const promise = collect(from, to).then(value => {
         // Keep the last good league payload for brief outages; timestamps remain original.

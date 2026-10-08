@@ -28,7 +28,7 @@ const server = http.createServer(async (req, res) => {
         if (rate.size > 1000) for (const [ip,v] of rate) if (now-v.at>60000) rate.delete(ip);
         if (count>120) { json(res,429,{error:'Too many requests'});return; }
     }
-    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', mode: 'poll', intervalSeconds: 30 }); return; }
+    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', mode: 'poll', intervalSeconds: 10 }); return; }
     if (url.pathname === '/api/domestic') {
         if (origin && !allowedOrigins.has(origin)) { json(res, 403, { error: 'Origin not allowed' }); return; }
         const from = url.searchParams.get('from') || core.kstDate();
