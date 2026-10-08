@@ -74,6 +74,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/score-center.css">
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -132,7 +133,7 @@
 
 <!-- PWA 설치 배너 -->
 <div id="pwaInstallBar" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:linear-gradient(90deg,#0d2b55,#0a3d6e);border-bottom:1px solid rgba(0,217,255,0.2);font-size:13px;color:#a8d8ff;">
-    <span><i class="fas fa-mobile-alt" style="color:#00d9ff;margin-right:8px;"></i>홈화면에 추가하면 경기 시작 알림을 받을 수 있어요!</span>
+    <span><i class="fas fa-mobile-alt" style="color:#00d9ff;margin-right:8px;"></i>홈화면에 추가하면 경기 스코어보드에 빠르게 접속할 수 있어요!</span>
     <div style="display:flex;gap:8px;flex-shrink:0;">
         <button id="pwaInstallBtn" style="background:linear-gradient(90deg,#00d9ff,#0099dd);color:#000;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:8px;cursor:pointer;">설치하기</button>
         <button id="pwaInstallDismiss" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;padding:6px 10px;border:none;border-radius:8px;cursor:pointer;">닫기</button>
@@ -151,19 +152,19 @@
             <!-- 뱃지 -->
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                실시간 업데이트 중
+                대한민국 스포츠 스코어보드
             </div>
 
             <!-- 메인 타이틀 -->
             <h1 class="hero-title">
-                실시간 스포츠 데이터의<br>
-                <span class="hero-title-accent">새로운 기준</span>
+                국내부터 해외까지,<br>
+                <span class="hero-title-accent">경기의 흐름을 한눈에.</span>
             </h1>
 
             <!-- 서브 카피 -->
             <p class="hero-subtitle">
-                NBA · EPL · K리그 · KBO · LCK · CS2 ···<br>
-                전 세계 주요 경기를 지연 없이, 정확하게
+                KBO · K리그 · KBL · WKBL · V리그 · NBA · EPL<br>
+                경기 일정, 점수, 결과를 한국 시간으로 확인하세요.
             </p>
 
             <!-- 스포츠 아이콘 스트립 -->
@@ -232,23 +233,28 @@
                     <button class="sport-tab" data-sport="soccer"><span>⚽</span><span>축구</span></button>
                     <button class="sport-tab" data-sport="basketball"><span>🏀</span><span>농구</span></button>
                     <button class="sport-tab" data-sport="baseball"><span>⚾</span><span>야구</span></button>
+                    <button class="sport-tab" data-sport="volleyball"><span>🏐</span><span>배구</span></button>
                     <button class="sport-tab" data-sport="hockey"><span>🏒</span><span>하키</span></button>
                     <button class="sport-tab" data-sport="football"><span>🏈</span><span>NFL</span></button>
                 </div>
                 <!-- ===== 홈 대시보드 섹션 ===== -->
                 <section class="content-section active" id="homeSection">
+                    <div class="score-summary" aria-label="선택 날짜 경기 현황"><div><b id="scoreTotal">—</b><span>등록 경기</span></div><div><b id="scoreLive">—</b><span>실시간 진행</span></div><div><b id="scoreUpcoming">—</b><span>예정 경기</span></div></div>
                     <div class="home-dashboard">
                         <!-- 왼쪽: 오늘의 경기 피드 -->
                         <div class="home-sports-feed">
                             <div class="home-feed-header">
-                                <h2><span class="live-indicator"></span> 오늘의 경기</h2>
+                                <h2><span class="live-indicator"></span> 경기 스코어보드</h2>
                                 <div class="home-feed-meta">
                                     <span class="home-live-count" id="homeLiveCount"></span>
                                     <span>업데이트: <span id="homeUpdateTime">-</span></span>
                                     <button class="btn-refresh" id="homeRefreshBtn" title="새로고침"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                             </div>
-                            <div id="homeGamesContainer">
+                            <div class="score-toolbar" id="scoreToolbar"></div>
+                            <div class="score-source-status" id="scoreSourceStatus" role="status" aria-live="polite">데이터 확인 중…</div>
+                            <div class="score-notice" id="scoreNotice" hidden><span id="scoreNoticeText"></span><br><button class="score-chip" id="scoreRetry">다시 연결</button></div>
+                            <div id="homeGamesContainer" aria-busy="false">
                                 <div class="skeleton-card"></div>
                                 <div class="skeleton-card"></div>
                                 <div class="skeleton-card"></div>
@@ -692,7 +698,7 @@
                     <div id="commKboTab" style="display:none">
                         <div class="section-header">
                             <h2 class="section-title">⚾ KBO 팀 응원방</h2>
-                            <span class="kbo-season-badge">🔴 2025 KBO 개막!</span>
+                            <span class="kbo-season-badge">⚾ KBO 팬 응원방</span>
                         </div>
                         <p class="kbo-tab-desc">팀을 선택해 응원방에 입장하세요. 라이벌 팬들과 치열하게 싸워보세요!</p>
 
@@ -855,16 +861,16 @@
             <div class="footer-section">
                 <h4>지원 리그</h4>
                 <p style="font-size:12px;color:var(--text-muted);line-height:2;">
-                    NBA · EPL · K리그 · KBO<br>
-                    NHL · MLB · LCK · CS2<br>
-                    La Liga · UCL · Dota2 · MMA
+                    KBO · K리그1·2 · KBL · WKBL · V리그<br>
+                    NBA · EPL · NHL · MLB · NFL<br>
+                    La Liga · UCL · 분데스리가 · 세리에A
                 </p>
             </div>
             <div class="footer-section">
                 <h4>데이터 출처</h4>
                 <p style="font-size:12px;color:var(--text-muted);line-height:2;">
-                    BallDontLie · API-Sports<br>
-                    ESPN · Sofascore · PandaScore
+                    국내: 네이버 스포츠<br>
+                    해외: ESPN
                 </p>
             </div>
         </div>
@@ -878,7 +884,7 @@
             <p>&copy; 2026 SPORTON — 실시간 스포츠 데이터 · <span id="oddsRefreshTs" style="font-size:11px;opacity:0.5;"></span></p>
             <p style="margin-top:8px;font-size:12px;">
                 <a href="/privacy.html" style="color:#94A3B8;text-decoration:underline;margin-right:16px;">개인정보처리방침</a>
-                <span style="color:#64748B;">본 서비스는 ESPN API, The Odds API의 데이터를 활용합니다.</span>
+                <span style="color:#64748B;">본 서비스는 네이버 스포츠·ESPN 경기 데이터와 The Odds API 배당 데이터를 활용합니다.</span>
             </p>
         </div>
     </div>
@@ -1107,6 +1113,9 @@
     </div>
 </div>
 
+<script src="/sporton-config.js"></script>
+<script src="/sports-core.js"></script>
 <script src="/app.js"></script>
+<script src="/score-center.js"></script>
 </body>
 </html>

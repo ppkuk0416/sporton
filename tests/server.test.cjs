@@ -1,0 +1,20 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const server = require('../server/server.cjs');
+test('HTTP routes reject bad ranges, private paths, unsupported methods and unknown origins', async t => {
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const base = 'http://127.0.0.1:' + server.address().port;
+    assert.equal((await fetch(base + '/api/health')).status, 200);
+    assert.equal((await fetch(base + '/api/domestic?from=2025-02-30')).status, 400);
+    assert.equal((await fetch(base + '/api/domestic?from=2025-05-01&to=2025-06-01')).status, 400);
+    assert.equal((await fetch(base + '/api/domestic', { headers: { Origin: 'https://example.com' } })).status, 403);
+    const allowed = await fetch(base + '/api/health', { headers: { Origin: 'https://sporton.live' } });
+    assert.equal(allowed.headers.get('access-control-allow-origin'), 'https://sporton.live');
+    assert.equal((await fetch(base + '/.git/config')).status, 404);
+    assert.equal((await fetch(base + '/server/server.cjs')).status, 404);
+    assert.equal((await fetch(base + '/index.html', { method: 'POST' })).status, 405);
+    assert.equal((await fetch(base + '/sports-core.js')).status, 200);
+    assert.equal((await fetch(base + '/missing.html')).status, 404);
+});
