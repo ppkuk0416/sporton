@@ -1,5 +1,12 @@
 name: Collect Korean scores
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/domestic-scores.yml'
+      - 'scripts/collect-domestic.cjs'
+      - 'server/**'
+      - 'sports-core.js'
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
