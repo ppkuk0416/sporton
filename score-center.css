@@ -24,8 +24,10 @@
 .score-quick-leagues,.score-favorite-teams { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px; }
 .score-favorite-teams:empty { display:none; }
 .score-quick-leagues { padding-top:2px; }
-.score-team-follow { min-height:44px;padding:8px 12px;border:1px solid #a4cdbd;border-radius:8px;background:#fff;color:#007b60;font:inherit;cursor:pointer; }
-.score-team-follow[aria-pressed=true] { background:#def5eb; }
+.score-follow { min-height:44px;padding:8px 12px;border:1px solid #a4cdbd;border-radius:8px;background:#fff;color:#007b60;font:inherit;cursor:pointer; }
+.score-follow[aria-pressed=true] { background:#def5eb; }
+.score-no-chat .home-chat-embed,.score-no-chat #liveChatPanel,.score-no-chat #gdChatSection { display:none!important; }
+.score-no-chat .home-dashboard { grid-template-columns:minmax(0,1fr)!important; }
 .score-detail-actions { display:flex;gap:8px;flex-wrap:wrap;margin:14px 0; }
 .score-nav-item { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;background:transparent;border:0;color:#62748b;font:inherit;font-size:11px;cursor:pointer; }
 .score-nav-item>span:first-child { font-size:21px; }

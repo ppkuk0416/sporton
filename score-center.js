@@ -389,5 +389,5 @@
     if (config.firebase && typeof firebase !== 'undefined') {
         try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }
     }
-    document.addEventListener('DOMContentLoaded', () => { Center.init(); Center.load(); });
+    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); Center.load(); });
 })();
