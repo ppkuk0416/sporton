@@ -56,41 +56,43 @@
         }).finally(()=>pending.delete(key));
         pending.set(key,task);return task;
     }
-    async function overseas(l, date) {
-        const key = l.id + ':' + date;
+
+    async function world(date, sport) {
+        const leagues = C.LEAGUES.filter(l => l.region === 'world' && (sport === 'all' || l.sport === sport));
+        const key = 'world:' + date + ':' + sport;
         const old = memo.get(key);
-        if (old && Date.now() - old.at < 8000) return old.feed;
+        if (old && Date.now() - old.at < 8000) return old.feeds;
         if (pending.has(key)) return pending.get(key);
         const task = (async () => {
+            let data, mode = 'poll';
             try {
-                let data, mode='poll';
-                try {
-                    data = await json((config.domesticApiBase || '').replace(/\/$/,'') + '/api/overseas?league=' + encodeURIComponent(l.id) + '&date=' + date);
-                } catch {
-                    mode='snapshot';
-                    const snapshot=await worldSnapshot(date);
-                    data=snapshot.feeds.find(f=>f.leagueId===l.id);
-                }
-                if (!data || !Array.isArray(data.matches) || !Number.isFinite(Date.parse(data.fetchedAt))) throw new Error('ESPN 데이터 오류');
-                const age=Date.now()-Date.parse(data.fetchedAt);
-                const state=data.state==='error'?'error': data.state==='stale'||age>(mode==='snapshot'?600000:45000)?'stale':'ok';
-                const matches=data.matches.filter(m=>m.rawDate===date&&m.leagueId===l.id).map(m=>({...m,homeTeam:KoreanNames.translateTeam(m.homeTeam),awayTeam:KoreanNames.translateTeam(m.awayTeam)}));
-                const feed={...l,state,mode,fetchedAt:data.fetchedAt,matches};
-                memo.set(key, { at: Date.now(), feed });
-                return feed;
+                data = await json((config.domesticApiBase || '').replace(/\/$/, '') + '/api/overseas?date=' + date + '&sport=' + encodeURIComponent(sport));
             } catch {
-                return old ? { ...old.feed, state: 'stale' } : { ...l, state: 'error', matches: [] };
+                mode = 'snapshot'; data = await worldSnapshot(date);
             }
-        })().finally(() => pending.delete(key));
-        pending.set(key, task);
-        return task;
+            if (data?.version !== 1 || data.from !== date || !Array.isArray(data.feeds)) throw new Error('ESPN 데이터 형식 오류');
+            const feeds = leagues.map(l => {
+                const f = data.feeds.find(f => f.leagueId === l.id);
+                const previous = old?.feeds.find(f => f.id === l.id && f.state !== 'error');
+                if (!f || !Array.isArray(f.matches) || !Number.isFinite(Date.parse(f.fetchedAt)) || f.state === 'error')
+                    return previous ? { ...previous, state: 'stale' } : { ...l, state: 'error', mode, matches: [] };
+                const age = Date.now() - Date.parse(f.fetchedAt);
+                const state = f.state === 'stale' || age > (mode === 'snapshot' ? 600000 : 45000) ? 'stale' : 'ok';
+                const matches = f.matches.filter(m => m.rawDate === date && m.leagueId === l.id).map(m => ({ ...m, homeTeam: KoreanNames.translateTeam(m.homeTeam), awayTeam: KoreanNames.translateTeam(m.awayTeam) }));
+                return { ...l, mode, state, fetchedAt: f.fetchedAt, matches };
+            });
+            memo.set(key, { at: Date.now(), feeds }); return feeds;
+        })().catch(() => leagues.map(l => {
+            const previous = old?.feeds.find(f => f.id === l.id && f.state !== 'error');
+            return previous ? { ...previous, state: 'stale' } : { ...l, state: 'error', matches: [] };
+        })).finally(() => pending.delete(key));
+        pending.set(key, task); return task;
     }
     const Scores = {
         async load(date, region = 'all', sport = 'all') {
-            const world = C.LEAGUES.filter(l => l.region === 'world' && (sport === 'all' || l.sport === sport));
             const requests = [];
             if (region !== 'world') requests.push(domestic(date).then(fs => fs.filter(l => sport === 'all' || l.sport === sport)));
-            if (region !== 'kr') requests.push(Promise.all(world.map(l => overseas(l, date))));
+            if (region !== 'kr') requests.push(world(date, sport));
             return (await Promise.all(requests)).flat();
         },
         invalidate() { for (const value of memo.values()) value.at = 0; }
