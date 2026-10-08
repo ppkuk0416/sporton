@@ -219,20 +219,39 @@
             try { localStorage.setItem('sporton_favorite_teams',JSON.stringify([...this.favoriteTeams])); } catch {}
             this.render();
         },
+        preview(date, region, sport, token) {
+            const regions=region==='all'?['kr','world']:[region];
+            for(const target of regions) {
+                const request=target==='world'?worldSnapshot(date):json('/data/domestic/'+date+'.json');
+                request.then(data=>{
+                    if(token!==this.sequence||data?.version!==1||data.from!==date||!Array.isArray(data.feeds))return;
+                    const present=this.lastDate===date?this.feeds:[],ids=new Set(present.filter(f=>f.state!=='error').map(f=>f.id));
+                    const previews=C.LEAGUES.filter(l=>l.region===target&&(sport==='all'||l.sport===sport)&&!ids.has(l.id)).flatMap(l=>{
+                        const f=data.feeds.find(f=>f.leagueId===l.id);
+                        if(!f||f.state==='error'||!Array.isArray(f.matches)||!Number.isFinite(Date.parse(f.fetchedAt)))return [];
+                        const matches=f.matches.filter(m=>m.leagueId===l.id&&m.rawDate===date).map(m=>target==='world'?{...m,homeTeam:KoreanNames.translateTeam(m.homeTeam),awayTeam:KoreanNames.translateTeam(m.awayTeam)}:m);
+                        return [{...l,mode:'snapshot',state:f.state,fetchedAt:f.fetchedAt,matches}];
+                    });
+                    if(previews.length){const added=new Set(previews.map(f=>f.id));this.feeds=[...present.filter(f=>!added.has(f.id)),...previews];this.lastDate=date;this.render();}
+                }).catch(()=>{});
+            }
+        },
         async load(force = false) {
             const token = ++this.sequence;
             this.lastRequestAt = Date.now();
             if (force) Scores.invalidate();
             this.busy = true; this.render();
             const date = this.date, region = this.region, sport = app.currentSport;
+            const preserve=items=>items.map(f=>{const previous=this.lastDate===date?this.feeds.find(p=>p.id===f.id&&p.state!=='error'):null;return f.state==='error'&&previous?{...previous,state:'stale'}:f;});
+            if(document.getElementById('scoreDate')&&(this.lastDate!==date||!this.feeds.length))this.preview(date,region,sport,token);
             const feeds = await Scores.load(date, region, sport, partial => {
                 if (token !== this.sequence) return;
                 const ids=new Set(partial.map(f=>f.id));
-                this.feeds=[...(this.lastDate===date?this.feeds.filter(f=>!ids.has(f.id)):[]),...partial];
+                this.feeds=[...(this.lastDate===date?this.feeds.filter(f=>!ids.has(f.id)):[]),...preserve(partial)];
                 this.lastDate=date;this.render();
             });
             if (token !== this.sequence) return;
-            this.feeds = feeds; this.lastDate = date; this.busy = false; this.render();
+            this.feeds = preserve(feeds); this.lastDate = date; this.busy = false; this.render();
         },
         render() {
             const container = document.getElementById('homeGamesContainer');
@@ -333,7 +352,7 @@
     };
     window.SportonScores = Scores;
     window.SportonCenter = Center;
-    HomeDashboard.fetchAndRender = () => Center.load();
+    HomeDashboard.fetchAndRender = () => document.getElementById('scoreDate') ? Center.load() : Promise.resolve();
     HomeDashboard.startAutoRefresh = function () {
         this.stopAutoRefresh();
         this.refreshTimer = setInterval(() => {
