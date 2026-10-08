@@ -11,6 +11,14 @@ node --test tests/*.test.cjs
 npm run check
 ```
 
+## 현재 운영 서버
+
+`sporton.live`는 `https://sporton-live-api.parkbeomkuk.chatgpt.site`를 통해 국내·해외 데이터를 10초마다 조회합니다. API 서버는 Sites에서 실행되므로 개인 PC나 상시 실행 터미널이 필요하지 않습니다. 서버 캐시는 8초이고 동시 요청을 통합합니다. 해외 리그는 한 요청으로 묶고 원본 요청 동시성을 제한합니다. 원본 공급자 지연과 네트워크 시간을 포함한 10초 이내 반영을 보장하는 SLA는 아닙니다.
+
+서버는 조회할 때 데이터를 가져옵니다. 별도 수집 예약이나 수동 갱신은 필요하지 않습니다. GitHub Actions 수집본은 API 장애 때의 보조 경로입니다. API 상태: `https://sporton-live-api.parkbeomkuk.chatgpt.site/api/health`. 정상 조회는 화면에 `10초마다 데이터 확인`, 장애 시에는 `수집본` 또는 `갱신 지연`이 표시됩니다. 장애 때 마지막 정상 점수를 보존하며 이를 새 실시간 기록으로 표시하지 않습니다.
+
+관리: Sites에서 SPORTON Live Scores API를 확인합니다. 호스팅은 현재 베타 기간에 대상 ChatGPT 요금제에 포함되며 요금제별 사용량 한도가 있습니다(https://learn.chatgpt.com/docs/sites). 별도 스포츠 API 유료 구독은 설정하지 않았습니다. 원본 API 변경·사용량 제한·Sites 공개 호스팅 정책 변경 시 점검이 필요합니다. 공개 설정 파일에는 비밀키를 넣지 않습니다.
+
 ## 국내 데이터 연결
 
 네이버 스포츠가 제공하는 경기 일정 JSON의 실제 응답을 확인했습니다. 제3자 공개 웹 엔드포인트로 SLA나 장기 호환성은 보장되지 않습니다. 운영 전 데이터 사용·재배포 조건을 확인하고, 규모가 커지면 K리그 공식 API 또는 계약된 공급자로 전환하십시오. 공식 K리그 API는 인증키와 파트너 접근 권한이 필요합니다: https://api.kleague.com/docs/index.jsp
