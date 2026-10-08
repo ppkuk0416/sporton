@@ -35,7 +35,7 @@ jobs:
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp index.html privacy.html styles.css app.js sports-core.js score-center.js score-center.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
+          cp index.html privacy.html styles.css app.js sports-core.js over-under.js over-under-ui.js score-center.js score-center.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
           cp -R data _site/
       - uses: actions/upload-pages-artifact@v3
         with:

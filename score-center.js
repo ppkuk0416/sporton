@@ -123,7 +123,7 @@
     };
 
     const Center = {
-        date: C.kstDate(), region: 'kr', status: 'all', query: '', feeds: [], sequence: 0,
+        date: C.kstDate(), region: 'all', status: 'all', query: '', feeds: [], sequence: 0,
         favorites: new Set(), favoriteTeams: new Map(), busy: false, lastDate: '', leagueId: '', activeTeam: '',
         init() {
             try { this.favorites = new Set(JSON.parse(localStorage.getItem('sporton_match_favorites') || '[]')); } catch {}
@@ -142,15 +142,10 @@
             toolbar.innerHTML = `
                 <div class="score-date-row">
                     <button class="score-icon-button" id="scorePrev" aria-label="전날 경기">‹</button>
-                    <label class="score-date-label">경기 날짜 <input type="date" id="scoreDate" aria-label="경기 날짜" value="${this.date}"></label>
+                    <label class="score-date-label"><input type="date" id="scoreDate" aria-label="경기 날짜" value="${this.date}"></label>
                     <button class="score-icon-button" id="scoreNext" aria-label="다음날 경기">›</button>
                     <button class="score-chip" id="scoreToday">오늘</button>
-                    <span class="score-timezone">한국 시간 · KST</span>
-                </div>
-                <div class="score-region-tabs" aria-label="경기 지역">
-                    <button class="score-chip" data-region="kr">🇰🇷 국내</button>
-                    <button class="score-chip" data-region="world">해외</button>
-                    <button class="score-chip" data-region="all">전체</button>
+                    <span class="score-timezone" title="모든 경기 시간은 한국 시간">KST</span>
                 </div>
                 <div class="score-quick-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>
                 <div id="scoreFavoriteTeams" class="score-favorite-teams" aria-label="저장한 관심 팀"></div>
@@ -163,8 +158,14 @@
                         <button class="score-chip" data-status="favorites">★ 관심 경기</button>
                         <button class="score-chip" data-status="myteams">♡ 내 팀</button>
                     </div>
-                    <label class="score-search"><span aria-hidden="true">⌕</span><input type="search" id="scoreSearch" placeholder="팀 또는 리그 검색" aria-label="팀 또는 리그 검색" maxlength="80"></label>
-                </div>`;
+
+                </div>
+                <details class="score-extra-filters" ${this.query ? 'open' : ''}><summary>필터·검색</summary><div class="score-extra-content">                <div class="score-region-tabs" aria-label="경기 지역">
+                    <button class="score-chip" data-region="kr">🇰🇷 국내</button>
+                    <button class="score-chip" data-region="world">해외</button>
+                    <button class="score-chip" data-region="all">전체</button>
+                </div>
+<label class="score-search"><span aria-hidden="true">⌕</span><input type="search" id="scoreSearch" placeholder="팀 또는 리그 검색" aria-label="팀 또는 리그 검색" maxlength="80"></label></div></details>`;
             document.getElementById('scoreSearch').value = this.query;
             const dateChange = date => {
                 if (!C.validDate(date)) return;
@@ -260,7 +261,7 @@
                 (this.region === 'all' || l.region === this.region) &&
                 (app.currentSport === 'all' || l.sport === app.currentSport)).map(f => ({...f,state:C.feedState(f)})) : [];
             document.querySelectorAll('[data-league]').forEach(b => { const active=b.dataset.league===this.leagueId;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active)); });
-            document.querySelectorAll('[data-score-nav]').forEach(b => b.classList.toggle('active', b.dataset.scoreNav === (this.status === 'live' ? 'live' : this.status === 'myteams' ? 'myteams' : 'today')));
+            document.querySelectorAll('[data-score-nav]').forEach(b => b.classList.toggle('active', app.currentView==='home' && b.dataset.scoreNav === (this.status === 'live' ? 'live' : this.status === 'myteams' ? 'myteams' : 'today')));
             const teamContainer = document.getElementById('scoreFavoriteTeams'); teamContainer.replaceChildren();
             for (const [key, team] of this.favoriteTeams) {
                 const b = document.createElement('button');b.className='score-chip';b.textContent='♡ '+team.name;b.setAttribute('aria-label',team.name+' 경기 보기');
@@ -282,9 +283,9 @@
             const notice = document.getElementById('scoreNotice');
             const messages = [];
             if (!navigator.onLine) messages.push('인터넷 연결이 끊겼습니다. 마지막으로 받은 정보를 표시합니다.');
-            if (issues.length) messages.push(issues.map(f => f.name).join(' · ') + ': 연결 실패 또는 갱신 지연. 경기 없음으로 판단하지 마세요.');
-            if (snapshots.length) messages.push('일부 경기는 주기 수집 데이터입니다. 수집은 약 5분 간격이며 지연될 수 있습니다.');
-            notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
+            if (issues.length) messages.push(issues.length+'개 리그 갱신 지연 · 마지막 기록');
+            if (snapshots.length) messages.push(this.busy?'수집본 표시 · 최신 점수 확인 중':'수집본 · 수집 시각 확인');
+            notice.title=issues.map(f=>f.name).join(' · '); notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
             container.setAttribute('aria-busy', String(this.busy));
             const statusEl = document.getElementById('apiStatus');
             if (statusEl) { const healthy = feeds.some(f => f.state === 'ok'); statusEl.classList.toggle('connected', healthy); statusEl.querySelector('.status-text').textContent = this.busy ? '조회 중' : healthy ? '데이터 연결' : '연결 확인'; }
@@ -395,7 +396,7 @@
             }
             const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);
             const actions=el('div',null,'score-detail-actions');const refresh=el('button',this.busy?'조회 중':'기록 새로고침','score-follow');refresh.disabled=this.busy;refresh.onclick=()=>this.load();actions.append(refresh);
-            if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
+            if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}const calc=el('button','언오버 계산','score-follow');calc.addEventListener('click',()=>window.SportonOverUnder.useMatch(m));actions.append(calc);box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
             const state=C.feedState({...data,mode:'poll',matches:[m]});
             box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(m.status==='live'?'5초':'10초')+'마다 확인'));
@@ -423,5 +424,5 @@
     if (config.firebase && typeof firebase !== 'undefined') {
         try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }
     }
-    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); Center.load(); });
+    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); if(app.currentView==='home')Center.load(); });
 })();

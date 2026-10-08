@@ -1100,12 +1100,10 @@ const OddsService = {
     },
 
     applyToCalc(line) {
-        const el = document.getElementById('nbaLine');
+        const el = document.getElementById('ouLine');
         if (el) el.value = line;
-        // 전체 경기 모드로 전환
-        const fullBtn = document.querySelector('[data-mode="full"]');
-        if (fullBtn && !fullBtn.classList.contains('active')) fullBtn.click();
-        app.switchView('nbacalc');
+        app.switchView('overunder');
+        window.SportonOverUnder?.calculate(false);
         Animations.showToast(`O/U 라인 ${line} 이(가) 계산기에 적용됐습니다 ✓`, 'success');
     },
 };
@@ -2925,17 +2923,17 @@ const app = {
         }
         document.querySelectorAll('[data-view]').forEach(link => link.classList.toggle('active', link.dataset.view===view));
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', leaderboard:'leaderboardSection', calendar:'calendarSection', nbacalc:'nbaCalcSection', gameDetail:'gameDetailSection' };
+        const sectionMap = { home:'homeSection', live:'liveSection', upcoming:'upcomingSection', community:'communitySection', myteam:'myteamSection', overunder:'overUnderSection', gameDetail:'gameDetailSection' };
         document.getElementById(sectionMap[view] || 'homeSection')?.classList.add('active');
         // 스포츠 탭 보이기/숨기기
         const sportTabs = document.getElementById('sportTabs');
-        if (sportTabs) sportTabs.style.display = (view==='community' || view==='calendar' || view==='textrelay' || view==='nbacalc' || view==='gameDetail' || view==='myteam' || view==='leaderboard') ? 'none' : 'flex';
+        if (sportTabs) sportTabs.style.display = (view==='community' || view==='textrelay' || view==='overunder' || view==='gameDetail' || view==='myteam') ? 'none' : 'flex';
         // 홈 뷰 body 클래스 (hero 숨기기 등)
         document.body.classList.toggle('view-home', view === 'home');
         // 내 팀 뷰: 팔로우 경기 로드
         if (view === 'myteam') this.loadMyTeamMatches();
         // 리더보드 뷰: 데이터 로드
-        if (view === 'leaderboard') Leaderboard.load();
+
         // Analytics: 뷰 전환 트래킹
         Analytics.pageView(view);
         // SEO: 동적 타이틀 업데이트
@@ -2945,9 +2943,7 @@ const app = {
             upcoming:    '예정 경기 | SPORTON',
             community:   '커뮤니티 | SPORTON',
             myteam:      '내 팀 경기 | SPORTON',
-            leaderboard: '예측 리더보드 | SPORTON',
-            calendar:    '경기 캘린더 | SPORTON',
-            nbacalc:     'NBA O/U 계산기 | SPORTON',
+            overunder:   '언오버 계산기 | SPORTON',
         };
         if (view !== 'gameDetail') {
             document.title = viewTitles[view] || 'SPORTON';
@@ -4256,7 +4252,15 @@ const HomeDashboard = {
 // switchView에 커뮤니티/캘린더/홈 연결 + 히스토리 API
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view, _pushHistory) {
+    const requestedView=view;
+    if (view === 'nbacalc') view = 'overunder';
+    if (view === 'leaderboard' || view === 'calendar') view = 'home';
+    if(view!==requestedView){try{history.replaceState({view},'','#'+view);}catch{}}
     _origSwitchView(view);
+    document.querySelectorAll('[data-score-nav]').forEach(link => {
+        const status=window.SportonCenter?.status;
+        link.classList.toggle('active',view==='home'&&link.dataset.scoreNav===(status==='live'?'live':status==='myteams'?'myteams':'today'));
+    });
     if (view === 'home') {
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
         document.getElementById('homeSection')?.classList.add('active');
@@ -4289,7 +4293,7 @@ window.addEventListener('popstate', function(e) {
 document.addEventListener('DOMContentLoaded', () => {
     const initialView = location.hash ? location.hash.replace('#','') : 'home';
     app.switchView(initialView, false);
-    try { history.replaceState({ view: initialView }, '', '#' + initialView); } catch {}
+    try { history.replaceState({ view: app.currentView }, '', '#' + app.currentView); } catch {}
 });
 
 Community.init();
@@ -4626,200 +4630,7 @@ Community.openPost = async function(postId) {
 // ──────────────────────────────────────────────
 // NBA Over/Under 계산기
 // ──────────────────────────────────────────────
-const NBACalc = {
-    mode: '1q',       // '1q' | 'full'
-    timeMode: 'remaining', // 'remaining' | 'elapsed'
 
-    // 정규분포 누적함수 (Abramowitz & Stegun 근사)
-    erf(x) {
-        const sign = x < 0 ? -1 : 1;
-        x = Math.abs(x);
-        const t = 1 / (1 + 0.3275911 * x);
-        const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
-        return sign * y;
-    },
-    normalCDF(z) {
-        return 0.5 * (1 + this.erf(z / Math.SQRT2));
-    },
-
-    init() {
-        // 모드 버튼
-        document.querySelectorAll('.nbaou-mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.nbaou-mode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.mode = btn.dataset.mode;
-                const quarterRow = document.getElementById('nbaQuarterRow');
-                const lineHint   = document.getElementById('nbaLineHint');
-                if (this.mode === 'full') {
-                    quarterRow.style.display = 'flex';
-                    lineHint.textContent = '예: 220.5 (전체 경기)';
-                } else {
-                    quarterRow.style.display = 'none';
-                    lineHint.textContent = '예: 59.5 (1쿼터)';
-                }
-                this.calculate();
-            });
-        });
-
-        // 시간 모드 라디오
-        document.querySelectorAll('.nbaou-time-mode').forEach(radio => {
-            radio.addEventListener('change', () => {
-                this.timeMode = document.querySelector('.nbaou-time-mode:checked').value;
-                const label = document.getElementById('nbaTimeLabel');
-                label.textContent = this.timeMode === 'remaining' ? '남은 시간 (현재 쿼터)' : '경과 시간 (현재 쿼터)';
-                this.calculate();
-            });
-        });
-
-        // 입력값 변경 시 자동 계산 (에러 메시지/스크롤 없이)
-        ['nbaLine','nbaQuarter','nbaMinutes','nbaSeconds','nbaHome','nbaAway'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => this.calculate(false));
-        });
-
-        // 계산 버튼 (에러 메시지 + 스크롤 활성)
-        document.getElementById('nbaCalcBtn')?.addEventListener('click', () => this.calculate(true));
-    },
-
-    calculate(showError = false) {
-        const line    = parseFloat(document.getElementById('nbaLine').value);
-        const mins    = parseInt(document.getElementById('nbaMinutes').value) || 0;
-        const secs    = parseInt(document.getElementById('nbaSeconds').value) || 0;
-        const home    = parseInt(document.getElementById('nbaHome').value) || 0;
-        const away    = parseInt(document.getElementById('nbaAway').value) || 0;
-        const quarter = parseInt(document.getElementById('nbaQuarter').value) || 1;
-
-        if (isNaN(line)) {
-            if (showError) this._showError('기준점(O/U Line)을 입력해주세요.');
-            return;
-        }
-
-        const Q_SEC   = 720;  // 12분 = 720초
-        const GAME_SEC = 2880; // 48분
-        const totalSec = this.mode === '1q' ? Q_SEC : GAME_SEC;
-
-        // 현재 쿼터 내 경과 시간(초)
-        const inputSec = mins * 60 + secs;
-        let elapsedInQ;
-        if (this.timeMode === 'remaining') {
-            elapsedInQ = Q_SEC - Math.min(inputSec, Q_SEC);
-        } else {
-            elapsedInQ = Math.min(inputSec, Q_SEC);
-        }
-
-        // 전체 경과 시간(초)
-        const totalElapsed = this.mode === '1q'
-            ? elapsedInQ
-            : (quarter - 1) * Q_SEC + elapsedInQ;
-
-        if (totalElapsed <= 0) {
-            if (showError) this._showError('경과 시간이 0입니다. 시간을 확인해주세요.');
-            return;
-        }
-
-        const currentTotal  = home + away;
-        const rate          = currentTotal / totalElapsed;       // 점/초
-        const projected     = rate * totalSec;                   // 예상 최종 총점
-        const remaining     = totalSec - totalElapsed;
-        const remainFrac    = remaining / totalSec;
-
-        // 불확실성 표준편차 (페이스 기반 정규분포)
-        // 기준 SD: 1쿼터 ≈ 7.5점, 전체 경기 ≈ 15점
-        const baseSD = this.mode === '1q' ? 7.5 : 15.0;
-        const sd     = baseSD * Math.sqrt(remainFrac);
-
-        // 오버/언더 확률
-        let pOver, pUnder;
-        if (sd < 0.01) {
-            // 경기 종료 직전 → 결정적
-            pOver  = projected > line ? 1 : 0;
-            pUnder = projected < line ? 1 : 0;
-        } else {
-            const z = (line - projected) / sd;
-            pOver  = 1 - this.normalCDF(z);
-            pUnder = this.normalCDF(z);
-        }
-
-        // 신뢰도: 경과 시간 비율 (많이 진행될수록 신뢰도 높음)
-        const confidence = (totalElapsed / totalSec) * 100;
-        const confLabel  = confidence < 25 ? '낮음' : confidence < 55 ? '보통' : confidence < 80 ? '높음' : '매우 높음';
-
-        this.renderResult({
-            line, currentTotal, projected, remaining, remainFrac,
-            pOver, pUnder, confidence, confLabel,
-            rate, sd, totalElapsed, totalSec, quarter
-        }, showError);
-    },
-
-    _showError(msg) {
-        const btn = document.getElementById('nbaCalcBtn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
-        btn.style.background = 'linear-gradient(90deg,#f87171,#ef4444)';
-        setTimeout(() => {
-            btn.innerHTML = orig;
-            btn.style.background = '';
-        }, 2200);
-    },
-
-    renderResult(d, scroll = false) {
-        const resultEl = document.getElementById('nbaResult');
-        const guideEl  = document.getElementById('nbaGuide');
-
-        resultEl.style.display = 'block';
-        guideEl.style.display  = 'none';
-
-        // 모바일에서 결과 패널로 자동 스크롤 (버튼 클릭 시만)
-        if (scroll) {
-            setTimeout(() => {
-                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 80);
-        }
-
-        // 현재 페이스
-        document.getElementById('resCurrentTotal').textContent = d.currentTotal + '점';
-        document.getElementById('resProjected').textContent    = d.projected.toFixed(1) + '점';
-
-        const diff = d.projected - d.line;
-        const diffEl = document.getElementById('resDiff');
-        diffEl.textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '점';
-        diffEl.style.color = diff >= 0 ? '#4ade80' : '#f87171';
-
-        // 확률 표시
-        const overPct  = Math.round(d.pOver  * 100);
-        const underPct = Math.round(d.pUnder * 100);
-        document.getElementById('resOverPct').textContent  = overPct + '%';
-        document.getElementById('resUnderPct').textContent = underPct + '%';
-        document.getElementById('resProbFill').style.width = overPct + '%';
-
-        // 신뢰도
-        document.getElementById('resConfidence').textContent = `${Math.round(d.confidence)}% (${d.confLabel})`;
-        document.getElementById('resConfFill').style.width   = d.confidence + '%';
-        const timePlayedMin = Math.floor(d.totalElapsed / 60);
-        const timePlayedSec = Math.floor(d.totalElapsed % 60);
-        const remainMin     = Math.floor(d.remaining / 60);
-        const remainSec     = Math.floor(d.remaining % 60);
-        document.getElementById('resConfDesc').textContent =
-            `경과 ${timePlayedMin}분 ${timePlayedSec}초 | 남은 시간 ${remainMin}분 ${remainSec}초`;
-
-        // 계산 근거 상세
-        const ratePerMin = (d.rate * 60).toFixed(2);
-        const details = [
-            ['득점 페이스', `${ratePerMin}점/분`],
-            ['기준점 (라인)', `${d.line}점`],
-            ['예상 최종 총점', `${d.projected.toFixed(1)}점`],
-            ['표준편차 (SD)', `±${d.sd.toFixed(2)}점`],
-            ['오버 확률', `${(d.pOver * 100).toFixed(1)}%`],
-            ['언더 확률', `${(d.pUnder * 100).toFixed(1)}%`],
-        ];
-        const grid = document.getElementById('resDetailGrid');
-        grid.innerHTML = details.map(([k, v]) =>
-            `<div class="nbaou-detail-row"><span class="nbaou-detail-key">${k}</span><span class="nbaou-detail-val">${v}</span></div>`
-        ).join('');
-    }
-};
-
-NBACalc.init();
 
 // ===== PWA: Service Worker 등록 =====
 if ('serviceWorker' in navigator) {
@@ -4862,7 +4673,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL 파라미터로 뷰 초기화 (?view=live 등)
     const params = new URLSearchParams(location.search);
     const initView = params.get('view');
-    if (initView && ['live','upcoming','community','myteam','calendar','nbacalc'].includes(initView)) {
+    if (initView && ['live','upcoming','community','myteam','overunder'].includes(initView)) {
         app.switchView(initView);
     }
 });

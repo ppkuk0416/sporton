@@ -91,16 +91,7 @@
                 <i class="fas fa-bolt"></i>
                 <span>SPORTON</span>
             </div>
-            <nav class="nav">
-                <a href="#" class="nav-link active" data-view="home"><i class="fas fa-home"></i><span>홈</span></a>
-                <a href="#" class="nav-link" data-view="live"><i class="fas fa-circle"></i><span>라이브</span></a>
-                <a href="#" class="nav-link" data-view="upcoming"><i class="fas fa-calendar"></i><span>예정</span></a>
-                <a href="#" class="nav-link" data-view="community"><i class="fas fa-comments"></i><span>커뮤니티</span></a>
-                <a href="#" class="nav-link" data-view="myteam"><i class="fas fa-heart"></i><span>내 팀</span><span class="myteam-badge" id="myteamBadge" style="display:none;background:#ef476f;color:#fff;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:4px;">0</span></a>
-                <a href="#" class="nav-link" data-view="leaderboard"><i class="fas fa-crown"></i><span>리더보드</span></a>
-                <a href="#" class="nav-link" data-view="calendar"><i class="fas fa-table"></i><span>캘린더</span></a>
-                <a href="#" class="nav-link" data-view="nbacalc"><i class="fas fa-calculator"></i><span>NBA O/U</span></a>
-            </nav>
+            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button><button class="score-nav-item" data-view="overunder">언오버 계산기</button></nav>
             <div class="header-actions">
                 <button class="admin-dashboard-btn" id="adminDashboardBtn" onclick="AdminDashboard.open()" title="관리자 대시보드"><i class="fas fa-chart-bar"></i> 대시보드</button>
                 <button class="icon-btn" id="notifBellBtn" title="경기 알림 받기" onclick="NotificationManager.requestPermission()" style="position:relative;">
@@ -136,55 +127,7 @@
     </div>
 </div>
 
-<section class="hero">
-    <!-- 배경: 경기장 분위기 SVG 패턴 + 그라디언트 -->
-    <div class="hero-bg-layer hero-bg-gradient"></div>
-    <div class="hero-bg-layer hero-bg-pattern"></div>
-    <div class="hero-bg-layer hero-bg-glow"></div>
 
-    <div class="container" style="position:relative;z-index:2;">
-        <div class="hero-content">
-
-            <!-- 뱃지 -->
-            <div class="hero-badge">
-                <span class="hero-badge-dot"></span>
-                대한민국 스포츠 스코어보드
-            </div>
-
-            <!-- 메인 타이틀 -->
-            <h1 class="hero-title">
-                국내부터 해외까지,<br>
-                <span class="hero-title-accent">경기의 흐름을 한눈에.</span>
-            </h1>
-
-            <!-- 서브 카피 -->
-            <p class="hero-subtitle">
-                KBO · K리그 · KBL · WKBL · V리그 · NBA · EPL<br>
-                경기 일정, 점수, 결과를 한국 시간으로 확인하세요.
-            </p>
-
-            <!-- 스포츠 아이콘 스트립 -->
-            <div class="hero-sports-strip">
-                <span title="축구"><i class="fas fa-futbol"></i></span>
-                <span title="농구"><i class="fas fa-basketball-ball"></i></span>
-                <span title="야구"><i class="fas fa-baseball-ball"></i></span>
-                <span title="하키"><i class="fas fa-hockey-puck"></i></span>
-                <span title="미식축구"><i class="fas fa-football-ball"></i></span>
-            </div>
-
-            <!-- 통계 -->
-            <!-- CTA -->
-            <div class="hero-cta">
-                <button class="btn btn-hero-primary" id="heroLiveBtn">
-                    <i class="fas fa-bolt"></i> 라이브 경기 보기
-                </button>
-                <button class="btn btn-hero-secondary" id="heroSetupBtn" style="display:none;">
-                    <i class="fas fa-key"></i> API 키 설정
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
 
 <main class="main-content">
     <div class="container">
@@ -234,15 +177,15 @@
                 </div>
                 <!-- ===== 홈 대시보드 섹션 ===== -->
                 <section class="content-section active" id="homeSection">
-                    <div class="score-summary" aria-label="선택 날짜 경기 현황"><div><b id="scoreTotal">—</b><span>등록 경기</span></div><div><b id="scoreLive">—</b><span>실시간 진행</span></div><div><b id="scoreUpcoming">—</b><span>예정 경기</span></div></div>
+                    <div hidden class="score-summary" aria-label="선택 날짜 경기 현황"><div><b id="scoreTotal">—</b><span>등록 경기</span></div><div><b id="scoreLive">—</b><span>실시간 진행</span></div><div><b id="scoreUpcoming">—</b><span>예정 경기</span></div></div>
                     <div class="home-dashboard">
                         <!-- 왼쪽: 오늘의 경기 피드 -->
                         <div class="home-sports-feed">
                             <div class="home-feed-header">
-                                <h2><span class="live-indicator"></span> 경기 스코어보드</h2>
+                                
                                 <div class="home-feed-meta">
                                     <span class="home-live-count" id="homeLiveCount"></span>
-                                    <span>업데이트: <span id="homeUpdateTime">-</span></span>
+                                    <span>갱신 <span id="homeUpdateTime">-</span></span>
                                     <button class="btn-refresh" id="homeRefreshBtn" title="새로고침"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                             </div>
@@ -371,184 +314,28 @@
                 </section>
 
                 <!-- 캘린더 위젯 섹션 -->
-                <section class="content-section" id="calendarSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-table"></i> 스포츠 캘린더</h2>
-                    </div>
-                    <div class="calendar-intro">
-                        <i class="fas fa-info-circle"></i>
-                        <span>오늘 경기, 라이브 스코어, 예정 일정을 한눈에 확인하세요. 실시간으로 자동 업데이트됩니다.</span>
-                    </div>
-                    <div class="calendar-unavailable">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>현재 캘린더 서비스를 이용할 수 없습니다.</p>
-                        <span>데이터 제공 서비스(SportBusy)가 일시적으로 중단되어 있습니다.<br>경기 일정은 <strong>예정</strong> 탭에서 확인하세요.</span>
-                    </div>
-                </section>
+                
 
-                <!-- NBA O/U 계산기 섹션 -->
-                <section class="content-section" id="nbaCalcSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-basketball-ball"></i> NBA 오버/언더 계산기</h2>
-                    </div>
-
-                    <div class="nbaou-wrap">
-                        <!-- 입력 패널 -->
-                        <div class="nbaou-input-card">
-
-                            <!-- 모드 선택 -->
-                            <div class="nbaou-field-group">
-                                <label class="nbaou-label">계산 모드</label>
-                                <div class="nbaou-mode-row">
-                                    <button class="nbaou-mode-btn active" data-mode="1q">
-                                        <i class="fas fa-stopwatch"></i> 1쿼터 기준
-                                    </button>
-                                    <button class="nbaou-mode-btn" data-mode="full">
-                                        <i class="fas fa-layer-group"></i> 전체 경기 기준
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- 기준점 -->
-                            <div class="nbaou-field-group">
-                                <label class="nbaou-label" for="nbaLine">
-                                    기준점 (O/U Line)
-                                    <span class="nbaou-hint" id="nbaLineHint">예: 59.5 (1쿼터)</span>
-                                </label>
-                                <input class="nbaou-input" id="nbaLine" type="number" step="0.5" min="0" placeholder="59.5">
-                            </div>
-
-                            <!-- 현재 쿼터 (전체 모드만) -->
-                            <div class="nbaou-field-group" id="nbaQuarterRow" style="display:none">
-                                <label class="nbaou-label" for="nbaQuarter">현재 쿼터</label>
-                                <select class="nbaou-input nbaou-select" id="nbaQuarter">
-                                    <option value="1">1쿼터</option>
-                                    <option value="2">2쿼터</option>
-                                    <option value="3">3쿼터</option>
-                                    <option value="4">4쿼터</option>
-                                </select>
-                            </div>
-
-                            <!-- 시간 입력 방식 토글 -->
-                            <div class="nbaou-field-group">
-                                <label class="nbaou-label">시간 입력 방식</label>
-                                <div class="nbaou-time-toggle">
-                                    <label class="nbaou-radio-label">
-                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="remaining" checked>
-                                        <span class="nbaou-radio-btn">남은 시간</span>
-                                    </label>
-                                    <label class="nbaou-radio-label">
-                                        <input class="nbaou-time-mode" type="radio" name="timeMode" value="elapsed">
-                                        <span class="nbaou-radio-btn">경과 시간</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- 분:초 입력 -->
-                            <div class="nbaou-field-group">
-                                <label class="nbaou-label" id="nbaTimeLabel">남은 시간 (현재 쿼터)</label>
-                                <div class="nbaou-time-row">
-                                    <div class="nbaou-time-input-wrap">
-                                        <input class="nbaou-input nbaou-time-digit" id="nbaMinutes" type="number" min="0" max="11" placeholder="9">
-                                        <span class="nbaou-time-unit">분</span>
-                                    </div>
-                                    <span class="nbaou-colon">:</span>
-                                    <div class="nbaou-time-input-wrap">
-                                        <input class="nbaou-input nbaou-time-digit" id="nbaSeconds" type="number" min="0" max="59" placeholder="33">
-                                        <span class="nbaou-time-unit">초</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 점수 입력 -->
-                            <div class="nbaou-field-group">
-                                <label class="nbaou-label">현재 점수</label>
-                                <div class="nbaou-score-row">
-                                    <div class="nbaou-score-block">
-                                        <label class="nbaou-score-label">홈팀</label>
-                                        <input class="nbaou-input nbaou-score-input" id="nbaHome" type="number" min="0" placeholder="12">
-                                    </div>
-                                    <div class="nbaou-vs">VS</div>
-                                    <div class="nbaou-score-block">
-                                        <label class="nbaou-score-label">어웨이</label>
-                                        <input class="nbaou-input nbaou-score-input" id="nbaAway" type="number" min="0" placeholder="4">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button class="btn btn-primary nbaou-calc-btn" id="nbaCalcBtn">
-                                <i class="fas fa-chart-bar"></i> 확률 계산하기
-                            </button>
-                        </div>
-
-                        <!-- 결과 패널 -->
-                        <div class="nbaou-result-card" id="nbaResult" style="display:none">
-
-                            <!-- 현재 페이스 -->
-                            <div class="nbaou-pace-row">
-                                <div class="nbaou-pace-item">
-                                    <span class="nbaou-pace-label">현재 총점</span>
-                                    <span class="nbaou-pace-val" id="resCurrentTotal">—</span>
-                                </div>
-                                <div class="nbaou-pace-item">
-                                    <span class="nbaou-pace-label">예상 최종 총점</span>
-                                    <span class="nbaou-pace-val accent" id="resProjected">—</span>
-                                </div>
-                                <div class="nbaou-pace-item">
-                                    <span class="nbaou-pace-label">기준점 대비</span>
-                                    <span class="nbaou-pace-val" id="resDiff">—</span>
-                                </div>
-                            </div>
-
-                            <!-- 오버/언더 확률 바 -->
-                            <div class="nbaou-prob-section">
-                                <div class="nbaou-prob-bar-wrap">
-                                    <div class="nbaou-prob-over-side" id="resOverBar">
-                                        <span class="nbaou-prob-pct" id="resOverPct">—%</span>
-                                        <span class="nbaou-prob-tag">오버 ▲</span>
-                                    </div>
-                                    <div class="nbaou-prob-under-side" id="resUnderBar">
-                                        <span class="nbaou-prob-tag">언더 ▼</span>
-                                        <span class="nbaou-prob-pct" id="resUnderPct">—%</span>
-                                    </div>
-                                </div>
-                                <div class="nbaou-prob-track">
-                                    <div class="nbaou-prob-fill-over" id="resProbFill" style="width:50%"></div>
-                                </div>
-                            </div>
-
-                            <!-- 신뢰도 -->
-                            <div class="nbaou-confidence">
-                                <div class="nbaou-conf-label-row">
-                                    <span class="nbaou-label">신뢰도</span>
-                                    <span class="nbaou-conf-val" id="resConfidence">—</span>
-                                </div>
-                                <div class="nbaou-conf-track">
-                                    <div class="nbaou-conf-fill" id="resConfFill" style="width:0%"></div>
-                                </div>
-                                <p class="nbaou-conf-desc" id="resConfDesc"></p>
-                            </div>
-
-                            <!-- 상세 계산 근거 -->
-                            <div class="nbaou-detail">
-                                <div class="nbaou-detail-title"><i class="fas fa-info-circle"></i> 계산 근거</div>
-                                <div class="nbaou-detail-grid" id="resDetailGrid"></div>
-                            </div>
-                        </div>
-
-                        <!-- 초기 안내 -->
-                        <div class="nbaou-guide" id="nbaGuide">
-                            <i class="fas fa-basketball-ball nbaou-guide-icon"></i>
-                            <p class="nbaou-guide-title">NBA 오버/언더 확률 계산기</p>
-                            <ul class="nbaou-guide-list">
-                                <li><i class="fas fa-check-circle"></i> 기준점(라인)과 현재 점수를 입력하면 오버/언더 확률을 계산합니다</li>
-                                <li><i class="fas fa-check-circle"></i> 현재 페이스 기반 정규분포로 확률을 산출합니다</li>
-                                <li><i class="fas fa-check-circle"></i> 경기 초반일수록 불확실성이 높아 확률 범위가 넓어집니다</li>
-                                <li><i class="fas fa-check-circle"></i> 1쿼터 12분, 전체 4쿼터 48분 기준으로 계산합니다</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
+                <!-- 공통 언오버 계산기 -->
+                <section class="content-section" id="overUnderSection">
+ <div class="section-header"><h2 class="section-title">언오버 계산기</h2></div>
+ <div class="ou-layout">
+ <form id="ouForm" class="ou-card" novalidate>
+ <p id="ouMatchName" class="ou-match-name"></p>
+ <label>종목<select id="ouSport"><option value="nba">농구 · NBA</option><option value="basketball">농구 · 40분 경기</option><option value="soccer">축구</option><option value="baseball">야구</option><option value="hockey">아이스하키</option><option value="football">미식축구</option><option value="custom">배구·기타 / 직접 설정</option></select></label>
+ <div class="ou-fields"><label>홈 점수<input id="ouHome" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label><label>원정 점수<input id="ouAway" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></label></div>
+ <label>기준점 (O/U)<input id="ouLine" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 220.5"></label>
+ <label>경기·구간 전체 (<span data-ou-unit>분</span>)<input id="ouTotal" type="number" min="0.001" step="any" inputmode="decimal"></label>
+ <div class="ou-fields"><label>진행 방식<select id="ouTimeMode"><option value="elapsed">경과</option><option value="remaining">남은 구간</option></select></label><label>현재 진행량 (<span data-ou-unit>분</span>)<input id="ouProgress" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 24.5"></label></div>
+ <p class="ou-hint">분은 소수로 입력: 24.5 = 24분 30초. 구간 경기·연장은 전체 진행량을 조정하세요.</p>
+ <p id="ouError" class="ou-error" role="alert"></p><button class="btn btn-primary ou-submit" type="submit">계산하기</button>
+ </form>
+ <div class="ou-card ou-result" id="ouResult" hidden aria-live="polite">
+ <p id="ouResultCaption" class="ou-hint"></p><strong id="ouComparison" class="ou-comparison"></strong>
+ <div class="ou-values"><div><span>현재 합계</span><b id="ouCurrent">—</b></div><div><span>예상 합계</span><b id="ouProjected">—</b></div><div><span>기준점 대비</span><b id="ouDifference">—</b></div></div>
+ <dl><div><dt>득점 속도</dt><dd id="ouPace">—</dd></div><div><dt>남은 구간</dt><dd id="ouRemaining">—</dd></div><div><dt>오버까지 필요한 추가 점수</dt><dd id="ouNeeded">—</dd></div></dl>
+ </div></div>
+ </section>
 
                 <!-- 커뮤니티 섹션 -->
                 <section class="content-section" id="communitySection">
@@ -774,36 +561,7 @@
                 </section>
 
                 <!-- ===== 리더보드 섹션 ===== -->
-                <section class="content-section" id="leaderboardSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-crown" style="color:#f4a261"></i> 예측 리더보드</h2>
-                        <div style="display:flex;gap:8px;">
-                            <button class="lb-period-btn active" data-period="weekly" onclick="Leaderboard.switchPeriod('weekly',this)">이번 주</button>
-                            <button class="lb-period-btn" data-period="alltime" onclick="Leaderboard.switchPeriod('alltime',this)">전체</button>
-                        </div>
-                    </div>
-                    <!-- 내 순위 카드 -->
-                    <div class="lb-my-rank" id="lbMyRank" style="display:none">
-                        <div class="lb-my-avatar-wrap"><img id="lbMyAvatar" src="" alt="" class="lb-avatar"><span id="lbMyRankNum" class="lb-my-rank-num"></span></div>
-                        <div class="lb-my-info">
-                            <div class="lb-my-nick" id="lbMyNick">-</div>
-                            <div class="lb-my-stats" id="lbMyStats">-</div>
-                        </div>
-                        <div class="lb-my-points" id="lbMyPoints">-</div>
-                    </div>
-                    <div class="lb-login-prompt" id="lbLoginPrompt">
-                        <i class="fas fa-user-circle"></i>
-                        <p>로그인하면 내 순위를 확인하고 포인트를 적립할 수 있어요!</p>
-                        <button class="btn btn-primary" onclick="UserAuth.openModal()"><i class="fas fa-sign-in-alt"></i> 로그인</button>
-                    </div>
-                    <!-- TOP 리더보드 -->
-                    <div class="lb-table-wrap">
-                        <div class="lb-table-header">
-                            <span>순위</span><span>유저</span><span>예측수</span><span>적중률</span><span>포인트</span>
-                        </div>
-                        <div id="lbList"><div class="lb-loading"><i class="fas fa-spinner fa-spin"></i> 로딩 중...</div></div>
-                    </div>
-                </section>
+                
 
                 <!-- ===== 내 팀 섹션 ===== -->
                 <section class="content-section" id="myteamSection">
@@ -840,53 +598,14 @@
 </main>
 
 
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4 style="display:flex;align-items:center;gap:8px;"><i class="fas fa-bolt" style="color:var(--accent-gold)"></i> SPORTON</h4>
-                <p style="line-height:1.7;color:var(--text-muted);font-size:13px;">
-                    실시간 스포츠 데이터의 새로운 기준.<br>
-                    정확한 정보만, 거짓 없이.
-                </p>
-            </div>
-            <div class="footer-section">
-                <h4>지원 리그</h4>
-                <p style="font-size:12px;color:var(--text-muted);line-height:2;">
-                    KBO · K리그1·2 · KBL · WKBL · V리그<br>
-                    NBA · EPL · NHL · MLB · NFL<br>
-                    La Liga · UCL · 분데스리가 · 세리에A
-                </p>
-            </div>
-            <div class="footer-section">
-                <h4>데이터 출처</h4>
-                <p style="font-size:12px;color:var(--text-muted);line-height:2;">
-                    국내: 네이버 스포츠<br>
-                    해외: ESPN
-                </p>
-            </div>
-        </div>
-        <div class="footer-invite">
-            <span><i class="fas fa-heart" style="color:#ef476f;margin-right:6px;"></i>SPORTON이 마음에 드셨나요?</span>
-            <button class="footer-invite-btn" onclick="InviteSystem.openModal()">
-                <i class="fas fa-user-plus"></i> 친구에게 초대하기
-            </button>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 SPORTON — 실시간 스포츠 데이터 · <span id="oddsRefreshTs" style="font-size:11px;opacity:0.5;"></span></p>
-            <p style="margin-top:8px;font-size:12px;">
-                <a href="/privacy.html" style="color:#94A3B8;text-decoration:underline;margin-right:16px;">개인정보처리방침</a>
-                <span style="color:#64748B;">본 서비스는 네이버 스포츠·ESPN 경기 데이터와 The Odds API 배당 데이터를 활용합니다.</span>
-            </p>
-        </div>
-    </div>
-</footer>
+<footer class="footer score-footer"><div class="container"><span>© SPORTON</span><span>네이버 스포츠 · ESPN</span><a href="/privacy.html">개인정보처리방침</a><span id="oddsRefreshTs" hidden></span></div></footer>
 
 <nav class="mobile-nav">
     <button class="score-nav-item active" data-score-nav="today"><span aria-hidden="true">☀</span><span>오늘 경기</span></button>
     <button class="score-nav-item" data-score-nav="live"><span aria-hidden="true">●</span><span>진행 중</span></button>
     <button class="score-nav-item" data-score-nav="myteams"><span aria-hidden="true">♡</span><span>내 팀</span></button>
     <button class="score-nav-item" data-score-nav="date"><span aria-hidden="true">▦</span><span>날짜 선택</span></button>
+    <button class="score-nav-item" data-view="overunder"><span aria-hidden="true">±</span><span>계산기</span></button>
 </nav>
 
 <!-- 로그인 모달 제거됨 - 로그인 없이 바로 채팅 가능 -->
@@ -1093,7 +812,9 @@
 
 <script src="/sporton-config.js"></script>
 <script src="/sports-core.js"></script>
+<script src="/over-under.js"></script>
 <script src="/app.js"></script>
+<script src="/over-under-ui.js"></script>
 <script src="/score-center.js"></script>
 </body>
 </html>
