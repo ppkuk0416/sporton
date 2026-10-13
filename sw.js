@@ -1,6 +1,6 @@
 // Only the installed, versioned shell is available offline. Live data is never cached here.
-const CACHE_NAME = 'sporton-shell-v8';
-const ASSET_VERSION = '20261013-priorities8';
+const CACHE_NAME = 'sporton-shell-v9';
+const ASSET_VERSION = '20261013-priorities9';
 const SHELL = ['/index.html', ...['styles.css','sports-core.js','app.js','score-center.js','score-center.css','sporton-config.js','watchboard.js','watchboard.css','score-alerts.js','score-diagnostics.js'].map(p => '/' + p + '?v=' + ASSET_VERSION), '/manifest.json'];
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));

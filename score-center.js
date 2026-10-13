@@ -462,12 +462,27 @@
             if(data.recordState==='error')box.append(el('p','상세 기록 공급 연결이 지연되고 있습니다.','score-warning'));
         }
     };
+    async function restoreDetailRoute(){
+        const params=new URLSearchParams(location.search),league=params.get('matchLeague'),id=params.get('match');
+        const known=C.LEAGUES.find(l=>l.id===league);
+        if(!known||!id||!(known.region==='world'?/^\d{6,14}$/:/^[A-Za-z0-9_-]{8,48}$/).test(id)){app.switchView('home');return;}
+        const token=++Detail.sequence;document.getElementById('gameDetailBody').textContent='상세 기록을 확인하고 있습니다.';
+        try{const data=await json((config.domesticApiBase||'').replace(/\/$/,'')+'/api/detail?league='+encodeURIComponent(league)+'&id='+encodeURIComponent(id));
+            if(token!==Detail.sequence||app.currentView!=='gameDetail')return;
+            if(!data.match||data.leagueId!==league||data.matchId!==id)throw Error('Detail identity mismatch');
+            if(data.match.region==='world')data.match={...data.match,homeTeam:KoreanNames.translateTeam(data.match.homeTeam),awayTeam:KoreanNames.translateTeam(data.match.awayTeam)};
+            Detail.match=data.match;Detail.data=data;Detail.busy=false;Detail.lastRequestAt=Date.now();app._prevView='home';Detail.render();
+        }catch{if(token===Detail.sequence&&app.currentView==='gameDetail'){app.switchView('home');Animations.showToast('상세 기록을 확인하지 못해 경기 목록으로 돌아왔습니다.','info');}}
+    }
+    const previousSwitchView=app.switchView.bind(app);
+    app.switchView=function(view,...args){if(view!=='gameDetail'&&this.currentView==='gameDetail'){try{const url=new URL(location.href);url.searchParams.delete('matchLeague');url.searchParams.delete('match');history.replaceState(history.state,'',url);}catch{}}return previousSwitchView(view,...args);};
+    window.addEventListener('popstate',()=>{if(app.currentView==='gameDetail')restoreDetailRoute();});
     window.SportonDetail=Detail;
-    app.showGameDetail=function(match){this._prevView=this.currentView;this.switchView('gameDetail');Detail.sequence++;Detail.match=match;Detail.data=null;Detail.busy=false;Detail.lastRequestAt=0;Detail.render();Detail.load();GameDetailChat.destroy();GameDetailChat.init(match.id);};
+    app.showGameDetail=function(match){this._prevView=this.currentView;this.switchView('gameDetail');try{const url=new URL(location.href);url.searchParams.set('matchLeague',match.leagueId);url.searchParams.set('match',match.providerId||match.id);history.replaceState(history.state,'',url);}catch{}Detail.sequence++;Detail.match=match;Detail.data=null;Detail.busy=false;Detail.lastRequestAt=0;Detail.render();Detail.load();GameDetailChat.destroy();GameDetailChat.init(match.id);};
     setInterval(()=>{if(document.hidden||app.currentView!=='gameDetail'||!Detail.match)return;if(Detail.data&&Detail.renderedState!==C.feedState({...Detail.data,mode:'poll',matches:[Detail.data.match]}))Detail.render();if(Detail.busy)return;if(Date.now()-Detail.lastRequestAt>=(Detail.data?.match?.status==='live'||Detail.match.status==='live'?5000:10000))Detail.load();},1000);
     // Public Firebase config is initialized once, before legacy DOM ready handlers.
     if (config.firebase && typeof firebase !== 'undefined') {
         try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }
     }
-    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); if(app.currentView==='home')Center.load(); });
+    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); if(app.currentView==='home')Center.load();else if(app.currentView==='gameDetail')restoreDetailRoute(); });
 })();
