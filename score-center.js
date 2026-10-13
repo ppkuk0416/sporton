@@ -129,7 +129,7 @@
             try { this.favorites = new Set(JSON.parse(localStorage.getItem('sporton_match_favorites') || '[]')); } catch {}
             try { this.favoriteTeams = new Map(JSON.parse(localStorage.getItem('sporton_favorite_teams') || '[]').filter(x => Array.isArray(x) && typeof x[0] === 'string' && typeof x[1]?.name === 'string')); } catch {}
             const params = new URLSearchParams(location.search);
-            let prefs = {}; try { prefs = JSON.parse(localStorage.getItem('sporton_score_preferences') || '{}'); } catch {}
+            let prefs = {}; try { const saved=JSON.parse(localStorage.getItem('sporton_score_preferences') || '{}'); prefs=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}; } catch {}
             if (['kr','world','all'].includes(prefs.region)) this.region = prefs.region;
             const sport = params.get('sport') || prefs.sport;
             if (['all', ...C.LEAGUES.map(l => l.sport)].includes(sport)) app.currentSport = sport;
@@ -274,6 +274,7 @@
             if (refresh) { refresh.disabled = this.busy; refresh.classList.toggle('refreshing', this.busy); }
             const matches = feeds.flatMap(f => f.matches.map(m => ({ ...m, feedState: f.state, mode: f.mode, fetchedAt: f.fetchedAt })));
             const filtered = C.filterMatches(matches, { date: this.date, region: this.region, sport: app.currentSport, status: this.status, query: this.query, favorites: this.favorites, favoriteTeams:new Set(this.favoriteTeams.keys()),leagueId:this.leagueId,team:this.activeTeam });
+            this.freshnessKey = this.feeds.map(f=>C.feedState(f)).join(',');
             const live = matches.filter(m => m.status === 'live' && m.feedState === 'ok' && m.mode === 'poll').length;
             document.getElementById('scoreTotal').textContent = matches.length;
             document.getElementById('scoreLive').textContent = live;
@@ -362,6 +363,8 @@
             if (Date.now() - (Center.lastRequestAt || 0) >= (active ? 5000 : 10000)) Center.load();
         }, 1000);
     };
+    // Refresh age labels even while a request is pending or polling is paused.
+    setInterval(() => { if (!document.hidden && app.currentView === 'home' && Center.feeds.map(f=>C.feedState(f)).join(',') !== Center.freshnessKey) Center.render(); }, 1000);
     const oldFilter = app.filterSport.bind(app);
     app.filterSport = function (sport) { oldFilter(sport); if (Center.leagueId && !C.LEAGUES.some(l=>l.id===Center.leagueId&&(sport==='all'||l.sport===sport))) Center.leagueId=''; Center.saveLocation(); if (this.currentView === 'home') Center.load(); };
 
@@ -398,7 +401,7 @@
             const actions=el('div',null,'score-detail-actions');const refresh=el('button',this.busy?'조회 중':'기록 새로고침','score-follow');refresh.disabled=this.busy;refresh.onclick=()=>this.load();actions.append(refresh);
             if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
-            const state=C.feedState({...data,mode:'poll',matches:[m]});
+            const state=C.feedState({...data,mode:'poll',matches:[m]});this.renderedState=state;
             box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(m.status==='live'?'5초':'10초')+'마다 확인'));
             if(state!=='ok'&&this.data)box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
             if(!this.data)box.append(el('p','상세 기록을 불러오고 있습니다.'));
@@ -419,7 +422,7 @@
     };
     window.SportonDetail=Detail;
     app.showGameDetail=function(match){this._prevView=this.currentView;this.switchView('gameDetail');Detail.sequence++;Detail.match=match;Detail.data=null;Detail.busy=false;Detail.lastRequestAt=0;Detail.render();Detail.load();GameDetailChat.destroy();GameDetailChat.init(match.id);};
-    setInterval(()=>{if(document.hidden||app.currentView!=='gameDetail'||Detail.busy||!Detail.match)return;if(Date.now()-Detail.lastRequestAt>=(Detail.data?.match?.status==='live'||Detail.match.status==='live'?5000:10000))Detail.load();},1000);
+    setInterval(()=>{if(document.hidden||app.currentView!=='gameDetail'||!Detail.match)return;if(Detail.data&&Detail.renderedState!==C.feedState({...Detail.data,mode:'poll',matches:[Detail.data.match]}))Detail.render();if(Detail.busy)return;if(Date.now()-Detail.lastRequestAt>=(Detail.data?.match?.status==='live'||Detail.match.status==='live'?5000:10000))Detail.load();},1000);
     // Public Firebase config is initialized once, before legacy DOM ready handlers.
     if (config.firebase && typeof firebase !== 'undefined') {
         try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }

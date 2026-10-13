@@ -4245,6 +4245,10 @@ const HomeDashboard = {
 const _origSwitchView = app.switchView.bind(app);
 app.switchView = function(view, _pushHistory) {
     const requestedView=view;
+    const legacyFilters={live:'live',upcoming:'upcoming',myteam:'myteams'};
+    if (legacyFilters[view] && window.SportonCenter) { window.SportonCenter.status=legacyFilters[view]; view='home'; }
+    if (view==='community' && !window.SPORTON_CONFIG?.firebase) view='home';
+    if (!['home','gameDetail','community'].includes(view)) view='home';
     if (view === 'nbacalc' || view === 'overunder') view = 'home';
     if (view === 'leaderboard' || view === 'calendar') view = 'home';
     if(view!==requestedView){try{history.replaceState({view},'','#'+view);}catch{}}

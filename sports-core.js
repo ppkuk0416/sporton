@@ -98,7 +98,8 @@
     }
     function teamKey(match, side) { return match.leagueId + ':' + (match[side + 'TeamId'] || match[side + 'Team']); }
     function feedState(feed, now = Date.now()) {
-        if (feed.state === 'error' || !Number.isFinite(Date.parse(feed.fetchedAt))) return 'error';
+        const timestamp=Date.parse(feed.fetchedAt);
+        if (feed.state === 'error' || !Number.isFinite(timestamp) || timestamp > now + 5000) return 'error';
         const maxAge = feed.mode === 'snapshot' ? 600000 : feed.matches?.some(m => m.status === 'live') ? 20000 : 120000;
         return feed.state === 'stale' || now - Date.parse(feed.fetchedAt) > maxAge ? 'stale' : 'ok';
     }

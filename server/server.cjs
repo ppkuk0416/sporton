@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const core = require('../sports-core.js');
 const { getScores } = require('./domestic.cjs');
-const { collectLeague } = require('./overseas.cjs');
+const { collectLeague, collectLeagues } = require('./overseas.cjs');
 const { getDetail, validRequest } = require('./details.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
@@ -21,7 +21,7 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(origin && allowedOrigins.has(origin) ? 204 : 403, { 'Access-Control-Allow-Methods': 'GET', 'Access-Control-Allow-Headers': 'Accept' }); res.end(); return;
     }
     if (!['GET', 'HEAD'].includes(req.method)) { json(res, 405, { error: 'Method not allowed' }); return; }
-    const url = new URL(req.url, 'http://localhost');
+    let url;try{url = new URL(req.url, 'http://localhost');}catch{json(res,400,{error:'Invalid URL'});return;}
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/health') {
         const key = req.socket.remoteAddress, now = Date.now(), item = rate.get(key);
         const count = item && now - item.at < 60000 ? item.count + 1 : 1;
@@ -29,7 +29,8 @@ const server = http.createServer(async (req, res) => {
         if (rate.size > 1000) for (const [ip,v] of rate) if (now-v.at>60000) rate.delete(ip);
         if (count>120) { json(res,429,{error:'Too many requests'});return; }
     }
-    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
+    if (rate.size > 4000) rate.delete(rate.keys().next().value);
+    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', release: '20261013-audit6', mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
     if (url.pathname === '/api/detail') {
         if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
         const league=url.searchParams.get('league'),id=url.searchParams.get('id');
@@ -52,7 +53,7 @@ const server = http.createServer(async (req, res) => {
         if(!leagueId&&core.validDate(date)){
             const sport=url.searchParams.get('sport')||'all',leagues=core.LEAGUES.filter(l=>l.region==='world'&&(sport==='all'||l.sport===sport));
             if(!leagues.length){json(res,400,{error:'Invalid sport'});return;}
-            const feeds=[];for(let i=0;i<leagues.length;i+=2)feeds.push(...await Promise.all(leagues.slice(i,i+2).map(l=>collectLeague(l.id,date))));
+            const feeds=await collectLeagues(leagues.map(l=>l.id),date);
             json(res,feeds.every(f=>f.state==='error')?502:200,{version:1,source:'ESPN',from:date,to:date,generatedAt:new Date().toISOString(),feeds});return;
         }
         if (!core.validDate(date) || !core.LEAGUES.some(l => l.id === leagueId && l.region === 'world')) { json(res, 400, { error: 'Invalid league or date' }); return; }
