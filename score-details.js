@@ -30,16 +30,40 @@
                 const inning=Number(String(game.currentInning||game.statusInfo).match(/\d+/)?.[0]);
                 if(inning>0) { lines.home=lines.home.map((n,i)=>i>=inning||i===inning-1&&/초/.test(game.statusInfo)?null:n);lines.away=lines.away.map((n,i)=>i>=inning?null:n); }
             }
-        } else if(match.sport==='basketball'&&r) {
-            const home=[1,2,3,4].map(n=>r['homeQ'+n+'Score']),away=[1,2,3,4].map(n=>r['awayQ'+n+'Score']);
-            if(Number(r.homeXScore)>0||Number(r.awayXScore)>0||/X|OT|연장/i.test(String(r.currentHalf))) {home.push(r.homeXScore);away.push(r.awayXScore);}
-            lines=periods(match,home,away,r.homeScore,r.awayScore);
-            if(lines&&match.status==='live'&&/^Q[1-4]$/.test(r.currentHalf)) {
-                const current=Number(r.currentHalf.slice(1));lines.home=lines.home.map((n,i)=>i>=current?null:n);lines.away=lines.away.map((n,i)=>i>=current?null:n);
+        } else if(match.sport==='basketball') {
+            const home=r?[1,2,3,4].map(n=>r['homeQ'+n+'Score']):game.homeTeamScoreByQuarter;
+            const away=r?[1,2,3,4].map(n=>r['awayQ'+n+'Score']):game.awayTeamScoreByQuarter;
+            if(r&&(Number(r.homeXScore)>0||Number(r.awayXScore)>0||/X|OT|연장/i.test(String(r.currentHalf)))) {home.push(r.homeXScore);away.push(r.awayXScore);}
+            lines=periods(match,home,away,r?.homeScore??match.homeScore,r?.awayScore??match.awayScore);
+            const current=Number(String(r?.currentHalf||game.currentQuarter||'').match(/(?:Q)?([1-4])/)?.[1]);
+            if(lines&&match.status==='live'&&current>0&&!/X|OT|연장/i.test(String(r?.currentHalf||game.currentQuarter))) {
+                lines.home=lines.home.map((n,i)=>i>=current?null:n);lines.away=lines.away.map((n,i)=>i>=current?null:n);
+            }
+        } else if(match.sport==='volleyball'&&Array.isArray(game.currentScoreBySet)) {
+            const current=Number(game.currentSet);
+            const sets=game.currentScoreBySet.filter(s=>Number.isInteger(Number(s.set))&&Number(s.set)>0&&Number(s.set)<=5).sort((a,b)=>Number(a.set)-Number(b.set));
+            const count=Math.max(...sets.map(s=>Number(s.set)),0);
+            const home=Array.from({length:count},(_,i)=>sets.find(s=>Number(s.set)===i+1)?.homeScore);
+            const away=Array.from({length:count},(_,i)=>sets.find(s=>Number(s.set)===i+1)?.awayScore);
+            lines=periods(match,home,away,match.homeScore,match.awayScore);
+            if(lines&&current>0) {
+                // Naver pads unplayed sets with 0; only sets at/before currentSet have been played.
+                lines.home=lines.home.map((n,i)=>i>=current?null:n);lines.away=lines.away.map((n,i)=>i>=current?null:n);
+            } else if(lines) {
+                // Without a current set, padded zeros cannot establish whether a set was played.
+                lines.home=lines.home.map((n,i)=>n===0&&lines.away[i]===0?null:n);
+                lines.away=lines.away.map((n,i)=>n===0&&number(home[i])===0?null:n);
             }
         }
         const events=Array.isArray(r?.timeline)?r.timeline.map(e=>({type:eventType(e.eventType),clock:String(e.time||''),side:['home','away'].includes(e.side)?e.side:'',text:String(e.text||'')})).filter(e=>e.type):[];
-        const stats=match.sport==='soccer'&&r?['shooting','shotsOnGoal','ballPossession','yellow','dismissal'].map((key,i)=>({label:['슈팅','유효 슈팅','점유율 (%)','경고','퇴장'][i],home:number(r.home?.[key]),away:number(r.away?.[key])})).filter(s=>s.home!==null||s.away!==null):[];
+        const statFields={
+            baseball:[['h','안타'],['e','실책'],['b','볼넷']],
+            basketball:[['rebound','리바운드'],['aS','어시스트'],['sT','스틸'],['bS','블록'],['to','턴오버']],
+            soccer:[['shooting','슈팅'],['shotsOnGoal','유효 슈팅'],['ballPossession','점유율 (%)'],['cornerKick','코너킥'],['foul','파울'],['offside','오프사이드'],['yellow','경고'],['dismissal','퇴장']],
+            volleyball:[['attackSuccessCount','공격 득점'],['blockSuccessCount','블로킹 득점'],['serveSuccessCount','서브 득점'],['totalErrorCount','범실']]
+        };
+        const teamStats=match.sport==='baseball'?r?.scoreBoard?.rheb:match.sport==='volleyball'?r?.gameRecord:r;
+        const stats=match.status!=='upcoming'?(statFields[match.sport]||[]).map(([key,label])=>({label,home:number(teamStats?.home?.[key]),away:number(teamStats?.away?.[key])})).filter(s=>s.home!==null||s.away!==null):[];
         return {match,periods:lines,events,stats,recordAvailable:!!r};
     }
     function espn(data,league,id) {

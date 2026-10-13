@@ -1,0 +1,104 @@
+{
+  "league": "kbo",
+  "game": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "game": {
+        "gameId": "20261010LGLT02026",
+        "categoryId": "kbo",
+        "gameDate": "2026-10-10",
+        "gameDateTime": "2026-10-10T14:00:00",
+        "statusCode": "RESULT",
+        "statusInfo": "10회말",
+        "homeTeamName": "롯데",
+        "awayTeamName": "LG",
+        "homeTeamCode": "LT",
+        "awayTeamCode": "LG",
+        "homeTeamScore": 3,
+        "awayTeamScore": 4,
+        "currentInning": "10회말",
+        "homeTeamScoreByInning": [
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "2",
+          "0"
+        ],
+        "awayTeamScoreByInning": [
+          "0",
+          "1",
+          "1",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1"
+        ]
+      }
+    }
+  },
+  "record": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "recordData": {
+        "scoreBoard": {
+          "rheb": {
+            "away": {
+              "r": 4,
+              "b": 2,
+              "e": 1,
+              "h": 12
+            },
+            "home": {
+              "r": 3,
+              "b": 5,
+              "e": 0,
+              "h": 10
+            }
+          },
+          "inn": {
+            "away": [
+              0,
+              1,
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "home": [
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "source": {
+    "game": "https://api-gw.sports.naver.com/schedule/games/20261010LGLT02026",
+    "record": "https://api-gw.sports.naver.com/schedule/games/20261010LGLT02026/record",
+    "checkedDate": "2026-10-13",
+    "note": "Selected actual response fields; unrelated player/broadcast data omitted."
+  }
+}

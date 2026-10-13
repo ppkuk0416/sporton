@@ -29,7 +29,8 @@ async function collectLeague(leagueId, date, fetcher = fetch) {
     const good = results.filter(r => r.status === 'fulfilled');
     if (!good.length) {
         if (old) return { ...old, state: 'stale' };
-        return { leagueId, name: league.name, state: 'error', matches: [], fetchedAt: new Date().toISOString() };
+        const errorCodes=results.map(r=>{const e=r.reason,m=String(e?.message||'');const http=m.match(/ESPN HTTP (\d{3})/);return http?'upstream-'+http[1]:e?.name==='TimeoutError'||e?.name==='AbortError'?'timeout':/Invalid ESPN|JSON/.test(m)?'invalid-payload':e?.name==='TypeError'?'runtime-or-network':'source-error';});
+        return { leagueId, name: league.name, state: 'error', matches: [], fetchedAt: new Date().toISOString(), errorCodes };
     }
     const events = new Map();
     good.forEach(r => r.value.data.events.forEach(ev => events.set(ev.id, ev)));
@@ -58,7 +59,14 @@ async function collectLeagues(leagueIds, date, options = {}) {
             if (budget.aborted) { results[i] = unavailable(id); continue; }
             let onAbort;
             const expired = new Promise(resolve => { onAbort = () => resolve(unavailable(id)); budget.addEventListener('abort',onAbort,{once:true}); });
-            const boundedFetch = (url, init = {}) => fetcher(url,{...init,signal:AbortSignal.any([budget,init.signal].filter(Boolean))});
+            const boundedFetch = async (url, init = {}) => {
+                const controller=new AbortController(),signals=[budget,init.signal].filter(Boolean);
+                const stop=event=>controller.abort(event.target.reason);
+                const cleanup=()=>signals.forEach(signal=>signal.removeEventListener('abort',stop));
+                for(const signal of signals){if(signal.aborted)controller.abort(signal.reason);else signal.addEventListener('abort',stop,{once:true});}
+                try{const res=await fetcher(url,{...init,signal:controller.signal});return {ok:res.ok,status:res.status,json:async()=>{try{return await res.json();}finally{cleanup();}}};}
+                catch(error){cleanup();throw error;}
+            };
             try { results[i] = await Promise.race([collectLeague(id,date,boundedFetch),expired]); }
             catch { results[i] = unavailable(id); }
             finally { budget.removeEventListener('abort',onAbort); }

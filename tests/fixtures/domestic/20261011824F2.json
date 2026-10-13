@@ -1,0 +1,119 @@
+{
+  "league": "wkovo",
+  "game": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "game": {
+        "gameId": "20261011824F2",
+        "categoryId": "wkovo",
+        "gameDate": "2026-10-11",
+        "gameDateTime": "2026-10-11T16:30:00",
+        "statusCode": "RESULT",
+        "statusInfo": "종료",
+        "homeTeamName": "정관장",
+        "awayTeamName": "흥국생명",
+        "homeTeamCode": "2003",
+        "awayTeamCode": "2004",
+        "homeTeamScore": 1,
+        "awayTeamScore": 3,
+        "currentSet": "4",
+        "currentScoreBySet": [
+          {
+            "set": 1,
+            "homeScore": 25,
+            "awayScore": 18
+          },
+          {
+            "set": 2,
+            "homeScore": 23,
+            "awayScore": 25
+          },
+          {
+            "set": 3,
+            "homeScore": 16,
+            "awayScore": 25
+          },
+          {
+            "set": 4,
+            "homeScore": 25,
+            "awayScore": 27
+          },
+          {
+            "set": 5,
+            "homeScore": 0,
+            "awayScore": 0
+          }
+        ]
+      }
+    }
+  },
+  "record": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "recordData": {
+        "gameRecord": {
+          "away": {
+            "leagueCode": null,
+            "leagueType": null,
+            "teamCode": "2004",
+            "gameCount": 0,
+            "attackCount": 157,
+            "attackSuccessCount": 63,
+            "attackSuccessRate": 40.1,
+            "blockCount": 74,
+            "blockSuccessCount": 6,
+            "serveCount": 94,
+            "serveSuccessCount": 6,
+            "receiveCount": 77,
+            "exactReceiveCount": 25,
+            "failReceiveCount": 0,
+            "errorReceiveCount": 0,
+            "receiveSuccessRate": 32.5,
+            "digCount": 110,
+            "digSuccessCount": 95,
+            "tossCount": 156,
+            "tossSuccessCount": 0,
+            "exactTossCount": 56,
+            "totalErrorCount": 21,
+            "opponentErrorCount": 20,
+            "totalPoint": 95
+          },
+          "home": {
+            "leagueCode": null,
+            "leagueType": null,
+            "teamCode": "2003",
+            "gameCount": 0,
+            "attackCount": 152,
+            "attackSuccessCount": 50,
+            "attackSuccessRate": 32.9,
+            "blockCount": 68,
+            "blockSuccessCount": 11,
+            "serveCount": 90,
+            "serveSuccessCount": 7,
+            "receiveCount": 84,
+            "exactReceiveCount": 25,
+            "failReceiveCount": 0,
+            "errorReceiveCount": 0,
+            "receiveSuccessRate": 29.8,
+            "digCount": 109,
+            "digSuccessCount": 92,
+            "tossCount": 164,
+            "tossSuccessCount": 0,
+            "exactTossCount": 49,
+            "totalErrorCount": 20,
+            "opponentErrorCount": 21,
+            "totalPoint": 89
+          }
+        }
+      }
+    }
+  },
+  "source": {
+    "game": "https://api-gw.sports.naver.com/schedule/games/20261011824F2",
+    "record": "https://api-gw.sports.naver.com/schedule/games/20261011824F2/record",
+    "checkedDate": "2026-10-13",
+    "note": "Selected actual response fields; unrelated player/broadcast data omitted."
+  }
+}

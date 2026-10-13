@@ -1,0 +1,125 @@
+{
+  "league": "kbl",
+  "game": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "game": {
+        "gameId": "202610106016490113",
+        "categoryId": "kbl",
+        "gameDate": "2026-10-10",
+        "gameDateTime": "2026-10-10T14:00:00",
+        "statusCode": "RESULT",
+        "statusInfo": "4쿼터",
+        "homeTeamName": "부산 KCC",
+        "awayTeamName": "원주 DB",
+        "homeTeamCode": "60",
+        "awayTeamCode": "16",
+        "homeTeamScore": 79,
+        "awayTeamScore": 85,
+        "currentQuarter": "4쿼터",
+        "homeTeamScoreByQuarter": [
+          "15",
+          "21",
+          "26",
+          "17",
+          "-"
+        ],
+        "awayTeamScoreByQuarter": [
+          "18",
+          "28",
+          "24",
+          "15",
+          "-"
+        ]
+      }
+    }
+  },
+  "record": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "recordData": {
+        "home": {
+          "fg": 22,
+          "sT": 2,
+          "ftP": 80,
+          "normalFg": 31,
+          "oR": 10,
+          "dk": 0,
+          "ft": 8,
+          "normalFgP": 43,
+          "foulTot": 21,
+          "score": 79,
+          "rebound": 43,
+          "aS": 18,
+          "dkA": 0,
+          "threepScore": 27,
+          "pScore": 40,
+          "tR": 3,
+          "normalFgA": 71,
+          "pdScore": 0,
+          "fgA": 46,
+          "dkP": 0,
+          "fgP": 47,
+          "dR": 33,
+          "threepA": 25,
+          "bS": 3,
+          "ftA": 10,
+          "threep": 9,
+          "to": 12,
+          "threepP": 36
+        },
+        "away": {
+          "fg": 23,
+          "sT": 6,
+          "ftP": 75,
+          "normalFg": 32,
+          "oR": 15,
+          "dk": 1,
+          "ft": 12,
+          "normalFgP": 39,
+          "foulTot": 17,
+          "score": 85,
+          "rebound": 42,
+          "aS": 16,
+          "dkA": 1,
+          "threepScore": 27,
+          "pScore": 40,
+          "tR": 4,
+          "normalFgA": 82,
+          "pdScore": 0,
+          "fgA": 45,
+          "dkP": 100,
+          "fgP": 51,
+          "dR": 27,
+          "threepA": 37,
+          "bS": 1,
+          "ftA": 16,
+          "threep": 9,
+          "to": 4,
+          "threepP": 24
+        },
+        "currentHalf": "Q4",
+        "homeScore": 79,
+        "awayScore": 85,
+        "homeXScore": 0,
+        "awayXScore": 0,
+        "homeQ1Score": 15,
+        "homeQ2Score": 21,
+        "homeQ3Score": 26,
+        "homeQ4Score": 17,
+        "awayQ1Score": 18,
+        "awayQ2Score": 28,
+        "awayQ3Score": 24,
+        "awayQ4Score": 15
+      }
+    }
+  },
+  "source": {
+    "game": "https://api-gw.sports.naver.com/schedule/games/202610106016490113",
+    "record": "https://api-gw.sports.naver.com/schedule/games/202610106016490113/record",
+    "checkedDate": "2026-10-13",
+    "note": "Selected actual response fields; unrelated player/broadcast data omitted."
+  }
+}

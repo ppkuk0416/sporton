@@ -8,9 +8,9 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
     const clock = date => new Date(date).toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hourCycle: 'h23', hour: '2-digit', minute: '2-digit', second: '2-digit' });
     async function json(url) {
-        const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
+        const started=performance.now();let res;
+        try{res=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();window.SportonDiagnostics?.record(url,performance.now()-started,true,data,res.status);return data;}
+        catch(error){window.SportonDiagnostics?.record(url,performance.now()-started,false,null,res?.status);throw error;}
     }
     async function domestic(date) {
         const key = 'kr:' + date;
@@ -280,7 +280,9 @@
             const date = this.date, region = this.region, sport = app.currentSport;
             const preserve=items=>items.map(f=>{const previous=this.lastDate===date?this.feeds.find(p=>p.id===f.id&&p.state!=='error'):null;return f.state==='error'&&previous?{...previous,state:'stale'}:f;});
             if(document.getElementById('scoreDate')&&(this.lastDate!==date||!this.feeds.length))this.preview(date,region,sport,token);
-            const feeds = await Scores.load(date, region, sport, partial => {
+            const pinLeagues=(window.SportonWatchboard?.getPins?.()||[]).filter(p=>p.rawDate===date).map(p=>C.LEAGUES.find(l=>l.id===p.leagueId)).filter(Boolean);
+            const includePins=pinLeagues.some(l=>(region!=='all'&&l.region!==region)||(sport!=='all'&&l.sport!==sport));
+            const feeds = await Scores.load(date, includePins?'all':region, includePins?'all':sport, partial => {
                 if (token !== this.sequence) return;
                 const ids=new Set(partial.map(f=>f.id));
                 this.feeds=[...(this.lastDate===date?this.feeds.filter(f=>!ids.has(f.id)):[]),...preserve(partial)];
@@ -446,9 +448,9 @@
             if(state!=='ok'&&this.data)box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
             if(!this.data)box.append(el('p','상세 기록을 불러오고 있습니다.'));
             if(data.periods){
-                box.append(el('h3',m.sport==='baseball'?'이닝별 점수':'구간별 점수'));
+                box.append(el('h3',m.sport==='baseball'?'이닝별 점수':m.sport==='volleyball'?'세트별 점수':'구간별 점수'));
                 const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');
-                for(const label of ['팀',...data.periods.labels,'합계'])head.append(el('th',label));table.append(head);
+                for(const label of ['팀',...data.periods.labels,m.sport==='volleyball'?'획득 세트':'합계'])head.append(el('th',label));table.append(head);
                 for(const side of ['away','home']){const tr=el('tr');tr.append(el('th',m[side+'Team']));for(const value of [...data.periods[side],data.periods[side+'Total']])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);box.append(wrap);
             }else if(m.sport==='baseball'||m.sport==='basketball'||m.sport==='hockey')box.append(el('p',m.status==='upcoming'?'경기가 시작되면 제공된 구간별 기록을 표시합니다.':'제공처에서 구간별 기록을 받지 못했습니다.'));
             if(m.sport==='soccer'){

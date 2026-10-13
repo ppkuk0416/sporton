@@ -1,0 +1,285 @@
+{
+  "league": "kleague",
+  "game": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "game": {
+        "gameId": "202610100904184",
+        "categoryId": "kleague",
+        "gameDate": "2026-10-10",
+        "gameDateTime": "2026-10-10T14:00:00",
+        "statusCode": "RESULT",
+        "statusInfo": "경기종료",
+        "homeTeamName": "서울",
+        "awayTeamName": "제주",
+        "homeTeamCode": "09",
+        "awayTeamCode": "04",
+        "homeTeamScore": 2,
+        "awayTeamScore": 1
+      }
+    }
+  },
+  "record": {
+    "code": 200,
+    "success": true,
+    "result": {
+      "recordData": {
+        "home": {
+          "ballPossession": 52,
+          "cornerKick": 1,
+          "dismissal": 0,
+          "foul": 11,
+          "goalKick": 0,
+          "offside": 3,
+          "shooting": 11,
+          "shotsOnGoal": 5,
+          "substitution": 3,
+          "yellow": 3
+        },
+        "away": {
+          "ballPossession": 48,
+          "cornerKick": 4,
+          "dismissal": 0,
+          "foul": 8,
+          "goalKick": 0,
+          "offside": 3,
+          "shooting": 6,
+          "shotsOnGoal": 2,
+          "substitution": 5,
+          "yellow": 1
+        },
+        "timeline": [
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "5'",
+            "text": "김륜성 코너킥"
+          },
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "7'",
+            "text": "김륜성 코너킥"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "10'",
+            "text": "정승원 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "yellow",
+            "time": "12'",
+            "text": "김진수 경고"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "15'",
+            "text": "클리말라 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "15'",
+            "text": "클리말라 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "cornerKick",
+            "time": "16'",
+            "text": "정승원 코너킥"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "16'",
+            "text": "이승모 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "17'",
+            "text": "유인수 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "20'",
+            "text": "클리말라 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "28'",
+            "text": "김신진 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "29'",
+            "text": "박수빈 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "substitute",
+            "time": "38'",
+            "text": "null IN / 이승모 OUT"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "43'",
+            "text": "안데르손 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "substitute",
+            "time": "45'",
+            "text": "null IN / 김신진 OUT"
+          },
+          {
+            "side": "away",
+            "eventType": "substitute",
+            "time": "45'",
+            "text": "null IN / 이탈로 OUT"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "45'",
+            "text": "문선민 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "goal",
+            "time": "45'",
+            "text": "문선민 골"
+          },
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "52'",
+            "text": "김륜성 코너킥"
+          },
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "52'",
+            "text": "김륜성 코너킥"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "55'",
+            "text": "바베츠 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "substitute",
+            "time": "60'",
+            "text": "null IN / 정운 OUT"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "71'",
+            "text": "이건희 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "goal",
+            "time": "71'",
+            "text": "이건희 골"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "77'",
+            "text": "이건희 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "77'",
+            "text": "클리말라 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "goal",
+            "time": "77'",
+            "text": "클리말라 골"
+          },
+          {
+            "side": "home",
+            "eventType": "substitute",
+            "time": "79'",
+            "text": "null IN / 안데르손 OUT"
+          },
+          {
+            "side": "home",
+            "eventType": "yellow",
+            "time": "81'",
+            "text": "손정범 경고"
+          },
+          {
+            "side": "away",
+            "eventType": "substitute",
+            "time": "81'",
+            "text": "null IN / 장민규 OUT"
+          },
+          {
+            "side": "away",
+            "eventType": "yellow",
+            "time": "81'",
+            "text": "토비아스 경고"
+          },
+          {
+            "side": "home",
+            "eventType": "substitute",
+            "time": "83'",
+            "text": "null IN / 문선민 OUT"
+          },
+          {
+            "side": "away",
+            "eventType": "substitute",
+            "time": "84'",
+            "text": "null IN / 세레스틴 OUT"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "87'",
+            "text": "클리말라 슈팅"
+          },
+          {
+            "side": "away",
+            "eventType": "shooting",
+            "time": "89'",
+            "text": "박수빈 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "+4",
+            "text": "정승원 슈팅"
+          },
+          {
+            "side": "home",
+            "eventType": "yellow",
+            "time": "+8",
+            "text": "로스 경고"
+          }
+        ]
+      }
+    }
+  },
+  "source": {
+    "game": "https://api-gw.sports.naver.com/schedule/games/202610100904184",
+    "record": "https://api-gw.sports.naver.com/schedule/games/202610100904184/record",
+    "checkedDate": "2026-10-13",
+    "note": "Selected actual response fields; unrelated player/broadcast data omitted."
+  }
+}
