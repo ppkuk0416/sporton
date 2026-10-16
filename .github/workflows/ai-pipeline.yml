@@ -1,0 +1,43 @@
+name: SPORTON AI pipeline
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sporton-ai-pipeline
+  cancel-in-progress: false
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AI_DB_PATH: .sporton/ai.sqlite
+      ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the latest development database
+        uses: actions/cache/restore@v4
+        with:
+          path: .sporton
+          key: sporton-ai-db-${{ github.run_id }}
+          restore-keys: sporton-ai-db-
+      - run: npm run check
+      - name: Collect, score, evaluate retraining, and predict
+        run: npm run ai:daily
+      - name: Save the new immutable database snapshot
+        uses: actions/cache/save@v4
+        with:
+          path: .sporton
+          key: sporton-ai-db-${{ github.run_id }}
+      - name: Retain an auditable snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: sporton-ai-${{ github.run_id }}
+          path: .sporton/ai.sqlite
+          retention-days: 30
+          if-no-files-found: error

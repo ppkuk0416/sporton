@@ -7,6 +7,8 @@ test('HTTP routes reject bad ranges, private paths, unsupported methods and unkn
     t.after(() => new Promise(resolve => server.close(resolve)));
     const base = 'http://127.0.0.1:' + server.address().port;
     assert.equal((await fetch(base + '/api/health')).status, 200);
+    assert.equal((await fetch(base + '/api/ai/status')).status, 200);
+    assert.equal((await fetch(base + '/ai.html')).status, 200);
     const raw=await new Promise((resolve,reject)=>{const socket=require('node:net').connect(server.address().port,'127.0.0.1',()=>socket.write('GET http://[ HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n'));let data='';socket.on('data',chunk=>data+=chunk);socket.on('end',()=>resolve(data));socket.on('error',reject);});
     assert.match(raw,/^HTTP\/1.1 400/);
     assert.equal((await fetch(base + '/api/health')).status,200,'malformed URLs cannot stop the local Node server');
