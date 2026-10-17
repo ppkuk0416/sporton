@@ -11,6 +11,20 @@ node --test tests/*.test.cjs
 npm run check
 ```
 
+## AI 분석 엔진
+
+KBL/NBA 경기 결과를 리그별로 분리해 저장하고, 시간순 walk-forward 검증을 거친 baseline 모델로 경기 전 확률·공정 핸디·예상 총점을 생성하는 독립 모듈이 추가되었습니다. 실제 배당·부상 데이터가 없으면 추천은 `PASS`이며 임의 수치로 대체하지 않습니다.
+
+- 구조·운영 방법: [`docs/AI_SYSTEM.md`](docs/AI_SYSTEM.md)
+- 공급원·이용 제한: [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md)
+- 환경변수 예시: [`.env.example`](.env.example)
+
+```sh
+npm run ai:migrate
+npm run ai:collect -- --from 2026-10-16 --to 2026-10-17
+npm run ai:daily
+```
+
 ## 현재 운영 서버
 
 `sporton.live`는 `https://sporton-live-api.parkbeomkuk.chatgpt.site`를 통해 국내·해외 데이터를 10초마다 조회합니다. API 서버는 Sites에서 실행되므로 개인 PC나 상시 실행 터미널이 필요하지 않습니다. 서버 캐시는 8초이고 동시 요청을 통합합니다. 해외 리그는 한 요청으로 묶고 원본 요청 동시성을 제한합니다. 원본 공급자 지연과 네트워크 시간을 포함한 10초 이내 반영을 보장하는 SLA는 아닙니다.
