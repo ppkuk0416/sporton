@@ -1,0 +1,62 @@
+[
+  {
+    "code": "naver_sports",
+    "name": "네이버 스포츠 경기 일정",
+    "baseUrl": "https://api-gw.sports.naver.com/schedule/games",
+    "sourceClass": "public_web",
+    "usageStatus": "enabled",
+    "termsUrl": "https://policy.naver.com/policy/service.html",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "KBL 일정·상태·스코어 보조 공급원. 공식 계약/SLA 없음; 고급 통계 공급원으로 간주하지 않음."
+  },
+  {
+    "code": "espn_scoreboard",
+    "name": "ESPN Scoreboard",
+    "baseUrl": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+    "sourceClass": "public_web",
+    "usageStatus": "enabled",
+    "termsUrl": "https://disneytermsofuse.com/",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "NBA 일정·상태·스코어 보조 공급원. 공개 응답 형식과 접근 지속성은 보장되지 않음."
+  },
+  {
+    "code": "kbl_official_rules",
+    "name": "KBL 선수선발 및 출전규정",
+    "baseUrl": "https://www.kbl.or.kr/rule/player",
+    "sourceClass": "official",
+    "usageStatus": "enabled",
+    "termsUrl": "https://www.kbl.or.kr/",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "2026-27 외국선수 출전 규정 검증에만 사용."
+  },
+  {
+    "code": "nba_official_stats",
+    "name": "NBA.com Stats",
+    "baseUrl": "https://www.nba.com/stats",
+    "sourceClass": "official",
+    "usageStatus": "approval_required",
+    "termsUrl": "https://www.nba.com/termsofuse",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "약관상 도박 연계 및 종합 통계 DB 이용 제한이 있으므로 명시적 권리 확인 전 자동 수집 금지."
+  },
+  {
+    "code": "nba_injury_report",
+    "name": "NBA Official Injury Report",
+    "baseUrl": "https://official.nba.com/nba-injury-report-2026-27-season/",
+    "sourceClass": "official",
+    "usageStatus": "approval_required",
+    "termsUrl": "https://www.nba.com/termsofuse",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "공식 PDF 존재 여부 및 이용 권리 확인 후 활성화. 미활성 시 부상 정보는 DATA_UNAVAILABLE."
+  },
+  {
+    "code": "the_odds_api",
+    "name": "The Odds API v4",
+    "baseUrl": "https://api.the-odds-api.com/v4",
+    "sourceClass": "licensed",
+    "usageStatus": "credentials_required",
+    "termsUrl": "https://the-odds-api.com/terms-of-service.html",
+    "lastCheckedAt": "2026-10-17T00:00:00Z",
+    "notes": "ODDS_API_KEY가 있을 때 NBA 프리게임 moneyline/spread/total만 서버에서 수집. KBL은 지원 확인 전 비활성."
+  }
+]

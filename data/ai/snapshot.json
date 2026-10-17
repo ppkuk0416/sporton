@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-17T11:53:40.546Z",
+  "date": "2026-10-17",
+  "status": {
+    "state": "ok",
+    "generatedAt": "2026-10-17T11:53:40.546Z",
+    "leagues": [
+      {
+        "code": "kbl",
+        "name": "KBL",
+        "game_count": 7,
+        "completed_games": 1,
+        "active_model": null,
+        "trained_through": null
+      },
+      {
+        "code": "nba",
+        "name": "NBA",
+        "game_count": 14,
+        "completed_games": 2,
+        "active_model": null,
+        "trained_through": null
+      }
+    ],
+    "sources": [
+      {
+        "code": "espn_scoreboard",
+        "name": "ESPN Scoreboard",
+        "source_class": "public_web",
+        "usage_status": "enabled",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      },
+      {
+        "code": "kbl_official_rules",
+        "name": "KBL 선수선발 및 출전규정",
+        "source_class": "official",
+        "usage_status": "enabled",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      },
+      {
+        "code": "naver_sports",
+        "name": "네이버 스포츠 경기 일정",
+        "source_class": "public_web",
+        "usage_status": "enabled",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      },
+      {
+        "code": "nba_injury_report",
+        "name": "NBA Official Injury Report",
+        "source_class": "official",
+        "usage_status": "approval_required",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      },
+      {
+        "code": "nba_official_stats",
+        "name": "NBA.com Stats",
+        "source_class": "official",
+        "usage_status": "approval_required",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      },
+      {
+        "code": "the_odds_api",
+        "name": "The Odds API v4",
+        "source_class": "licensed",
+        "usage_status": "credentials_required",
+        "last_checked_at": "2026-10-17T00:00:00Z"
+      }
+    ],
+    "latestRun": {
+      "run_type": "odds",
+      "league_code": "nba",
+      "status": "skipped",
+      "started_at": "2026-10-16T15:51:37.106Z",
+      "finished_at": "2026-10-16T15:51:37.108Z",
+      "records_read": 0,
+      "records_written": 0,
+      "error": null
+    },
+    "policy": {
+      "realDataOnly": true,
+      "predictionsImmutable": true,
+      "postStartOfficialPrediction": false,
+      "missingValue": "DATA_UNAVAILABLE"
+    }
+  },
+  "performance": {
+    "state": "DATA_UNAVAILABLE",
+    "models": []
+  },
+  "predictions": {
+    "kbl": {
+      "state": "DATA_UNAVAILABLE",
+      "league": "kbl",
+      "date": "2026-10-17",
+      "predictions": []
+    },
+    "nba": {
+      "state": "DATA_UNAVAILABLE",
+      "league": "nba",
+      "date": "2026-10-17",
+      "predictions": []
+    }
+  }
+}

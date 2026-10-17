@@ -6,10 +6,11 @@ const core = require('../sports-core.js');
 const { getScores } = require('./domestic.cjs');
 const { collectLeague, collectLeagues } = require('./overseas.cjs');
 const { getDetail, validRequest } = require('./details.cjs');
+const ai = require('./ai.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['index.html', 'app.js', 'styles.css', 'sports-core.js', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['index.html', 'ai.html', 'app.js', 'styles.css', 'sports-core.js', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'ai-dashboard.js', 'ai-dashboard.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': mime['.json'], 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }
@@ -31,6 +32,20 @@ const server = http.createServer(async (req, res) => {
     }
     if (rate.size > 4000) rate.delete(rate.keys().next().value);
     if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', release: '20261013-priorities8', mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
+    if (url.pathname === '/api/ai/status') {
+        if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
+        try{json(res,200,ai.status());}catch{json(res,503,{state:'DATA_UNAVAILABLE',error:'AI storage unavailable'});}return;
+    }
+    if (url.pathname === '/api/ai/predictions') {
+        if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
+        const league=url.searchParams.get('league')||'kbl',date=url.searchParams.get('date')||core.kstDate();
+        if(!['kbl','nba'].includes(league)||!core.validDate(date)){json(res,400,{error:'Invalid league or date'});return;}
+        try{json(res,200,ai.predictions(league,date));}catch{json(res,503,{state:'DATA_UNAVAILABLE',error:'AI storage unavailable'});}return;
+    }
+    if (url.pathname === '/api/ai/performance') {
+        if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
+        try{json(res,200,ai.performance());}catch{json(res,503,{state:'DATA_UNAVAILABLE',error:'AI storage unavailable'});}return;
+    }
     if (url.pathname === '/api/detail') {
         if(origin&&!allowedOrigins.has(origin)){json(res,403,{error:'Origin not allowed'});return;}
         const league=url.searchParams.get('league'),id=url.searchParams.get('id');
@@ -64,7 +79,7 @@ const server = http.createServer(async (req, res) => {
     let file;
     try { file = decodeURIComponent(url.pathname).replace(/^\//, '') || 'index.html'; } catch { json(res, 400, { error: 'Invalid path' }); return; }
     // A closed allowlist prevents exposing source, credentials, .git, or filesystem paths.
-    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file)) { json(res, 404, { error: 'Not found' }); return; }
+    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file) && file !== 'data/ai/snapshot.json') { json(res, 404, { error: 'Not found' }); return; }
     try {
         const data = await fs.readFile(path.join(ROOT, file));
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': file === 'sw.js' || file.endsWith('.json') ? 'no-cache' : 'no-cache' });

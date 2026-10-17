@@ -37,5 +37,13 @@
 ## 남은 운영 한계
 CORS는 사용자 인증이 아닙니다. IP 제한과 캐시는 Worker 인스턴스 단위이며 전역 부하/비용 상한을 검증하지 않았습니다. 제공처 지연·누락·차단, 무중단, 점수의 완전성은 보장하지 않습니다. 계정·글쓰기·관리자 기능을 공개하려면 서버 인증·권한·저장소 규칙·남용 방지가 먼저 필요합니다. 현재 관심 정보는 기기 간 동기화되지 않습니다.
 
+## AI 분석 운영
+
+- 로컬 기본 저장소는 `.sporton/ai.sqlite`이며 Git에서 제외된다. 운영에서는 `AI_DB_PATH`를 영속 볼륨에 지정하고 별도 백업이 필요하다.
+- `npm run ai:daily`는 전후 1일 수집, 종료 경기 채점, 신규 완료 경기 존재 시 후보 재학습, 검증 우수 시에만 승격, 당일 예측을 순서대로 실행한다.
+- `ODDS_API_KEY`는 서버/Actions secret으로만 제공한다. 브라우저 설정이나 `sporton-config.js`에 넣지 않는다.
+- Actions의 AI DB 캐시와 30일 artifact는 개발 검증용이며 운영 DB/백업이 아니다.
+- 현재 Pages와 운영 Sites API에는 영속 AI DB가 연결되지 않았다. 이 연결 전 공개 화면은 `DATA_UNAVAILABLE`을 표시하는 것이 정상이다.
+
 ## GitHub 설정 확인이 남은 항목
 기본 pages build and deployment와 사용자 정의 Deploy score site가 함께 실행되는 이력이 있습니다. 기본 경로가 검증을 우회할 가능성이 있으므로 Settings → Pages → Build and deployment → Source를 GitHub Actions로 통일해야 합니다. 브라우저 주소를 확실하게 확인할 수 없어 Computer Use가 정책상 중단되어 UI 변경을 완료하지 못했습니다. 제공된 GitHub 연결 도구도 Pages 관리자 설정을 지원하지 않습니다. 이 설정은 사용자 확인이 남아 있으며 모든 배포 경로의 검증 강제를 보장하지 않습니다.
