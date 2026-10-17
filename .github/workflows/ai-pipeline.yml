@@ -1,5 +1,12 @@
 name: SPORTON AI pipeline
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'ai-engine/**'
+      - 'server/ai.cjs'
+      - 'package.json'
+      - '.github/workflows/ai-pipeline.yml'
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
