@@ -79,7 +79,7 @@ const server = http.createServer(async (req, res) => {
     let file;
     try { file = decodeURIComponent(url.pathname).replace(/^\//, '') || 'index.html'; } catch { json(res, 400, { error: 'Invalid path' }); return; }
     // A closed allowlist prevents exposing source, credentials, .git, or filesystem paths.
-    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file)) { json(res, 404, { error: 'Not found' }); return; }
+    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file) && file !== 'data/ai/snapshot.json') { json(res, 404, { error: 'Not found' }); return; }
     try {
         const data = await fs.readFile(path.join(ROOT, file));
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': file === 'sw.js' || file.endsWith('.json') ? 'no-cache' : 'no-cache' });

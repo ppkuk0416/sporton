@@ -10,6 +10,14 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- AI 경기 분석 -->
+  <url>
+    <loc>https://sporton.live/ai.html</loc>
+    <lastmod>2026-10-17</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- 라이브스코어 뷰 -->
   <url>
     <loc>https://sporton.live/?view=live</loc>

@@ -12,7 +12,7 @@ on:
       - 'data/**'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Collect Korean scores']
+    workflows: ['Collect Korean scores', 'SPORTON AI pipeline']
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -38,6 +38,14 @@ jobs:
           node-version: '22'
       - name: Validate the exact checkout before publishing
         run: npm run check
+      - name: Use the AI snapshot from the completed pipeline
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'SPORTON AI pipeline'
+        uses: actions/download-artifact@v4
+        with:
+          name: sporton-ai-public
+          path: data/ai
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
       - uses: actions/configure-pages@v5
       - name: Prepare public files
         run: |

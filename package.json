@@ -17,6 +17,7 @@
     "ai:predict": "node ai-engine/cli.cjs predict",
     "ai:score": "node ai-engine/cli.cjs score",
     "ai:daily": "node ai-engine/cli.cjs daily",
-    "ai:backtest": "node ai-engine/cli.cjs backtest"
+    "ai:backtest": "node ai-engine/cli.cjs backtest",
+    "ai:export": "node ai-engine/cli.cjs export"
   }
 }

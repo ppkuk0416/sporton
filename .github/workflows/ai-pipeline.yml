@@ -29,6 +29,8 @@ jobs:
       - run: npm run check
       - name: Collect, score, evaluate retraining, and predict
         run: npm run ai:daily
+      - name: Export the public read-only AI snapshot
+        run: npm run ai:export
       - name: Save the new immutable database snapshot
         uses: actions/cache/save@v4
         with:
@@ -40,4 +42,11 @@ jobs:
           name: sporton-ai-${{ github.run_id }}
           path: .sporton/ai.sqlite
           retention-days: 30
+          if-no-files-found: error
+      - name: Publish the dashboard snapshot for the Pages workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: sporton-ai-public
+          path: data/ai/snapshot.json
+          retention-days: 7
           if-no-files-found: error

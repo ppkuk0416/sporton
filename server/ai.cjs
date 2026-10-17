@@ -1,4 +1,5 @@
 'use strict';
+const core = require('../sports-core.js');
 const { loadConfig } = require('../ai-engine/config.cjs');
 const { openDatabase } = require('../ai-engine/db.cjs');
 let database;
@@ -40,5 +41,19 @@ function performance() {
     return {state:rows.some(row=>row.sample_count)?'ok':'DATA_UNAVAILABLE',models:rows};
 }
 
+function snapshot(date = core.kstDate()) {
+    return {
+        version: 1,
+        generatedAt: new Date().toISOString(),
+        date,
+        status: status(),
+        performance: performance(),
+        predictions: {
+            kbl: predictions('kbl', date),
+            nba: predictions('nba', date)
+        }
+    };
+}
+
 function close() { if(database){database.close();database=null;} }
-module.exports={status,predictions,performance,close};
+module.exports={status,predictions,performance,snapshot,close};

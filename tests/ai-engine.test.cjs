@@ -1,9 +1,11 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {openDatabase}=require('../ai-engine/db.cjs');
 const {upsertGames}=require('../ai-engine/repository.cjs');
 const {trainLeague,predictDate,scoreFinished,marketAssessment}=require('../ai-engine/service.cjs');
 const {walkForward}=require('../ai-engine/model.cjs');
+const {main}=require('../ai-engine/cli.cjs');
 
 function feed(count=60){
     const teams=Array.from({length:6},(_,index)=>({id:'t'+index,name:'Team '+index}));
@@ -63,4 +65,17 @@ test('walk-forward validation never trains on the game being evaluated',()=>{
     }));
     const result=walkForward(games,{minimum:20,minTeamGames:3});assert.ok(result.rows.length>0);
     assert.equal(result.rows[0].startsAt,games[20].starts_at);
+});
+
+test('public snapshot export is valid and never invents predictions',async()=>{
+    const directory=fs.mkdtempSync(path.join(os.tmpdir(),'sporton-ai-')),previous=process.env.AI_DB_PATH;
+    process.env.AI_DB_PATH=path.join(directory,'ai.sqlite');
+    try{
+        const output=path.join(directory,'snapshot.json'),result=await main(['export','--date','2026-10-17','--output',output]);
+        const snapshot=JSON.parse(fs.readFileSync(output,'utf8'));
+        assert.equal(result.state,'ok');assert.equal(snapshot.version,1);assert.equal(snapshot.date,'2026-10-17');
+        assert.deepEqual(Object.keys(snapshot.predictions),['kbl','nba']);
+        assert.equal(snapshot.predictions.kbl.state,'DATA_UNAVAILABLE');assert.deepEqual(snapshot.predictions.kbl.predictions,[]);
+        assert.equal(snapshot.status.policy.realDataOnly,true);
+    }finally{if(previous===undefined)delete process.env.AI_DB_PATH;else process.env.AI_DB_PATH=previous;fs.rmSync(directory,{recursive:true,force:true});}
 });
