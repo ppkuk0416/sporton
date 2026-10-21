@@ -28,8 +28,8 @@ function trainLeague(db, leagueCode, config) {
     const version = `${leagueCode}-elo-${finishedAt.replace(/[-:.TZ]/g,'').slice(0,14)}-${crypto.createHash('sha256').update(JSON.stringify(artifact)).digest('hex').slice(0,8)}`;
     const active = db.prepare('SELECT * FROM model_versions WHERE league_id=? AND is_active=1').get(league.id);
     const activeMetrics = active?.metrics_json ? JSON.parse(active.metrics_json) : null;
-    const promote = !active || (backtest.metrics.sampleCount >= 20 && Number.isFinite(backtest.metrics.brierScore)
-        && (!Number.isFinite(activeMetrics?.brierScore) || backtest.metrics.brierScore < activeMetrics.brierScore));
+    const promote = backtest.metrics.sampleCount >= 20 && Number.isFinite(backtest.metrics.brierScore)
+        && (!active || !Number.isFinite(activeMetrics?.brierScore) || backtest.metrics.brierScore < activeMetrics.brierScore);
     if (promote && active) db.prepare('UPDATE model_versions SET is_active=0,retired_at=? WHERE id=?').run(finishedAt, active.id);
     const model = db.prepare(`INSERT INTO model_versions(league_id,training_run_id,version,algorithm,artifact_json,metrics_json,
         trained_through,created_at,deployed_at,is_active) VALUES(?,?,?,?,?,?,?,?,?,?) RETURNING *`)
