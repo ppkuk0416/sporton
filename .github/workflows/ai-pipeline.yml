@@ -48,11 +48,13 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Save the new immutable database snapshot
+        if: always()
         uses: actions/cache/save@v4
         with:
           path: .sporton
           key: sporton-ai-db-${{ github.run_id }}
       - name: Retain an auditable snapshot
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sporton-ai-${{ github.run_id }}

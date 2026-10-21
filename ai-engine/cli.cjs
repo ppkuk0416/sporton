@@ -34,6 +34,7 @@ async function main(argv=process.argv.slice(2)) {
         if(command==='backtest') { const result={};for(const league of leagueCodes)result[league]=Service.backtestLeague(db,league,config);return result; }
         if(command==='export') {
             const date=args.date||today,output=path.resolve(String(args.output||'data/ai/snapshot.json'));
+            if(!core.validDate(date))throw new Error('Invalid snapshot date');
             const leagueRows=db.prepare(`SELECT l.code,l.name,
                 (SELECT count(*) FROM games g WHERE g.league_id=l.id) game_count,
                 (SELECT count(*) FROM games g WHERE g.league_id=l.id AND g.status='finished') completed_games,
@@ -57,7 +58,7 @@ async function main(argv=process.argv.slice(2)) {
                 WHERE l.code=? AND substr(datetime(g.starts_at,'+9 hours'),1,10)=? ORDER BY g.starts_at,p.generated_at`).all(league,date)
                 .map(row=>({...row,risk_factors:JSON.parse(row.risk_factors_json),risk_factors_json:undefined}));
             const generatedAt=new Date().toISOString(),payload={version:1,generatedAt,date,
-                status:{state:'ok',generatedAt,leagues:leagueRows,sources,latestRun,policy:{realDataOnly:true,predictionsImmutable:true,postStartOfficialPrediction:false,missingValue:'DATA_UNAVAILABLE'}},
+                status:{state:'ok',generatedAt,leagues:leagueRows,sources,latestRun,policy:{realDataOnly:true,predictionsImmutable:true,postStartOfficialPrediction:false,missingValue:'DATA_UNAVAILABLE',minTrainGames:config.minTrainGames}},
                 performance:{state:performanceRows.some(row=>row.sample_count)?'ok':'DATA_UNAVAILABLE',models:performanceRows},predictions:{}};
             for(const league of ['kbl','nba']){const rows=predictionRows(league);payload.predictions[league]={state:rows.length?'ok':'DATA_UNAVAILABLE',league,date,predictions:rows};}
             await fs.mkdir(path.dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify(payload,null,2)+'\n');
@@ -66,6 +67,7 @@ async function main(argv=process.argv.slice(2)) {
         if(command==='daily') {
             const result={collect:{},score:null,train:{},predict:{}};
             for(const league of leagueCodes) result.collect[league]=await Pipeline.collectLeagueRange(db,league,shift(today,-1),shift(today,1));
+            Pipeline.assertCollections(result.collect);
             if(leagueCodes.includes('nba'))result.odds=await Pipeline.collectMarkets(db,config);
             result.score=Service.scoreFinished(db);
             for(const league of leagueCodes){result.train[league]=Service.trainLeague(db,league,config);result.predict[league]=Service.predictDate(db,league,today,config);}

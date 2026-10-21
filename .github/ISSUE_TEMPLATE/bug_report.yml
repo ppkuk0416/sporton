@@ -1,0 +1,26 @@
+name: SPORTON 오류 제보
+description: 경기 정보, 화면 또는 분석의 오류를 알려 주세요.
+title: "[오류] "
+body:
+  - type: markdown
+    attributes:
+      value: "제보 내용은 공개됩니다. 비밀번호, API 키, 개인정보는 적지 마세요."
+  - type: input
+    id: page
+    attributes:
+      label: 문제가 생긴 페이지 주소
+      placeholder: https://sporton.live/ai?league=kbl&date=2026-10-21
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 문제가 있었나요?
+      description: 리그, 경기 날짜, 팀 이름, 오류가 발생한 순서와 기대한 동작을 알려 주세요.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 기기와 브라우저
+      placeholder: 아이폰 Safari / 안드로이드 Chrome / PC Chrome

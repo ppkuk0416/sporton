@@ -58,6 +58,13 @@ test('market assessment removes vig and enforces the edge threshold',()=>{
     assert.equal(marketAssessment(null,{homeWinProbability:.8},.04).status,'PASS');
 });
 
+test('a first model with fewer than twenty validation games cannot become active',()=>{
+    const db=openDatabase(':memory:');upsertGames(db,'kbl','naver_sports',feed(30));
+    const result=trainLeague(db,'kbl',{minTrainGames:20,minTeamGames:3});
+    assert.equal(result.promoted,false);assert.ok(result.metrics.sampleCount<20);
+    assert.equal(db.prepare('SELECT count(*) n FROM model_versions WHERE is_active=1').get().n,0);db.close();
+});
+
 test('walk-forward validation never trains on the game being evaluated',()=>{
     const games=feed(30).matches.filter(game=>game.status==='finished').map((game,index)=>({
         ...game,home_team_id:Number(game.homeTeamId.slice(1))+1,away_team_id:Number(game.awayTeamId.slice(1))+1,

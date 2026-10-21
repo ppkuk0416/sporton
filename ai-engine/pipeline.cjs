@@ -16,7 +16,7 @@ function bucket(now = new Date()) { return new Date(Math.floor(now.getTime()/300
 
 async function collectLeagueRange(db,leagueCode,from,to) {
     const key=`collect:${leagueCode}:${from}:${to}:${bucket()}`,run=beginRun(db,'collect',leagueCode,key);
-    if(run.status!=='running') return {state:'skipped',reason:'IDEMPOTENT_REPLAY',runId:run.id};
+    if(run.status!=='running') return {state:run.status==='succeeded'?'skipped':run.status,reason:'IDEMPOTENT_REPLAY',runId:run.id};
     try {
         let feeds=[];
         if(leagueCode==='kbl') {
@@ -24,10 +24,10 @@ async function collectLeagueRange(db,leagueCode,from,to) {
             if(feed) feeds=[feed];
         } else if(leagueCode==='nba') feeds=await Promise.all(dates(from,to).map(date=>collectLeague('nba',date)));
         else throw new Error('Unsupported league');
-        const readable=feeds.filter(feed=>['ok','stale'].includes(feed.state));
+        const readable=feeds.filter(feed=>feed.state==='ok');
         let written=0,read=0;
         for(const feed of readable){read+=(feed.matches||[]).length;written+=upsertGames(db,leagueCode,leagueCode==='kbl'?'naver_sports':'espn_scoreboard',feed);}
-        const state=readable.length===feeds.length?'succeeded':readable.length?'partial':'failed';
+        const state=feeds.length&&readable.length===feeds.length?'succeeded':readable.length?'partial':'failed';
         const details={recordsRead:read,recordsWritten:written,feeds:feeds.map(feed=>({state:feed.state,fetchedAt:feed.fetchedAt,count:feed.matches?.length||0}))};
         finishRun(db,run.id,state,details,state==='failed'?'All upstream feeds failed':null);
         return {state,runId:run.id,...details};
@@ -41,4 +41,10 @@ async function collectMarkets(db,config) {
     catch(error){finishRun(db,run.id,'failed',{},error.message);throw error;}
 }
 
-module.exports={collectLeagueRange,collectMarkets,dates,bucket};
+function assertCollections(results) {
+    for(const [league,result] of Object.entries(results)) {
+        if(!['succeeded','skipped'].includes(result.state))throw new Error(`${league}: collection ${result.state}; keep the last verified public snapshot`);
+    }
+}
+
+module.exports={collectLeagueRange,collectMarkets,dates,bucket,assertCollections};
