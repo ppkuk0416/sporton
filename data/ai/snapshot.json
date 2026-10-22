@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-22T17:15:34.232Z",
+  "generatedAt": "2026-10-22T21:41:45.239Z",
   "date": "2026-10-23",
   "status": {
     "state": "ok",
-    "generatedAt": "2026-10-22T17:15:34.232Z",
+    "generatedAt": "2026-10-22T21:41:45.239Z",
     "leagues": [
       {
         "code": "kbl",
@@ -71,8 +71,8 @@
       "run_type": "odds",
       "league_code": "nba",
       "status": "skipped",
-      "started_at": "2026-10-22T17:15:33.936Z",
-      "finished_at": "2026-10-22T17:15:33.936Z",
+      "started_at": "2026-10-22T21:41:45.062Z",
+      "finished_at": "2026-10-22T21:41:45.063Z",
       "records_read": 0,
       "records_written": 0,
       "error": null
