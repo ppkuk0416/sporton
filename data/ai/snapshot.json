@@ -1,23 +1,23 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-23T11:45:52.012Z",
-  "date": "2026-10-23",
+  "generatedAt": "2026-10-23T17:13:33.368Z",
+  "date": "2026-10-24",
   "status": {
     "state": "ok",
-    "generatedAt": "2026-10-23T11:45:52.012Z",
+    "generatedAt": "2026-10-23T17:13:33.368Z",
     "leagues": [
       {
         "code": "kbl",
         "name": "KBL",
-        "game_count": 14,
-        "completed_games": 10,
+        "game_count": 17,
+        "completed_games": 11,
         "active_model": null,
         "trained_through": null
       },
       {
         "code": "nba",
         "name": "NBA",
-        "game_count": 40,
+        "game_count": 48,
         "completed_games": 28,
         "active_model": null,
         "trained_through": null
@@ -71,8 +71,8 @@
       "run_type": "odds",
       "league_code": "nba",
       "status": "skipped",
-      "started_at": "2026-10-23T11:45:51.856Z",
-      "finished_at": "2026-10-23T11:45:51.857Z",
+      "started_at": "2026-10-23T17:13:33.188Z",
+      "finished_at": "2026-10-23T17:13:33.189Z",
       "records_read": 0,
       "records_written": 0,
       "error": null
@@ -93,13 +93,13 @@
     "kbl": {
       "state": "DATA_UNAVAILABLE",
       "league": "kbl",
-      "date": "2026-10-23",
+      "date": "2026-10-24",
       "predictions": []
     },
     "nba": {
       "state": "DATA_UNAVAILABLE",
       "league": "nba",
-      "date": "2026-10-23",
+      "date": "2026-10-24",
       "predictions": []
     }
   }
