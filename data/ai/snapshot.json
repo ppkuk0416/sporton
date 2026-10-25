@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-24T20:54:47.489Z",
+  "generatedAt": "2026-10-25T04:49:56.456Z",
   "date": "2026-10-25",
   "status": {
     "state": "ok",
-    "generatedAt": "2026-10-24T20:54:47.489Z",
+    "generatedAt": "2026-10-25T04:49:56.456Z",
     "leagues": [
       {
         "code": "kbl",
@@ -18,7 +18,7 @@
         "code": "nba",
         "name": "NBA",
         "game_count": 55,
-        "completed_games": 40,
+        "completed_games": 48,
         "active_model": null,
         "trained_through": null
       }
@@ -71,8 +71,8 @@
       "run_type": "odds",
       "league_code": "nba",
       "status": "skipped",
-      "started_at": "2026-10-24T20:54:47.315Z",
-      "finished_at": "2026-10-24T20:54:47.316Z",
+      "started_at": "2026-10-25T04:49:56.268Z",
+      "finished_at": "2026-10-25T04:49:56.269Z",
       "records_read": 0,
       "records_written": 0,
       "error": null
@@ -88,6 +88,13 @@
   "performance": {
     "state": "DATA_UNAVAILABLE",
     "models": [
+      {
+        "league": "nba",
+        "model_version": "nba-elo-20261025044956-686f2659",
+        "sample_count": 0,
+        "accuracy": null,
+        "score_mae": null
+      },
       {
         "league": "nba",
         "model_version": "nba-elo-20261024205447-e64b28c1",
