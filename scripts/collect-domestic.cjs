@@ -5,6 +5,7 @@ const core = require('../sports-core.js');
 const { collect } = require('../server/domestic.cjs');
 const { collectLeague }=require('../server/overseas.cjs');
 async function main() {
+    await require('./collect-standings.cjs').collectTables();
     const today = process.env.SCORE_DATE || core.kstDate();
     const dates = Array.from({ length: 8 }, (_, i) => core.shiftDate(today, i - 1));
     const payload = await collect(dates[0], dates.at(-1));

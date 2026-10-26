@@ -10,7 +10,7 @@ const ai = require('./ai.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['index.html', 'ai.html', 'app.js', 'styles.css', 'sports-core.js', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'ai-dashboard.js', 'ai-dashboard.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['index.html', 'ai.html', 'app.js', 'styles.css', 'sports-core.js', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'ai-dashboard.js', 'ai-dashboard.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': mime['.json'], 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }
@@ -79,7 +79,7 @@ const server = http.createServer(async (req, res) => {
     let file;
     try { file = decodeURIComponent(url.pathname).replace(/^\//, '') || 'index.html'; } catch { json(res, 400, { error: 'Invalid path' }); return; }
     // A closed allowlist prevents exposing source, credentials, .git, or filesystem paths.
-    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file) && file !== 'data/ai/snapshot.json') { json(res, 404, { error: 'Not found' }); return; }
+    if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file) && !/^data\/standings\/(kleague2?|eng\.1|esp\.1|ger\.1|ita\.1|fra\.1|uefa\.champions)\.json$/.test(file) && file !== 'data/ai/snapshot.json') { json(res, 404, { error: 'Not found' }); return; }
     try {
         const data = await fs.readFile(path.join(ROOT, file));
         res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': file === 'sw.js' || file.endsWith('.json') ? 'no-cache' : 'no-cache' });

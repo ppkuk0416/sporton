@@ -57,3 +57,13 @@ CORS는 사용자 인증이 아닙니다. IP 제한과 캐시는 Worker 인스�
 
 ## GitHub 설정 확인이 남은 항목
 기본 pages build and deployment와 사용자 정의 Deploy score site가 함께 실행되는 이력이 있습니다. 기본 경로가 검증을 우회할 가능성이 있으므로 Settings → Pages → Build and deployment → Source를 GitHub Actions로 통일해야 합니다. 브라우저 주소를 확실하게 확인할 수 없어 Computer Use가 정책상 중단되어 UI 변경을 완료하지 못했습니다. 제공된 GitHub 연결 도구도 Pages 관리자 설정을 지원하지 않습니다. 이 설정은 사용자 확인이 남아 있으며 모든 배포 경로의 검증 강제를 보장하지 않습니다.
+
+
+## Football standings (2026-10-26)
+
+- Home → 축구 → 리그 순위표 lists every soccer league from sports-core.js, filtered by the selected region. The match date does not change current-season standings.
+- K League 1/2: provider season metadata selects the current enabled season; provider split groups and ranks are retained. scripts/collect-standings.cjs runs in the existing 5-minute collector, including push-triggered refresh. GitHub scheduling/build/publishing may add delay.
+- Overseas: the browser-accessible site.web.api.espn.com standings endpoint is queried on demand and every 60 seconds while the table is visible. Only the selected league is queried. Manual refresh skips the one-minute browser memo.
+- data/standings contains an eight-league fallback, refreshed by the collector. Original fetchedAt is retained on collection failure; stale data is labeled. A source query timestamp is not the time of the latest goal or an instant live ranking guarantee.
+- Supply rank, points and group order are displayed without guessing qualification/relegation zones. Missing numbers remain —.
+- New football assets are included in Pages packaging and the versioned offline shell; live standings JSON is excluded from service-worker storage. No Firebase or new API server deployment is needed for this feature.

@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/domestic-scores.yml'
       - 'scripts/collect-domestic.cjs'
+      - 'scripts/collect-standings.cjs'
+      - 'football-standings.js'
       - 'server/**'
       - 'sports-core.js'
   schedule:
