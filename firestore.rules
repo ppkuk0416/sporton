@@ -27,7 +27,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['uid', 'text', 'nickname', 'createdAt'])
         && request.resource.data.keys().hasAll(['uid', 'text', 'nickname', 'createdAt'])
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 200
         && request.resource.data.nickname is string && request.resource.data.nickname.size() > 0 && request.resource.data.nickname.size() <= 20
         && request.resource.data.createdAt == request.time
         && getAfter(lockPath(request.auth.uid)).data.lastPostedAt == request.time
