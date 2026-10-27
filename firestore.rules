@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function matchIdValid(id) {
+      return id is string && id.matches('^[A-Za-z0-9._-]{1,64}__[A-Za-z0-9_-]{1,64}$');
+    }
+    function lockPath(uid) { return /databases/$(database)/documents/commentLocks/$(uid); }
+    function commentPath(matchId, commentId) {
+      return /databases/$(database)/documents/matches/$(matchId)/comments/$(commentId);
+    }
+    function validLock(data, uid) {
+      return data.keys().hasOnly(['lastPostedAt', 'matchId', 'commentId'])
+        && data.keys().hasAll(['lastPostedAt', 'matchId', 'commentId'])
+        && data.lastPostedAt == request.time
+        && matchIdValid(data.matchId)
+        && data.commentId is string && data.commentId.matches('^[A-Za-z0-9_-]{1,64}$')
+        && !exists(commentPath(data.matchId, data.commentId))
+        && existsAfter(commentPath(data.matchId, data.commentId))
+        && getAfter(commentPath(data.matchId, data.commentId)).data.uid == uid
+        && getAfter(commentPath(data.matchId, data.commentId)).data.createdAt == request.time;
+    }
+    match /matches/{matchId}/comments/{commentId} {
+      allow get: if matchIdValid(matchId);
+      allow list: if matchIdValid(matchId) && request.query.limit != null && request.query.limit <= 50;
+      allow create: if signedIn() && matchIdValid(matchId)
+        && request.resource.data.keys().hasOnly(['uid', 'text', 'nickname', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'text', 'nickname', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
+        && request.resource.data.nickname is string && request.resource.data.nickname.size() > 0 && request.resource.data.nickname.size() <= 20
+        && request.resource.data.createdAt == request.time
+        && getAfter(lockPath(request.auth.uid)).data.lastPostedAt == request.time
+        && getAfter(lockPath(request.auth.uid)).data.matchId == matchId
+        && getAfter(lockPath(request.auth.uid)).data.commentId == commentId;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /commentLocks/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list: if false;
+      allow create: if signedIn() && request.auth.uid == uid && validLock(request.resource.data, uid);
+      allow update: if signedIn() && request.auth.uid == uid
+        && resource.data.lastPostedAt is timestamp
+        && request.time >= resource.data.lastPostedAt + duration.value(5, 's')
+        && validLock(request.resource.data, uid);
+      allow delete: if false;
+    }
+  }
+}
