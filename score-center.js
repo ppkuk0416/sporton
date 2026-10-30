@@ -453,12 +453,13 @@
                 for(const label of ['팀',...data.periods.labels,m.sport==='volleyball'?'획득 세트':'합계'])head.append(el('th',label));table.append(head);
                 for(const side of ['away','home']){const tr=el('tr');tr.append(el('th',m[side+'Team']));for(const value of [...data.periods[side],data.periods[side+'Total']])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);box.append(wrap);
             }else if(m.sport==='baseball'||m.sport==='basketball'||m.sport==='hockey')box.append(el('p',m.status==='upcoming'?'경기가 시작되면 제공된 구간별 기록을 표시합니다.':'제공처에서 구간별 기록을 받지 못했습니다.'));
-            if(m.sport==='soccer'){
-                box.append(el('h3','득점 · 카드 기록'));
-                for(const event of data.events||[]){const label={'goal':'⚽ 득점','own-goal':'⚽ 자책골','red':'🟥 퇴장','yellow':'🟨 경고'}[event.type]||'기록';box.append(el('p',(event.clock||'')+' '+label+' · '+(event.side?m[event.side+'Team']+' · ':'')+event.text));}
+            if(m.sport==='soccer'||data.events?.length){
+                box.append(el('h3',m.sport==='soccer'?'경기 주요 장면':'득점 장면'));
+                for(const event of data.events||[]){const label={'goal':'⚽ 득점','own-goal':'⚽ 자책골','red':'🟥 퇴장','yellow':'🟨 경고','corner':'코너킥','goal-kick':'골킥','shot':'슈팅','score':'득점'}[event.type]||'기록';box.append(el('p',(event.clock||'')+' '+label+' · '+(event.side?m[event.side+'Team']+' · ':'')+event.text));}
                 if(!data.events?.length)box.append(el('p',m.status==='upcoming'?'경기 시작 전입니다.':data.recordAvailable?'현재 제공된 득점·카드 기록이 없습니다.':'제공처에서 상세 기록을 받지 못했습니다.'));
             }
-            if(data.stats?.length){const wrap=el('div',null,'score-detail-table'),table=el('table');const head=el('tr');for(const label of [m.awayTeam,'기록',m.homeTeam])head.append(el('th',label));table.append(head);for(const stat of data.stats){const tr=el('tr');for(const value of [stat.away??'—',stat.label,stat.home??'—'])tr.append(el('td',value));table.append(tr);}wrap.append(table);box.append(wrap);}
+            if(data.stats?.length){box.append(el('h3','팀 기록'));const wrap=el('div',null,'score-detail-table'),table=el('table');const head=el('tr');for(const label of [m.awayTeam,'기록',m.homeTeam])head.append(el('th',label));table.append(head);for(const stat of data.stats){const tr=el('tr');for(const value of [stat.away??'—',stat.label,stat.home??'—'])tr.append(el('td',value));table.append(tr);}wrap.append(table);box.append(wrap);}
+            if(data.players?.length){box.append(el('h3','선수 기록'));for(const group of data.players){if(!['away','home'].includes(group.side)||!Array.isArray(group.columns)||!Array.isArray(group.entries))continue;const details=el('details',null,'score-player-group');details.append(el('summary',m[group.side+'Team']+' · '+group.title));const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');for(const label of ['선수',...group.columns])head.append(el('th',label));table.append(head);for(const entry of group.entries){const tr=el('tr');tr.append(el('th',entry.name));for(const value of entry.values||[])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);details.append(wrap);box.append(details);}}
             if(data.recordState==='error')box.append(el('p','상세 기록 공급 연결이 지연되고 있습니다.','score-warning'));
         }
     };
@@ -484,5 +485,5 @@
     if (config.firebase && typeof firebase !== 'undefined') {
         try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }
     }
-    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); if(app.currentView==='home')Center.load();else if(app.currentView==='gameDetail')restoreDetailRoute(); });
+    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); const params=new URLSearchParams(location.search);if(params.has('matchLeague')&&params.has('match'))app.switchView('gameDetail');if(app.currentView==='home')Center.load();else if(app.currentView==='gameDetail')restoreDetailRoute(); });
 })();

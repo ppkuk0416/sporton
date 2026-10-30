@@ -13,8 +13,55 @@
         if(/own.?goal|자책/.test(text))return 'own-goal';
         if(/red|dismissal|second.?yellow|퇴장/.test(text))return 'red';
         if(/yellow|경고/.test(text))return 'yellow';
+        if(/corner.?kick|코너킥/.test(text))return 'corner';
+        if(/goal.?kick|골킥/.test(text))return 'goal-kick';
+        if(/shoot|shot|슈팅/.test(text))return 'shot';
         if(/goal|골/.test(text))return 'goal';
         return '';
+    }
+    const display=v=>v===null||v===undefined||v===''?null:String(v).slice(0,80);
+    function domesticPlayers(record,sport) {
+        const configs={
+            baseball:[['타자','battersBoxscore',[['pos','포지션'],['ab','타수'],['hit','안타'],['hr','홈런'],['rbi','타점'],['run','득점']]],['투수','pitchersBoxscore',[['inn','이닝'],['hit','피안타'],['bb','볼넷'],['kk','탈삼진'],['r','실점'],['er','자책점'],['era','시즌 평균자책']]]],
+            basketball:[['선수 기록',null,[['playTimeStr','출전'],['scoreTot','득점'],['reboundTot','리바운드'],['as','어시스트'],['st','스틸'],['bs','블록'],['to','턴오버']]]],
+            soccer:[['선수 기록',null,[['position','포지션'],['goals','득점'],['assists','도움'],['shots','슈팅'],['shotsOnGoal','유효슈팅']]]],
+            volleyball:[['선수 기록','playerStatOfGame',[['position','포지션'],['point','득점'],['attackSuccess','공격'],['blockingSuccess','블로킹'],['serveSuccess','서브'],['error','범실']]]]
+        };
+        const out=[];
+        for(const [title,key,cols] of configs[sport]||[]) for(const side of ['away','home']) {
+            const rows=key?record?.[key]?.[side]:record?.[side+'PlayerStats'];
+            if(!Array.isArray(rows))continue;
+            const entries=rows.filter(p=>p&&(p.playerName||p.name)).slice(0,80).map(p=>({name:String(p.playerName||p.name).slice(0,100),values:cols.map(([k])=>display(p[k]))}));
+            if(entries.length)out.push({side,title,columns:cols.map(([,label])=>label),entries});
+        }
+        return out;
+    }
+    const ESPN_LABELS={totalShots:'슈팅',shotsOnTarget:'유효 슈팅',possessionPct:'점유율 (%)',wonCorners:'코너킥',foulsCommitted:'파울',yellowCards:'경고',redCards:'퇴장',totalRebounds:'리바운드',assists:'어시스트',steals:'스틸',blocks:'블록',turnovers:'턴오버',fieldGoalsMadeFieldGoalsAttempted:'야투',threePointFieldGoalsMadeThreePointFieldGoalsAttempted:'3점슛',freeThrowsMadeFreeThrowsAttempted:'자유투',hits:'안타',walks:'볼넷',homeRuns:'홈런',shotsTotal:'슈팅',shots:'슈팅',firstDowns:'퍼스트 다운',thirdDownEff:'서드 다운',totalYards:'총 야드',rushingYards:'러싱 야드',netPassingYards:'패싱 야드',powerPlayGoals:'파워플레이 골'};
+    function espnStats(data,h,a) {
+        const sideFor=t=>t?.homeAway==='home'||String(t?.team?.id)===String(h.team.id)?'home':t?.homeAway==='away'||String(t?.team?.id)===String(a.team.id)?'away':'';
+        const byKey=new Map();
+        for(const team of data?.boxscore?.teams||[]) {
+            const side=sideFor(team);if(!side)continue;
+            for(const item of team.statistics||[]) for(const stat of Array.isArray(item.stats)?(item.name==='pitching'||item.name==='fielding'?[]:item.stats):[item]) {
+                const key=String(stat.name||'');const label=ESPN_LABELS[key]||ESPN_LABELS[key.replace(/[^A-Za-z]/g,'')];
+                const value=display(stat.displayValue??stat.value);if(!label||value===null)continue;
+                if(!byKey.has(key))byKey.set(key,{label,home:null,away:null});byKey.get(key)[side]=value;
+            }
+        }
+        return [...byKey.values()];
+    }
+    function espnPlayers(data,h,a) {
+        const groups=[];
+        for(const team of data?.boxscore?.players||[]) {
+            const id=String(team.team?.id||'');const side=id===String(h.team.id)?'home':id===String(a.team.id)?'away':'';if(!side)continue;
+            for(const group of team.statistics||[]) {
+                const cols=Array.isArray(group.labels)?group.labels.slice(0,20).map(x=>String(x).slice(0,30)):[];if(!cols.length)continue;
+                const entries=(group.athletes||[]).filter(x=>x.athlete?.displayName&&Array.isArray(x.stats)).slice(0,80).map(x=>({name:String(x.athlete.displayName).slice(0,100),values:cols.map((_,i)=>display(x.stats[i]))}));
+                const title=group.type==='batting'?'타자':group.type==='pitching'?'투수':group.name||group.displayName||'선수 기록';
+                if(entries.length)groups.push({side,title:String(title).slice(0,60),columns:cols,entries});
+            }
+        }
+        return groups;
     }
     function naver(gameData, recordData, league) {
         const game=gameData?.result?.game;
@@ -55,7 +102,8 @@
                 lines.away=lines.away.map((n,i)=>n===0&&number(home[i])===0?null:n);
             }
         }
-        const events=Array.isArray(r?.timeline)?r.timeline.map(e=>({type:eventType(e.eventType),clock:String(e.time||''),side:['home','away'].includes(e.side)?e.side:'',text:String(e.text||'')})).filter(e=>e.type):[];
+        const timeline=match.status!=='upcoming'&&Array.isArray(r?.timeline)?r.timeline.map(e=>({type:eventType(e.eventType),clock:String(e.time||''),side:['home','away'].includes(e.side)?e.side:'',text:String(e.text||'').slice(0,300)})).filter(e=>e.type):[];
+        const events=timeline.filter((e,i)=>i>=timeline.length-50||['goal','own-goal','yellow','red'].includes(e.type)).slice(-200);
         const statFields={
             baseball:[['h','안타'],['e','실책'],['b','볼넷']],
             basketball:[['rebound','리바운드'],['aS','어시스트'],['sT','스틸'],['bS','블록'],['to','턴오버']],
@@ -64,7 +112,7 @@
         };
         const teamStats=match.sport==='baseball'?r?.scoreBoard?.rheb:match.sport==='volleyball'?r?.gameRecord:r;
         const stats=match.status!=='upcoming'?(statFields[match.sport]||[]).map(([key,label])=>({label,home:number(teamStats?.home?.[key]),away:number(teamStats?.away?.[key])})).filter(s=>s.home!==null||s.away!==null):[];
-        return {match,periods:lines,events,stats,recordAvailable:!!r};
+        return {match,periods:lines,events,stats,players:match.status==='upcoming'?[]:domesticPlayers(r,match.sport),recordAvailable:!!r};
     }
     function espn(data,league,id) {
         const header=data?.header, comp=header?.competitions?.[0];
@@ -73,8 +121,10 @@
         if(!match)throw Error('Invalid ESPN game');
         const h=comp.competitors.find(c=>c.homeAway==='home'),a=comp.competitors.find(c=>c.homeAway==='away');
         const lines=periods(match,h.linescores?.map(l=>l.value??l.displayValue)||[],a.linescores?.map(l=>l.value??l.displayValue)||[],match.homeScore,match.awayScore);
-        const events=Array.isArray(data.keyEvents)?data.keyEvents.map(e=>({type:eventType(e.type?.text)||({'100':'goal','93':'yellow','94':'red','92':'own-goal'}[String(e.type?.id)]||''),clock:String(e.clock?.displayValue||''),side:String(e.team?.id)===String(h.team.id)?'home':String(e.team?.id)===String(a.team.id)?'away':'',text:(e.athletesInvolved||[]).map(p=>p.displayName||p.shortName||'').filter(Boolean).join(' · ')})).filter(e=>e.type):[];
-        return {match,periods:lines,events,stats:[],recordAvailable:!!lines||Array.isArray(data.keyEvents)};
+        const scoring=match.sport==='soccer'?(data.keyEvents||[]):Array.isArray(data.scoringPlays)&&data.scoringPlays.length?data.scoringPlays:(data.plays||[]).filter(e=>e.scoringPlay===true);
+        const events=match.status==='upcoming'?[]:scoring.slice(-50).map(e=>({type:match.sport==='soccer'?eventType(e.type?.text):'score',clock:String(e.clock?.displayValue||e.period?.displayValue||''),side:String(e.team?.id)===String(h.team.id)?'home':String(e.team?.id)===String(a.team.id)?'away':'',text:String(e.text||e.shortText||(e.participants||[]).map(p=>p.athlete?.displayName).filter(Boolean).join(' · ')||(e.athletesInvolved||[]).map(p=>p.displayName||p.shortName||'').filter(Boolean).join(' · ')).slice(0,300)})).filter(e=>e.type);
+        const stats=match.status==='upcoming'?[]:espnStats(data,h,a),players=match.status==='upcoming'?[]:espnPlayers(data,h,a);
+        return {match,periods:lines,events,stats,players,recordAvailable:!!lines||events.length>0||stats.length>0||players.length>0};
     }
     return {naver,espn,periods,eventType};
 });

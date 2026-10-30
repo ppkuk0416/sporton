@@ -1,0 +1,182 @@
+{
+  "kbl": {
+    "result": {
+      "recordData": {
+        "homePlayerStats": [
+          {
+            "playerName": "테스트 선수",
+            "position": "C",
+            "playTimeStr": "27:44",
+            "scoreTot": 15,
+            "reboundTot": 6,
+            "as": 0,
+            "st": 0,
+            "bs": 0,
+            "to": 0
+          }
+        ],
+        "awayPlayerStats": [
+          {
+            "playerName": "테스트 선수",
+            "position": "GD",
+            "playTimeStr": "03:37",
+            "scoreTot": 0,
+            "reboundTot": 0,
+            "as": 0,
+            "st": 0,
+            "bs": 0,
+            "to": 0
+          }
+        ]
+      }
+    },
+    "success": true
+  },
+  "kleague": {
+    "result": {
+      "recordData": {
+        "awayPlayerStats": [
+          {
+            "playerName": "테스트 선수",
+            "position": "DF",
+            "goals": 0,
+            "assists": 0,
+            "shots": 0,
+            "shotsOnGoal": 0
+          }
+        ],
+        "timeline": [
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "5'",
+            "text": "테스트 이벤트"
+          },
+          {
+            "side": "away",
+            "eventType": "cornerKick",
+            "time": "7'",
+            "text": "테스트 이벤트"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "10'",
+            "text": "테스트 이벤트"
+          },
+          {
+            "side": "home",
+            "eventType": "yellow",
+            "time": "12'",
+            "text": "테스트 이벤트"
+          },
+          {
+            "side": "home",
+            "eventType": "shooting",
+            "time": "15'",
+            "text": "테스트 이벤트"
+          }
+        ],
+        "homePlayerStats": [
+          {
+            "playerName": "테스트 선수",
+            "position": "MF",
+            "goals": 0,
+            "assists": 0,
+            "shots": 2,
+            "shotsOnGoal": 0
+          }
+        ]
+      }
+    },
+    "success": true
+  },
+  "wkovo": {
+    "result": {
+      "recordData": {
+        "playerStatOfGame": {
+          "away": [
+            {
+              "playerName": "테스트 선수",
+              "position": "OH",
+              "point": 10,
+              "attackSuccess": 8,
+              "blockingSuccess": 1,
+              "serveSuccess": 1,
+              "error": 6
+            }
+          ],
+          "home": [
+            {
+              "playerName": "테스트 선수",
+              "position": "S",
+              "point": 2,
+              "attackSuccess": 1,
+              "blockingSuccess": 0,
+              "serveSuccess": 1,
+              "error": 3
+            }
+          ]
+        }
+      }
+    },
+    "success": true
+  },
+  "kbo": {
+    "result": {
+      "recordData": {
+        "battersBoxscore": {
+          "away": [
+            {
+              "name": "테스트 선수",
+              "pos": "우",
+              "ab": 3,
+              "hit": 0,
+              "hr": 0,
+              "rbi": 0,
+              "run": 0
+            }
+          ],
+          "home": [
+            {
+              "name": "테스트 선수",
+              "pos": "좌",
+              "ab": 4,
+              "hit": 0,
+              "hr": 0,
+              "rbi": 0,
+              "run": 0
+            }
+          ]
+        },
+        "pitchersBoxscore": {
+          "away": [
+            {
+              "name": "테스트 선수",
+              "inn": "5",
+              "hit": 4,
+              "bb": 0,
+              "kk": 0,
+              "r": 1,
+              "er": 1,
+              "era": "4.24"
+            }
+          ],
+          "home": [
+            {
+              "name": "테스트 선수",
+              "inn": "7",
+              "hit": 7,
+              "bb": 1,
+              "kk": 5,
+              "r": 3,
+              "er": 3,
+              "era": "4.27"
+            }
+          ]
+        }
+      }
+    },
+    "success": true
+  }
+}
