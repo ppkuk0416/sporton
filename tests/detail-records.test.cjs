@@ -14,6 +14,7 @@ test('real ESPN team and player box scores retain team identities and displayed 
  for(const id of ['nba','mlb','epl','nhl','nfl']){const raw=require('./fixtures/espn-details/'+id+'.json');const d=D.espn(raw,L(id==='epl'?'eng.1':id),raw.header.id);assert.ok(d.stats.length>0,id);if(id!=='epl')assert.ok(d.players.length>0,id);assert.ok(d.stats.every(x=>x.home!==null||x.away!==null));assert.ok(d.players.every(x=>x.columns.length===x.entries[0].values.length));}
  const raw=require('./fixtures/espn-details/epl.json'),result=D.espn(raw,L('eng.1'),raw.header.id);assert.ok(result.events.some(e=>e.text));assert.ok(result.stats.some(s=>s.label==='슈팅'));
  const baseball=require('./fixtures/espn-details/mlb.json'),mlb=D.espn(baseball,L('mlb'),baseball.header.id);assert.ok(mlb.players.some(g=>g.title==='타자'));assert.ok(mlb.players.some(g=>g.title==='투수'));
+ const nba=require('./fixtures/espn-details/nba.json'),basketball=D.espn(nba,L('nba'),nba.header.id);assert.deepEqual(basketball.stats.find(s=>s.label==='야투율 (%)'),{label:'야투율 (%)',away:'44',home:'44'});assert.deepEqual(basketball.stats.find(s=>s.label==='야투'),{label:'야투',away:'38-87',home:'42-95'});
 });
 test('upcoming games never label season box scores as match records',()=>{
  const raw=structuredClone(require('./fixtures/espn-details/epl.json'));raw.header.competitions[0].status.type.state='pre';raw.header.competitions[0].status.type.completed=false;

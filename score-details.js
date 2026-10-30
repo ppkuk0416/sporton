@@ -37,6 +37,7 @@
         return out;
     }
     const ESPN_LABELS={totalShots:'슈팅',shotsOnTarget:'유효 슈팅',possessionPct:'점유율 (%)',wonCorners:'코너킥',foulsCommitted:'파울',yellowCards:'경고',redCards:'퇴장',totalRebounds:'리바운드',assists:'어시스트',steals:'스틸',blocks:'블록',turnovers:'턴오버',fieldGoalsMadeFieldGoalsAttempted:'야투',threePointFieldGoalsMadeThreePointFieldGoalsAttempted:'3점슛',freeThrowsMadeFreeThrowsAttempted:'자유투',hits:'안타',walks:'볼넷',homeRuns:'홈런',shotsTotal:'슈팅',shots:'슈팅',firstDowns:'퍼스트 다운',thirdDownEff:'서드 다운',totalYards:'총 야드',rushingYards:'러싱 야드',netPassingYards:'패싱 야드',powerPlayGoals:'파워플레이 골'};
+    Object.assign(ESPN_LABELS,{'fieldGoalsMade-fieldGoalsAttempted':'야투','threePointFieldGoalsMade-threePointFieldGoalsAttempted':'3점슛','freeThrowsMade-freeThrowsAttempted':'자유투',fieldGoalPct:'야투율 (%)',threePointFieldGoalPct:'3점슛 성공률 (%)',freeThrowPct:'자유투 성공률 (%)',offensiveRebounds:'공격 리바운드',defensiveRebounds:'수비 리바운드',pointsInPaint:'골밑 득점',fastBreakPoints:'속공 득점',largestLead:'최대 점수 차',leadPercentage:'리드 시간 (%)'});
     function espnStats(data,h,a) {
         const sideFor=t=>t?.homeAway==='home'||String(t?.team?.id)===String(h.team.id)?'home':t?.homeAway==='away'||String(t?.team?.id)===String(a.team.id)?'away':'';
         const byKey=new Map();
@@ -124,7 +125,8 @@
         const scoring=match.sport==='soccer'?(data.keyEvents||[]):Array.isArray(data.scoringPlays)&&data.scoringPlays.length?data.scoringPlays:(data.plays||[]).filter(e=>e.scoringPlay===true);
         const events=match.status==='upcoming'?[]:scoring.slice(-50).map(e=>({type:match.sport==='soccer'?eventType(e.type?.text):'score',clock:String(e.clock?.displayValue||e.period?.displayValue||''),side:String(e.team?.id)===String(h.team.id)?'home':String(e.team?.id)===String(a.team.id)?'away':'',text:String(e.text||e.shortText||(e.participants||[]).map(p=>p.athlete?.displayName).filter(Boolean).join(' · ')||(e.athletesInvolved||[]).map(p=>p.displayName||p.shortName||'').filter(Boolean).join(' · ')).slice(0,300)})).filter(e=>e.type);
         const stats=match.status==='upcoming'?[]:espnStats(data,h,a),players=match.status==='upcoming'?[]:espnPlayers(data,h,a);
-        return {match,periods:lines,events,stats,players,recordAvailable:!!lines||events.length>0||stats.length>0||players.length>0};
+        const flow=match.sport==='basketball'&&match.status!=='upcoming'&&Array.isArray(data.plays)?data.plays.filter(e=>e.scoringPlay===true&&number(e.homeScore)!==null&&number(e.awayScore)!==null&&number(e.period?.number)!==null).map(e=>({period:number(e.period.number),clock:display(e.clock?.displayValue),home:number(e.homeScore),away:number(e.awayScore)})).slice(-250):[];
+        return {match,periods:lines,events,stats,players,flow,recordAvailable:!!lines||events.length>0||stats.length>0||players.length>0};
     }
     return {naver,espn,periods,eventType};
 });
