@@ -24,7 +24,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    # A controlled domestic outage may still have saved healthy overseas data.
+    # Always deploy the checked and tested main branch after the collector finishes.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Collect Korean scores'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

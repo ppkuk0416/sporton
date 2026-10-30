@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const {assertSnapshot,fresh}=require('../ai-dashboard.js');
+const core=require('../sports-core.js');
 
 async function checkProduction(fetcher=fetch) {
     const site='https://sporton.live',api='https://sporton-live-api.parkbeomkuk.chatgpt.site';
@@ -25,6 +26,7 @@ async function checkProduction(fetcher=fetch) {
         }],
         ['AI data freshness',async()=>{const r=await request(site+'/data/ai/snapshot.json');assert.equal(r.status,200);const s=assertSnapshot(await r.json());assert.ok(fresh(s.generatedAt),'AI snapshot older than 12 hours or timestamp invalid');}],
         ['API health',async()=>{const r=await request(api+'/api/health');assert.equal(r.status,200);assert.equal((await r.json()).status,'ok');assert.equal(r.headers.get('access-control-allow-origin'),site);}],
+        ['domestic feeds',async()=>{const today=core.kstDate(),r=await request(api+'/api/domestic?from='+today+'&to='+today);assert.equal(r.status,200);const data=await r.json();const expected=core.LEAGUES.filter(l=>l.region==='kr');assert.ok(Array.isArray(data.feeds),'Domestic feed list missing');const bad=expected.filter(l=>{const feed=data.feeds.find(f=>f.leagueId===l.id);const age=Date.now()-Date.parse(feed?.fetchedAt);return !feed||feed.state!=='ok'||!Number.isFinite(age)||age< -30000||age>120000;});assert.equal(bad.length,0,'Domestic unavailable or stale: '+bad.map(l=>l.name).join(', '));}],
         ['AI API',async()=>{const r=await request(api+'/api/ai/status');assert.equal(r.status,200);assert.ok(fresh((await r.json()).generatedAt),'AI API data is stale');}],
         ['invalid date rejection',async()=>assert.equal((await request(api+'/api/ai/predictions?league=kbl&date=2026-02-30')).status,400)],
         ['origin rejection',async()=>assert.equal((await request(api+'/api/ai/status',{headers:{Origin:'https://invalid.example'}})).status,403)],

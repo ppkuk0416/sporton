@@ -28,7 +28,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm run collect
+      - name: Collect and distinguish a domestic outage
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          npm run collect
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "domestic_outage=true" >> "$GITHUB_OUTPUT"
+          elif [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
       - name: Commit data when changed
         run: |
           git config user.name "github-actions[bot]"
@@ -38,3 +50,8 @@ jobs:
           git commit -m "data: refresh Korean sports scores"
           git pull --rebase origin main
           git push origin main
+      - name: Report domestic outage after saving available data
+        if: steps.collect.outputs.domestic_outage == 'true'
+        run: |
+          echo '::error::All domestic providers failed. Overseas data was saved when available; domestic data needs attention.'
+          exit 1

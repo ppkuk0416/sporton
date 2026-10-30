@@ -4,6 +4,13 @@ const path = require('node:path');
 const core = require('../sports-core.js');
 const { collect } = require('../server/domestic.cjs');
 const { collectLeague }=require('../server/overseas.cjs');
+function mergeDomesticFeed(feed,previous,date) {
+    if(feed.state==='error') {
+        const good=previous?.feeds?.find(f=>f.leagueId===feed.leagueId&&['ok','stale'].includes(f.state)&&Array.isArray(f.matches));
+        if(good)return {...good,state:'stale',error:feed.error};
+    }
+    return {...feed,matches:feed.matches.filter(m=>m.rawDate===date)};
+}
 async function main() {
     await require('./collect-standings.cjs').collectTables();
     const today = process.env.SCORE_DATE || core.kstDate();
@@ -15,13 +22,7 @@ async function main() {
         const target = path.join(directory, date + '.json');
         let previous;
         try { previous = JSON.parse(await fs.readFile(target, 'utf8')); } catch {}
-        const feeds = payload.feeds.map(feed => {
-            if (feed.state === 'error') {
-                const good = previous?.feeds?.find(f => f.leagueId === feed.leagueId && ['ok', 'stale'].includes(f.state));
-                if (good) return { ...good, state: 'stale', error: feed.error };
-            }
-            return { ...feed, matches: feed.matches.filter(m => m.rawDate === date) };
-        });
+        const feeds = payload.feeds.map(feed => mergeDomesticFeed(feed,previous,date));
         const value = { ...payload, from: date, to: date, feeds };
         await fs.writeFile(target, JSON.stringify(value) + '\n');
     }
@@ -50,6 +51,9 @@ async function main() {
     console.log('ESPN games: '+[...feedsByDate.values()].flat().reduce((n,f)=>n+f.matches.length,0));
     const failures = payload.feeds.filter(f => f.state === 'error').map(f => f.name);
     console.log(JSON.stringify({ from: dates[0], to: dates.at(-1), games: payload.feeds.reduce((n, f) => n + f.matches.length, 0), failures }));
-    if (failures.length === payload.feeds.length) process.exitCode = 1;
+    // Controlled partial failure: the workflow can publish successful overseas
+    // data first and still report the domestic outage as a failed run.
+    if (failures.length === payload.feeds.length) process.exitCode = 2;
 }
-main().catch(e => { console.error(e.message); process.exitCode = 1; });
+if(require.main===module)main().catch(e => { console.error(e.message); process.exitCode = 1; });
+module.exports={mergeDomesticFeed};
