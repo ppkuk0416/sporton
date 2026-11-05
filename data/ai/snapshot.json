@@ -1,26 +1,26 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-26T04:54:39.611Z",
-  "date": "2026-10-26",
+  "generatedAt": "2026-11-05T06:55:42.237Z",
+  "date": "2026-11-05",
   "status": {
     "state": "ok",
-    "generatedAt": "2026-10-26T04:54:39.611Z",
+    "generatedAt": "2026-11-05T06:55:42.237Z",
     "leagues": [
       {
         "code": "kbl",
         "name": "KBL",
-        "game_count": 19,
-        "completed_games": 17,
+        "game_count": 22,
+        "completed_games": 18,
         "active_model": null,
         "trained_through": null
       },
       {
         "code": "nba",
         "name": "NBA",
-        "game_count": 64,
-        "completed_games": 55,
-        "active_model": null,
-        "trained_through": null
+        "game_count": 135,
+        "completed_games": 133,
+        "active_model": "nba-elo-20261105065542-29b38f7d",
+        "trained_through": "2026-11-05T03:30:00.000Z"
       }
     ],
     "sources": [
@@ -71,8 +71,8 @@
       "run_type": "odds",
       "league_code": "nba",
       "status": "skipped",
-      "started_at": "2026-10-26T04:54:39.431Z",
-      "finished_at": "2026-10-26T04:54:39.432Z",
+      "started_at": "2026-11-05T06:55:42.046Z",
+      "finished_at": "2026-11-05T06:55:42.047Z",
       "records_read": 0,
       "records_written": 0,
       "error": null
@@ -88,6 +88,13 @@
   "performance": {
     "state": "DATA_UNAVAILABLE",
     "models": [
+      {
+        "league": "nba",
+        "model_version": "nba-elo-20261105065542-29b38f7d",
+        "sample_count": 0,
+        "accuracy": null,
+        "score_mae": null
+      },
       {
         "league": "nba",
         "model_version": "nba-elo-20261026045439-51f4252a",
@@ -150,13 +157,13 @@
     "kbl": {
       "state": "DATA_UNAVAILABLE",
       "league": "kbl",
-      "date": "2026-10-26",
+      "date": "2026-11-05",
       "predictions": []
     },
     "nba": {
       "state": "DATA_UNAVAILABLE",
       "league": "nba",
-      "date": "2026-10-26",
+      "date": "2026-11-05",
       "predictions": []
     }
   }
