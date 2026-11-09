@@ -1,0 +1,22 @@
+# Cloudflare Pages: keep repository-only files outside the visitor flow.
+# GitHub's legacy builder uses _config.yml for the same exclusions.
+/.agents/* / 302
+/.github/* / 302
+/.sporton/* / 302
+/server/* / 302
+/scripts/* / 302
+/tests/* / 302
+/docs/* / 302
+/pm-skills/* / 302
+/ai-engine/* / 302
+/AGENTS.md / 302
+/DESIGN.md / 302
+/PRODUCT.md / 302
+/README.md / 302
+/OPERATIONS.md / 302
+/PRODUCT_STRATEGY.md / 302
+/package.json / 302
+/package-lock.json / 302
+/.env / 302
+/.env.example / 302
+/.gitignore / 302

@@ -10,6 +10,7 @@ on:
       - 'server/**'
       - 'manifest.json'
       - '_config.yml'
+      - '_redirects'
       - 'data/**'
       - '.github/workflows/pages.yml'
   workflow_run:
@@ -55,7 +56,7 @@ jobs:
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp index.html ai.html privacy.html styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js ai-dashboard.js ai-dashboard.css football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
+          cp _redirects index.html ai.html privacy.html styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js ai-dashboard.js ai-dashboard.css football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
           cp -R data _site/
       - uses: actions/upload-pages-artifact@v3
         with:
