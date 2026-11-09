@@ -1,0 +1,25 @@
+# Keep the legacy main/root Pages builder consistent with the public-only
+# artifact assembled by .github/workflows/pages.yml.
+exclude:
+  - .agents
+  - .github
+  - .env
+  - .env.example
+  - .gitignore
+  - .sporton
+  - AGENTS.md
+  - DESIGN.md
+  - PRODUCT.md
+  - README.md
+  - OPERATIONS.md
+  - PRODUCT_STRATEGY.md
+  - ai-engine
+  - docs
+  - pm-skills
+  - scripts
+  - server
+  - tests
+  - node_modules
+  - package.json
+  - package-lock.json
+  - work

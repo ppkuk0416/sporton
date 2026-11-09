@@ -9,6 +9,7 @@ on:
       - 'ai-engine/**'
       - 'server/**'
       - 'manifest.json'
+      - '_config.yml'
       - 'data/**'
       - '.github/workflows/pages.yml'
   workflow_run:
