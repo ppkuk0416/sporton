@@ -1,12 +1,14 @@
 'use strict';
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const {writeJsonAtomic}=require('../server/snapshot-store.cjs');
+const {assertSnapshot,sync}=require('../server/team-data.cjs');
 const core = require('../sports-core.js');
 const { collect } = require('../server/domestic.cjs');
 const { collectLeague }=require('../server/overseas.cjs');
 function mergeDomesticFeed(feed,previous,date) {
     if(feed.state==='error') {
-        const good=previous?.feeds?.find(f=>f.leagueId===feed.leagueId&&['ok','stale'].includes(f.state)&&Array.isArray(f.matches));
+        const good=previous?.feeds?.find(f=>f.leagueId===feed.leagueId&&['ok','stale'].includes(f.state)&&Array.isArray(f.matches)&&f.matches.every(m=>m.rawDate===date));
         if(good)return {...good,state:'stale',error:feed.error};
     }
     return {...feed,matches:feed.matches.filter(m=>m.rawDate===date)};
@@ -24,7 +26,7 @@ async function main() {
         try { previous = JSON.parse(await fs.readFile(target, 'utf8')); } catch {}
         const feeds = payload.feeds.map(feed => mergeDomesticFeed(feed,previous,date));
         const value = { ...payload, from: date, to: date, feeds };
-        await fs.writeFile(target, JSON.stringify(value) + '\n');
+        await writeJsonAtomic(target, assertSnapshot(value));
     }
     for (const file of await fs.readdir(directory)) {
         if (/^\d{4}-\d{2}-\d{2}\.json$/.test(file) && file.slice(0, 10) < core.shiftDate(today, -7))
@@ -44,10 +46,11 @@ async function main() {
             feedsByDate.get(job.date).push(feed);
         }));
     }
-    for(const [date,feeds]of feedsByDate) await fs.writeFile(path.join(worldDir,date+'.json'),JSON.stringify({version:1,source:'ESPN',generatedAt:new Date().toISOString(),from:date,to:date,feeds})+'\n');
+    for(const [date,feeds]of feedsByDate) await writeJsonAtomic(path.join(worldDir,date+'.json'),assertSnapshot({version:1,source:'ESPN',generatedAt:new Date().toISOString(),from:date,to:date,feeds}));
     for(const file of await fs.readdir(worldDir)) {
         if(/^\d{4}-\d{2}-\d{2}\.json$/.test(file)&&file.slice(0,10)<core.shiftDate(today,-7))await fs.unlink(path.join(worldDir,file));
     }
+    await sync(path.resolve(__dirname,'../data'));
     console.log('ESPN games: '+[...feedsByDate.values()].flat().reduce((n,f)=>n+f.matches.length,0));
     const failures = payload.feeds.filter(f => f.state === 'error').map(f => f.name);
     console.log(JSON.stringify({ from: dates[0], to: dates.at(-1), games: payload.feeds.reduce((n, f) => n + f.matches.length, 0), failures }));

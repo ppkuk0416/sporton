@@ -39,7 +39,7 @@
         return new Date(Date.parse(date + 'T12:00:00Z') + days * 86400000).toISOString().slice(0, 10);
     }
     function safeUrl(value) {
-        try { const u = new URL(value); return u.protocol === 'https:' ? u.href : ''; } catch { return ''; }
+        try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password ? u.href : ''; } catch { return ''; }
     }
     function score(value) {
         if (value === null || value === undefined || value === '') return null;
@@ -60,7 +60,7 @@
                 id: 'naver:' + g.gameId, providerId: String(g.gameId), source: '네이버 스포츠',
                 leagueId: league.id, league: league.name, sport: league.sport, region: 'kr',
                 homeTeam: String(g.homeTeamName), awayTeam: String(g.awayTeamName),
-                homeTeamId: String(g.homeTeamCode || g.homeTeamName), awayTeamId: String(g.awayTeamCode || g.awayTeamName),
+                homeTeamId: g.homeTeamCode == null ? null : String(g.homeTeamCode), awayTeamId: g.awayTeamCode == null ? null : String(g.awayTeamCode),
                 homeScore: scored ? score(g.homeTeamScore) : null, awayScore: scored ? score(g.awayTeamScore) : null,
                 homeLogoUrl: safeUrl(g.homeTeamEmblemUrl), awayLogoUrl: safeUrl(g.awayTeamEmblemUrl),
                 status, time: status === 'live' || status === 'suspended' || status === 'delayed'
@@ -69,6 +69,9 @@
                 isoDate, sourceUrl: 'https://m.sports.naver.com/game/' + encodeURIComponent(g.gameId) + '/relay'
             };
         });
+    }
+    function espnTeamLogo(team) {
+        return safeUrl(team.logo) || (Array.isArray(team.logos) ? team.logos : []).map(logo => safeUrl(logo?.href)).find(Boolean) || '';
     }
     function normalizeESPN(data, league, translate = value => value) {
         if (!Array.isArray(data?.events)) throw new Error('ESPN 응답 형식 오류');
@@ -88,9 +91,9 @@
                 sport: league.sport, region: 'world', status, time, rawDate: kstDate(ev.date), isoDate: ev.date,
                 homeTeam: translate(h.team.displayName || h.team.shortDisplayName || ''),
                 awayTeam: translate(a.team.displayName || a.team.shortDisplayName || ''),
-                homeTeamId: String(h.team.id || h.team.displayName || ''), awayTeamId: String(a.team.id || a.team.displayName || ''),
+                homeTeamId: h.team.id == null ? null : String(h.team.id), awayTeamId: a.team.id == null ? null : String(a.team.id),
                 homeScore: hasScore ? score(h.score) : null, awayScore: hasScore ? score(a.score) : null,
-                homeLogoUrl: safeUrl(h.team.logo), awayLogoUrl: safeUrl(a.team.logo),
+                homeLogoUrl: espnTeamLogo(h.team), awayLogoUrl: espnTeamLogo(a.team),
                 period: ev.status?.period || 0, clock: ev.status?.displayClock || '',
                 sourceUrl: safeUrl(ev.links?.[0]?.href)
             };

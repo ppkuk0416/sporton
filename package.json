@@ -18,6 +18,9 @@
     "ai:score": "node ai-engine/cli.cjs score",
     "ai:daily": "node ai-engine/cli.cjs daily",
     "ai:backtest": "node ai-engine/cli.cjs backtest",
-    "ai:export": "node ai-engine/cli.cjs export"
+    "ai:export": "node ai-engine/cli.cjs export",
+    "data:audit": "node scripts/manage-team-data.cjs audit",
+    "data:sync": "node scripts/manage-team-data.cjs sync",
+    "skills:check": "node scripts/check-skills.cjs"
   }
 }

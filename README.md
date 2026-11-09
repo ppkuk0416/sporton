@@ -11,6 +11,14 @@ node --test tests/*.test.cjs
 npm run check
 ```
 
+## 팀과 기록 데이터 관리
+
+팀 식별자·로고·시즌 전적은 [데이터 관리 기준](docs/DATA_OPERATIONS.md)에 따라 검증합니다. `npm run data:sync`로 관리 목록을 갱신하고 `npm run data:audit`로 출처·정합성과 미확정 정보를 확인합니다.
+
+## 프로젝트 개발 스킬
+
+GitHub 원본을 검토해 Impeccable, Cloudflare security-audit, ECC verification-loop를 프로젝트에 한정해 추가했습니다. 선택 이유·적용 결과·검증 한계는 [스킬 검토 보고서](docs/SKILLS_REVIEW.md), 작업별 사용 기준은 [AGENTS.md](AGENTS.md)를 참고하세요. 전역 훅·자동 기억 수집·MCP 설정은 설치하지 않습니다. `npm run skills:check`로 고정한 원본 파일의 무결성을 확인합니다.
+
 ## AI 분석 엔진
 
 KBL/NBA 경기 결과를 리그별로 분리해 저장하고, 시간순 walk-forward 검증을 거친 baseline 모델로 경기 전 확률·공정 핸디·예상 총점을 생성하는 독립 모듈이 추가되었습니다. 실제 배당·부상 데이터가 없으면 추천은 `PASS`이며 임의 수치로 대체하지 않습니다.

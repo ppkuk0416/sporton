@@ -6,7 +6,7 @@ const code=fs.readFileSync('ai-dashboard.js','utf8');
 const snapshot=()=>({version:1,date:'2026-10-21',generatedAt:new Date().toISOString(),status:{leagues:[{code:'kbl',name:'KBL',completed_games:9},{code:'nba',name:'NBA',completed_games:15}]},performance:{models:[]},predictions:{kbl:{predictions:[]},nba:{predictions:[]}}});
 function dashboard(fetcher){
     const root={innerHTML:'',setAttribute(){},querySelectorAll:()=>[],querySelector:()=>({})};
-    const window={SPORTON_CONFIG:{domesticApiBase:'https://api.example'}};
+    const window={SPORTON_CONFIG:{domesticApiBase:'https://api.example'},SportonTeamLogos:require('../team-logos.js')};
     vm.runInNewContext(code,{window,document:{getElementById:()=>root,addEventListener(){}},location:{hostname:'sporton.live',search:'?date=2026-10-21',href:'https://sporton.live/ai'},URLSearchParams,URL,Date,Number,AbortSignal,fetch:fetcher,history:{replaceState(){}}});
     return {app:window.SportonAI,root};
 }

@@ -71,7 +71,7 @@ test('oversized source pages are explicit errors instead of silently losing game
 
 test('ESPN collector merges UTC days into one KST day and marks partial failures', async () => {
     const { collectLeague } = require('../server/overseas.cjs');
-    const ev = { id: '42', date: '2025-05-01T01:00:00Z', status: { type: { state: 'post', completed: true } }, competitions: [{ competitors: [{ homeAway: 'home', team: { displayName: 'A' }, score: '100' }, { homeAway: 'away', team: { displayName: 'B' }, score: '99' }] }] };
+    const ev = { id: '42', date: '2025-05-01T01:00:00Z', status: { type: { state: 'post', completed: true } }, competitions: [{ competitors: [{ homeAway: 'home', team: { id:'1', displayName: 'A' }, score: '100' }, { homeAway: 'away', team: { id:'2', displayName: 'B' }, score: '99' }] }] };
     const result = await collectLeague('nba', '2025-05-01', async url => ({ ok: true, json: async () => ({ events: [ev] }) }));
     assert.equal(result.state, 'ok');
     assert.equal(result.matches.length, 1);

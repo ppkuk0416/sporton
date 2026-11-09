@@ -1,5 +1,6 @@
 'use strict';
 const C = require('../sports-core.js');
+const {inspectFeed}=require('./team-data.cjs');
 const rawCache = new Map(), rawPending = new Map(), feedCache = new Map();
 async function raw(league, date, fetcher = fetch) {
     const key = league.id + ':' + date;
@@ -36,6 +37,7 @@ async function collectLeague(leagueId, date, fetcher = fetch) {
     good.forEach(r => r.value.data.events.forEach(ev => events.set(ev.id, ev)));
     const matches = C.normalizeESPN({ events: [...events.values()] }, league).filter(m => m.rawDate === date);
     const feed = { leagueId, name: league.name, state: good.length === 2 ? 'ok' : 'stale', matches, fetchedAt: new Date(Math.min(...good.map(r=>Date.parse(r.value.fetchedAt)))).toISOString() };
+    if(inspectFeed(feed,date).length)return old?{...old,state:'stale'}:{leagueId,name:league.name,state:'error',matches:[],fetchedAt:null,errorCodes:['invalid-payload']};
     if (good.length === 2) {
         feedCache.set(key, feed);
         if (feedCache.size > 128) feedCache.delete(feedCache.keys().next().value);

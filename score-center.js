@@ -157,7 +157,7 @@
                 <div class="score-filter-row">
                     <div class="score-status-tabs" aria-label="경기 상태">
                         <button class="score-chip active" data-status="all">전체</button>
-                        <button class="score-chip" data-status="live">🔴 진행 중</button>
+                        <button class="score-chip" data-status="live"><span class="score-live-dot" aria-hidden="true"></span>진행 중</button>
                         <button class="score-chip" data-status="upcoming">예정</button>
                         <button class="score-chip" data-status="finished">종료</button>
                         <button class="score-chip" data-status="favorites">★ 관심 경기</button>
@@ -165,7 +165,7 @@
                     </div>
 
                 </div>
-                <details class="score-extra-filters" ${this.query ? 'open' : ''}><summary>필터·검색</summary><div class="score-extra-content">                <div class="score-region-tabs" aria-label="경기 지역">
+                <details class="score-extra-filters" ${this.query ? 'open' : ''}><summary>필터·검색</summary><div class="score-extra-content"><div class="score-mobile-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>                <div class="score-region-tabs" aria-label="경기 지역">
                     <button class="score-chip" data-region="kr">🇰🇷 국내</button>
                     <button class="score-chip" data-region="world">해외</button>
                     <button class="score-chip" data-region="all">전체</button>
@@ -251,7 +251,7 @@
         },
         toggleTeam(match, side) {
             const key = C.teamKey(match, side);
-            this.favoriteTeams.has(key) ? this.favoriteTeams.delete(key) : this.favoriteTeams.set(key,{name:match[side+'Team'],leagueId:match.leagueId});
+            this.favoriteTeams.has(key) ? this.favoriteTeams.delete(key) : this.favoriteTeams.set(key,{name:match[side+'Team'],leagueId:match.leagueId,logoUrl:window.SportonTeamLogos.url(match,side)});
             try { localStorage.setItem('sporton_favorite_teams',JSON.stringify([...this.favoriteTeams])); } catch {}
             this.render();
         },
@@ -302,7 +302,10 @@
             document.querySelectorAll('[data-score-nav]').forEach(b => b.classList.toggle('active', app.currentView==='home' && b.dataset.scoreNav === (this.status === 'live' ? 'live' : this.status === 'myteams' ? 'myteams' : 'today')));
             const teamContainer = document.getElementById('scoreFavoriteTeams'); teamContainer.replaceChildren();
             for (const [key, team] of this.favoriteTeams) {
-                const b = document.createElement('button');b.className='score-chip';b.textContent='♡ '+team.name;b.setAttribute('aria-label',team.name+' 경기 보기');
+                const observed = this.feeds.flatMap(feed => feed.matches).find(match => [C.teamKey(match,'home'),C.teamKey(match,'away')].includes(key));
+                const leagueId = team.leagueId || key.split(':')[0];
+                const logoUrl = team.logoUrl || (observed && window.SportonTeamLogos.url(observed,C.teamKey(observed,'home')===key?'home':'away'));
+                const b = document.createElement('button');b.className='score-chip score-team-filter';b.append(window.SportonTeamLogos.create({homeTeam:team.name,homeLogoUrl:logoUrl,leagueId,region:C.LEAGUES.find(league=>league.id===leagueId)?.region,homeTeamId:key.slice(leagueId.length+1)},'home'),document.createTextNode(team.name));b.setAttribute('aria-label',team.name+' 경기 보기');
                 b.classList.toggle('active',this.activeTeam===key);b.setAttribute('aria-pressed',String(this.activeTeam===key));
                 b.addEventListener('click',()=>{this.query='';document.getElementById('scoreSearch').value='';this.activeTeam=key;this.status='myteams';this.region='all';this.leagueId='';app.filterSport('all');this.saveLocation();});teamContainer.append(b);
             }
@@ -384,8 +387,7 @@
             const teams = document.createElement('span'); teams.className = 'score-team-pair';
             for (const side of ['away', 'home']) {
                 const team = document.createElement('span'); team.className = 'score-team';
-                const logo = C.safeUrl(m[side + 'LogoUrl']);
-                if (logo) { const img = document.createElement('img'); img.src = logo; img.alt = ''; img.loading = 'lazy'; img.addEventListener('error', () => img.remove()); team.append(img); }
+                team.append(window.SportonTeamLogos.create(m, side));
                 const name = document.createElement('span'); name.textContent = m[side + 'Team']; team.append(name);
                 const value = document.createElement('b'); value.textContent = m[side + 'Score'] == null ? '—' : String(m[side + 'Score']); team.append(value); teams.append(team);
             }
@@ -433,7 +435,7 @@
             document.getElementById('gameDetailMeta').textContent=m.league+' · '+C.LABELS[m.status]+' · 한국 시간';
             const sb=document.getElementById('gameDetailScoreboard');sb.style.display='flex';sb.replaceChildren();
             for(const side of ['away','home']) {
-                const team=el('div',m[side+'Team'],'gd-team');
+                const team=el('div',null,'gd-team');team.append(window.SportonTeamLogos.create(m,side),el('span',m[side+'Team'],'gd-team-name'));
                 const follow=el('button',Center.favoriteTeams.has(C.teamKey(m,side))?'♥ 관심 팀':'♡ 관심 팀','score-follow');
                 follow.setAttribute('aria-label',m[side+'Team']+' 관심 팀');follow.setAttribute('aria-pressed',String(Center.favoriteTeams.has(C.teamKey(m,side))));
                 follow.addEventListener('click',()=>{Center.toggleTeam(m,side);this.render();});team.append(follow);sb.append(team);

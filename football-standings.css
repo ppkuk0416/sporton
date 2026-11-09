@@ -1,10 +1,33 @@
-.football-standings{border-bottom:1px solid var(--score-line);padding:12px 16px;color:#172b45;min-width:0}
-.football-standings[hidden],#footballStandingsPanel[hidden]{display:none!important}
-.football-view-tabs{display:flex;gap:8px;margin-bottom:8px}.football-view-tabs button,.football-standings-controls button{min-height:44px;border:1px solid var(--score-line);border-radius:8px;background:#fff;color:#526982;padding:8px 16px;font:inherit;cursor:pointer}.football-view-tabs button.active{background:#007b60;border-color:#007b60;color:white;font-weight:700}
-.football-standings-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:8px}.football-standings-controls label{display:flex;align-items:center;gap:8px;font-weight:700}.football-standings-controls select{min-height:44px;max-width:100%;border:1px solid var(--score-line);background:white;color:#172b45;border-radius:8px;padding:8px;font:inherit}.football-standings-controls button:disabled{opacity:.6}
-#footballStandingsStatus,#footballStandingsSeason{font-size:12px;line-height:1.6;margin:8px 0;color:#526982}#footballStandingsContent{min-height:60px}
-.football-table-group h3{font-size:14px;margin:16px 0 8px}.football-table-scroll{overflow:auto;max-width:100%;border:1px solid var(--score-line);border-radius:8px;max-height:65vh}
-.football-table{width:100%;min-width:660px;border-collapse:separate;border-spacing:0;font-size:12px;font-variant-numeric:tabular-nums;background:white}
-.football-table caption{text-align:left;padding:8px;color:#526982}.football-table td,.football-table th{padding:10px 7px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--score-line);background:white}.football-table thead th{position:sticky;top:0;z-index:2;background:#f0f6fa}.football-table tbody th{text-align:left;min-width:135px;max-width:210px}.football-table tbody th span{white-space:normal;vertical-align:middle}.football-table img{vertical-align:middle;object-fit:contain;margin-right:6px}.football-table td:nth-child(10){color:#007b60;font-weight:800}.football-form{display:flex;gap:3px}.football-form>span{display:inline-block;border-radius:3px;padding:3px;color:white}.football-form-W{background:#007b60}.football-form-D{background:#687b8f}.football-form-L{background:#ad3b44}
-.football-standings-open #homeGamesContainer{display:none!important}
-@media(max-width:600px){.football-standings{padding:10px}.football-table tbody th{position:sticky;left:0;z-index:1;box-shadow:2px 0 4px #0001}.football-table-scroll{max-height:60vh}.football-view-tabs button{flex:1}}
+.football-standings { min-width: 0; padding: var(--ui-space-3); border-bottom: 1px solid var(--score-line); color: var(--score-ink); }
+.football-standings[hidden], #footballStandingsPanel[hidden] { display: none !important; }
+.football-view-tabs { display: flex; gap: var(--ui-space-1); margin-bottom: var(--ui-space-1); }
+.football-view-tabs button, .football-standings-controls button { min-height: 48px; padding: var(--ui-space-1) var(--ui-space-2); border: 1px solid var(--score-line); border-radius: 16px; background: var(--score-surface); color: var(--score-muted); font: inherit; font-size: 14px; cursor: pointer; }
+.football-view-tabs button.active { border-color: transparent; background: var(--score-accent); color: var(--score-on-accent); font-weight: 700; }
+.football-standings-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--ui-space-2); margin-top: var(--ui-space-2); }
+.football-standings-controls label { display: flex; align-items: center; gap: var(--ui-space-1); max-width: 100%; font-size: 14px; font-weight: 650; }
+.football-standings-controls select { max-width: 100%; min-width: 0; min-height: 48px; padding: var(--ui-space-1); border: 1px solid var(--score-line); border-radius: 16px; background: var(--score-surface); color: var(--score-ink); font: inherit; }
+.football-standings-controls button:disabled { opacity: .6; }
+#footballStandingsStatus, #footballStandingsSeason { margin-block: var(--ui-space-2); color: var(--score-muted); font-size: 12px; line-height: 24px; }
+#footballStandingsContent { min-height: 64px; }
+.football-table-group h3 { margin: var(--ui-space-3) 0 var(--ui-space-2); font-size: 16px; }
+.football-table-scroll { max-width: 100%; max-height: 65vh; overflow: auto; border: 1px solid var(--score-line); border-radius: 16px; }
+.football-table { width: 100%; min-width: 744px; border-collapse: separate; border-spacing: 0; background: var(--score-surface); font-size: 13px; font-variant-numeric: tabular-nums; }
+.football-table caption { padding: var(--ui-space-2); color: var(--score-muted); text-align: left; }
+.football-table td, .football-table th { padding: var(--ui-space-2) var(--ui-space-1); border-bottom: 1px solid var(--score-line); background: var(--score-surface); text-align: center; white-space: nowrap; }
+.football-table thead th { position: sticky; z-index: 2; top: 0; background: var(--score-panel); color: var(--score-muted); font-weight: 600; }
+.football-table tbody th { min-width: 160px; max-width: 240px; text-align: left; }
+.football-table tbody th span { white-space: normal; vertical-align: middle; }
+.football-table img { width: 24px; height: 24px; margin-right: var(--ui-space-1); object-fit: contain; vertical-align: middle; }
+.football-table td:nth-child(10) { color: var(--score-accent); font-weight: 750; }
+.football-form { display: flex; gap: var(--ui-space-1); }
+.football-form > span { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 16px; font-size: 11px; }
+.football-form-W { background: var(--score-form-win-bg); color: var(--score-form-win-ink); }
+.football-form-D { background: var(--score-form-draw-bg); color: var(--score-form-draw-ink); }
+.football-form-L { background: var(--score-form-loss-bg); color: var(--score-form-loss-ink); }
+.football-standings-open #homeGamesContainer { display: none !important; }
+@media (max-width: 768px) {
+    .football-standings { padding: var(--ui-space-2); }
+    .football-table tbody th { position: sticky; z-index: 1; left: 0; box-shadow: 2px 0 4px #191F280A; }
+    .football-table-scroll { max-height: 60vh; }
+    .football-view-tabs button { flex: 1; }
+}

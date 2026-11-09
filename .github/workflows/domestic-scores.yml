@@ -6,6 +6,7 @@ on:
       - '.github/workflows/domestic-scores.yml'
       - 'scripts/collect-domestic.cjs'
       - 'scripts/collect-standings.cjs'
+      - 'scripts/manage-team-data.cjs'
       - 'football-standings.js'
       - 'server/**'
       - 'sports-core.js'

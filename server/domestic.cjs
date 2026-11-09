@@ -1,5 +1,6 @@
 'use strict';
 const core = require('../sports-core.js');
+const {inspectFeed}=require('./team-data.cjs');
 const domestic = core.LEAGUES.filter(l => l.source === 'naver');
 const inflight = new Map();
 const cache = new Map();
@@ -21,7 +22,9 @@ async function collect(from, to, fetcher = fetch) {
             const data = await res.json();
             const matches = core.normalizeNaver(data, league);
             if (Number(data.result.gameTotalCount) > data.result.games.length) throw new Error('응답 경기 수 제한 초과');
-            return { leagueId: league.id, name: league.name, state: 'ok', fetchedAt, matches };
+            const feed = { leagueId: league.id, name: league.name, state: 'ok', fetchedAt, matches };
+            if(inspectFeed(feed,from,to).length)throw Error('Invalid domestic team or match data');
+            return feed;
         } catch (error) {
             return { leagueId: league.id, name: league.name, state: 'error', fetchedAt, matches: [], error: '데이터 공급 연결 실패' };
         }

@@ -63,7 +63,7 @@
                 else{
                     const {match:m,feed}=item;
                     const detail=element('button','watchboard-detail');detail.type='button';detail.setAttribute('aria-label',m.awayTeam+' 대 '+m.homeTeam+' 경기 상세');detail.onclick=()=>app.showGameDetail(m);
-                    for(const side of ['away','home']){const team=element('span','watchboard-team');team.append(element('span','',m[side+'Team']),element('b','',m[side+'Score']==null?'—':String(m[side+'Score'])));detail.append(team);}
+                    for(const side of ['away','home']){const team=element('span','watchboard-team'),name=element('span','watchboard-team-name');name.append(root.SportonTeamLogos.create(m,side),element('span','',m[side+'Team']));team.append(name,element('b','',m[side+'Score']==null?'—':String(m[side+'Score'])));detail.append(team);}
                     const state=freshness?.feedState(feed) || feed.state;
                     const fresh=state==='ok'&&feed.mode==='poll'&&navigator.onLine;
                     card.classList.toggle('watchboard-stale',!fresh);

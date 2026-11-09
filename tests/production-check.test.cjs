@@ -14,7 +14,7 @@ test('production monitor detects an old release even when every page returns HTT
         if(u.pathname==='/api/ai/status')return Response.json({generatedAt:new Date().toISOString()},{headers});
         if(u.pathname==='/data/ai/snapshot.json')return Response.json({version:1,date:'2026-10-21',generatedAt:new Date().toISOString(),status:{leagues:[]},performance:{models:[]},predictions:{kbl:{predictions:[]},nba:{predictions:[]}}});
         if(u.pathname.endsWith('.js')||u.pathname.endsWith('.css'))return new Response('',{headers:{'Content-Type':u.pathname.endsWith('.js')?'text/javascript':'text/css'}});
-        return new Response(u.pathname==='/'?'<a href="/ai.html">AI</a>':old?html.replaceAll('20261021-users1','old'):html);
+        return new Response(u.pathname==='/'?'<a href="/ai.html">AI</a>':old?html.replace(/ai-dashboard\.(js|css)\?v=[^" ]+/g,'ai-dashboard.$1?v=old'):html);
     };
     assert.equal((await checkProduction(fetcher)).ok,true);old=true;
     const report=await checkProduction(fetcher);assert.equal(report.ok,false);assert.equal(report.results.find(r=>r.name==='AI page and release').ok,false);
