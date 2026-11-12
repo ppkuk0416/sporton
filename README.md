@@ -3,13 +3,19 @@
 국내 KBO, K리그1·2, KBL, WKBL, V리그 남녀와 해외 ESPN 경기를 한국 시간으로 탐색합니다. 날짜·종목·지역·진행 상태·팀 검색·관심 경기를 제공합니다. 취소·연기·중단과 공급 오류를 경기 없음으로 처리하지 않습니다.
 
 ## 실행과 검증
-Node.js 22 이상, 외부 패키지 없이 실행합니다.
+Node.js 22 이상에서 실행합니다. 브라우저 배포 파일은 저장소에 포함되어 있습니다. UI 소스를 변경할 때는 고정된 의존성을 설치한 뒤 다시 빌드합니다.
 ```sh
+npm ci --ignore-scripts
+npm run build
 node server/server.cjs
 # http://localhost:4173
 node --test tests/*.test.cjs
 npm run check
 ```
+
+## Astryx UI
+
+[Meta Astryx](https://github.com/meta/astryx) 0.7.14의 실제 TextInput, Selector, Button, IconButton을 검색·리그/지역 필터·새로고침에 적용했습니다. 모바일 터치 환경에서는 리그 선택기가 하단 시트로 열립니다. 차콜/라임, 시간순 타임라인, 경기 자료는 유지합니다. 의존성·라이선스·빌드 경로는 [적용 기록](docs/ASTRYX_INTEGRATION.md)을 참고하세요.
 
 ## 팀과 기록 데이터 관리
 

@@ -19,6 +19,8 @@ exclude:
   - ai-engine
   - docs
   - pm-skills
+  - licenses
+  - src
   - scripts
   - server
   - tests

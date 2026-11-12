@@ -1,0 +1,45 @@
+/* SPORTON maps Astryx's semantic theme to the approved charcoal/lime tokens. */
+[data-astryx-theme="neutral"] {
+    --font-family-body: var(--font-body);
+    --font-family-heading: var(--font-body);
+    --color-background-body: var(--score-ground);
+    --color-background-surface: var(--score-panel);
+    --color-background-card: var(--score-ground);
+    --color-background-popover: var(--score-panel);
+    --color-background-muted: var(--score-panel);
+    --color-text-primary: var(--score-ink);
+    --color-text-secondary: var(--score-muted);
+    --color-text-disabled: var(--score-disabled-ink);
+    --color-accent: var(--score-accent);
+    --color-accent-muted: var(--score-accent-soft);
+    --color-text-accent: var(--score-accent);
+    --color-on-accent: var(--score-on-accent);
+    --color-border: var(--score-field-line);
+    --color-border-emphasized: var(--score-field-line);
+    --radius-element: 8px;
+    --radius-inner: 8px;
+    --radius-container: 16px;
+}
+.astryx-sporton { min-width: 0; font-family: var(--font-body); }
+.astryx-search-mount { grid-column: 1; grid-row: 1; }
+.astryx-refresh-mount { grid-column: 3; grid-row: 1; }
+.astryx-search-mount .astryx-text-input { min-height: 48px; padding-inline: 16px; gap: 8px; }
+.astryx-sporton .astryx-selector { min-height: 48px; }
+.astryx-search-mount input { min-height: 48px; font-size: 14px; }
+.astryx-sporton .astryx-button, .astryx-sporton [role="combobox"] { min-height: 48px; font-family: var(--font-body); }
+.astryx-sporton .astryx-button { border-radius: 8px; }
+.astryx-refresh-button { width: 100%; }
+.astryx-filter-fields { display: grid; grid-template-columns: minmax(240px,1fr) auto auto; align-items: end; gap: 24px; width: 100%; }
+.astryx-filters-mount > div { width: 100%; }
+.astryx-region-field { display: grid; gap: 8px; }
+.astryx-field-label { font-size: 14px; line-height: 20px; font-weight: 550; color: var(--score-ink); }
+.astryx-region-buttons { display: flex; gap: 8px; }
+.astryx-region-buttons > button { flex: 1; }
+.astryx-controls-ready .score-extra-content { padding: 24px; }
+[data-astryx-theme="neutral"] [role="option"] { min-height: 48px; }
+@media (max-width: 768px) {
+    .astryx-filter-fields { grid-template-columns: minmax(0,1fr); gap: 24px; }
+    .astryx-filter-reset { justify-self: start; }
+    .astryx-controls-ready .score-extra-content { padding: 16px; }
+    .astryx-refresh-mount .astryx-button { width: 48px; padding-inline: 0; }
+}

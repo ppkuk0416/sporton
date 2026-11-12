@@ -2,7 +2,7 @@
 
 SPORTON lets Korean-speaking users find domestic and overseas sports schedules, scores and results in Korean time, follow teams, pin matches and inspect supported match details.
 
-The application uses static HTML/CSS and vanilla JavaScript. The optional Node.js server serves the site and read-only score/detail APIs. Node.js 22+ is required; the prepared cloud uses Node 24. There is no bundler, TypeScript project or application package dependency to install.
+The application uses static HTML/CSS and vanilla JavaScript for scores, with progressively enhanced React/Astryx control islands for search, league/region filters and refresh. The optional Node.js server serves the site and read-only score/detail APIs. Node.js 22+ is required; the prepared cloud uses Node 24. React 19, Astryx 0.7.14 and StyleX are pinned in package-lock.json; esbuild produces committed static browser assets with `npm run build`. There is no TypeScript project. The Node score server still runs independently of UI build dependencies.
 
 Product facts and constraints:
 

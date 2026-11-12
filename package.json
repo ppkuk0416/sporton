@@ -13,6 +13,17 @@
     "check": "node scripts/check.cjs",
     "data:audit": "node scripts/manage-team-data.cjs audit",
     "data:sync": "node scripts/manage-team-data.cjs sync",
-    "skills:check": "node scripts/check-skills.cjs"
+    "skills:check": "node scripts/check-skills.cjs",
+    "build": "node scripts/build-ui.cjs"
+  },
+  "dependencies": {
+    "@astryxdesign/core": "0.7.14",
+    "@astryxdesign/theme-neutral": "0.7.14",
+    "@stylexjs/stylex": "0.19.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   }
 }

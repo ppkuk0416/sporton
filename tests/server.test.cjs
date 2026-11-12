@@ -26,5 +26,7 @@ test('HTTP routes reject bad ranges, private paths, unsupported methods and unkn
     assert.equal((await fetch(base + '/server/server.cjs')).status, 404);
     assert.equal((await fetch(base + '/index.html', { method: 'POST' })).status, 405);
     assert.equal((await fetch(base + '/sports-core.js')).status, 200);
+    for(const [file,type] of [['astryx-ui.js','javascript'],['astryx-ui.css','text/css'],['third-party-notices.txt','text/plain']]){const asset=await fetch(base+'/'+file);assert.equal(asset.status,200,file);assert.ok(asset.headers.get('content-type').includes(type),file);await asset.body.cancel();}
+    assert.equal((await fetch(base+'/src/ui/astryx-controls.jsx')).status,404);
     assert.equal((await fetch(base + '/missing.html')).status, 404);
 });

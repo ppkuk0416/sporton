@@ -220,6 +220,7 @@
             document.addEventListener('visibilitychange', () => { if (!document.hidden && app.currentView === 'home') this.load(); });
             window.addEventListener('online', () => this.load(true));
             window.addEventListener('offline', () => this.render());
+            window.SportonAstryx?.mount(this,C,app);
             this.render();
         },
         selectDate(date) {
@@ -273,7 +274,9 @@
             const bar=document.getElementById('scoreActiveFilters');const signature=JSON.stringify(items);
             if(signature!==this.filterSignature){this.filterSignature=signature;bar.replaceChildren();bar.hidden=!items.length;for(const [key,label] of items){const b=document.createElement('button');b.className='score-chip score-filter-token';b.dataset.clearFilter=key;b.textContent=label+' ×';b.setAttribute('aria-label',label+' 필터 해제');b.onclick=()=>this.clearFilter(key);bar.append(b);}if(items.length){const reset=document.createElement('button');reset.className='score-chip';reset.dataset.clearFilter='all';reset.textContent='오늘 전체 경기';reset.onclick=()=>this.clearFilter('all');bar.append(reset);}}
             const result=document.getElementById('scoreResultCount');const text=this.busy?'경기 확인 중':(items.length?'필터 적용 · ':'')+count+'경기';if(result.textContent!==text)result.textContent=text;
+            if (!window.SportonAstryx?.sync) {
             const refresh=document.getElementById('scoreRefresh');refresh.disabled=this.busy;refresh.querySelector('.score-refresh-label').textContent=this.busy?'조회 중':'새로고침';refresh.setAttribute('aria-label',this.busy?'경기 조회 중':'경기 새로고침');
+            }
         },
         toggleTeam(match, side) {
             const key = C.teamKey(match, side);
@@ -321,6 +324,7 @@
             const container = document.getElementById('homeGamesContainer');
             if (!container || !document.getElementById('scoreDate')) return;
             this.renderDates();
+            window.SportonAstryx?.sync?.();
             const feeds = this.lastDate === this.date ? this.feeds.filter(l =>
                 (this.region === 'all' || l.region === this.region) &&
                 (app.currentSport === 'all' || l.sport === app.currentSport)).map(f => ({...f,state:C.feedState(f)})) : [];
@@ -428,6 +432,7 @@
     };
     window.SportonScores = Scores;
     window.SportonCenter = Center;
+    window.addEventListener('sporton:astryx-ready',()=>{if(document.getElementById('scoreDate')&&!window.SportonAstryx.sync){window.SportonAstryx.mount(Center,C,app);Center.render();}});
     HomeDashboard.fetchAndRender = () => document.getElementById('scoreDate') ? Center.load() : Promise.resolve();
     HomeDashboard.startAutoRefresh = function () {
         this.stopAutoRefresh();

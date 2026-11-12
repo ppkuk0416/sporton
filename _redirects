@@ -10,6 +10,8 @@
 /.github/* / 302
 /.sporton/* / 302
 /server/* / 302
+/src/* / 302
+/licenses/* / 302
 /scripts/* / 302
 /tests/* / 302
 /docs/* / 302

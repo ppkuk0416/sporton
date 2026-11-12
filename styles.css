@@ -46,7 +46,7 @@
     --transition-base: 300ms ease-in-out;
     --transition-slow: 500ms ease-in-out;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
+@layer reset { * { margin: 0; padding: 0; box-sizing: border-box; } }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
 h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 600; line-height: 1.2; }

@@ -7,6 +7,10 @@ on:
       - '*.css'
       - '*.js'
       - 'server/**'
+      - 'src/**'
+      - 'scripts/build-ui.cjs'
+      - 'package.json'
+      - 'package-lock.json'
       - 'manifest.json'
       - '_config.yml'
       - '_redirects'
@@ -39,6 +43,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - name: Verify committed browser bundles
+        run: git diff --exit-code -- astryx-ui.js astryx-ui.css astryx-ui.js.LEGAL.txt third-party-notices.txt
       - name: Validate the exact checkout before publishing
         run: npm run check
       - uses: actions/configure-pages@v5
@@ -47,7 +55,7 @@ jobs:
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp _redirects index.html privacy.html tokens.css styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
+          cp astryx-ui.js astryx-ui.css astryx-ui.js.LEGAL.txt third-party-notices.txt _redirects index.html privacy.html tokens.css styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
           mkdir -p _site/data
           cp -R data/domestic data/overseas data/standings data/teams _site/data/
       - uses: actions/upload-pages-artifact@v3
