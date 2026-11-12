@@ -1,6 +1,4 @@
-/* Hallmark · checked: 2026-11-12 · genre: modern-minimal (inferred)
- * built: the project · redesign: polish · shape: app screen · v2.0.0
- * floor: 0 FAIL, 0 open REFLEX, 2 waived · finish-review: subagent, ship, 0 findings, gap none */
+/* SPORTON shared theme tokens; timeline redesign. */
 :root {
     --ui-space-1: 8px;
     --ui-space-2: 16px;
@@ -19,7 +17,7 @@
     --score-ink: #F1F3EC;
     --score-muted: #ADB8B1;
     --score-live: #D3F897;
-    --score-radius: 24px;
+    --score-radius: 16px;
     --score-warning-ink: #E8C78F;
     --score-warning-surface: rgba(144, 103, 48, .12);
     --score-form-win-bg: #EAF7F0;

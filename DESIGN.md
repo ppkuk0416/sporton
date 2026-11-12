@@ -1,5 +1,5 @@
 ---
-name: SPORTON charcoal glass
+name: SPORTON charcoal timeline
 description: Korean sports score dashboard with clear data states
 colors:
   primary: "#D3F897"
@@ -9,8 +9,8 @@ colors:
   secondary-text: "#ADB8B1"
   on-primary: "#1B2418"
 rounded:
-  control: "999px"
-  panel: "24px"
+  control: "8px"
+  panel: "16px"
 spacing:
   sm: "8px"
   md: "16px"
@@ -28,19 +28,19 @@ Use charcoal surfaces and lime selection states, with dark text on filled lime c
 
 ## Typography
 
-Use the existing system Korean sans stack and tabular score/time numerals. Titles are 36px on desktop and 28px on mobile. Avoid decorative uppercase kickers; give the actual page title a clear hierarchy.
+Use the existing system Korean sans stack and tabular score/time numerals. Titles are 32px on desktop and 28px on mobile. Avoid decorative uppercase kickers; give the actual page title a clear hierarchy.
 
 ## Layout
 
-Use the 8px spacing grid and capped centered layout. Match cards use two columns on desktop and one on mobile. Mobile navigation respects the safe area. Filters and tables scroll within their own regions rather than causing page overflow.
+Use the 8px spacing grid and capped centered layout. The user approved a chronological timeline: a seven-day date strip above a single match list, with a start-time axis on the left. Desktop rows align opposing teams and scores horizontally; mobile stacks the two teams inside each row. Mobile navigation respects the safe area. Filters and tables scroll within their own regions rather than causing page overflow.
 
 ## Elevation & Depth
 
-Keep the requested diffuse background lighting and translucent header/panel surfaces. Restrict effects to existing containers; avoid adding blur to every repeated row.
+Use a solid charcoal ground and restrained tonal panels for the approved timeline redesign. Separate repeated rows with fine rules; keep scores and time labels prominent.
 
 ## Shapes
 
-Use 24px content panels, 16px nested panels, capsule controls and a consistent SVG stroke system. Keep artwork proportions intact.
+Use 16px content panels and 8px controls and a consistent SVG stroke system. Keep artwork proportions intact.
 
 ## Components
 

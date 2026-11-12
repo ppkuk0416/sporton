@@ -1,3 +1,7 @@
+/ai / 302
+/ai/ / 302
+/ai.html / 302
+/data/ai/* / 302
 # Cloudflare Pages: keep repository-only files outside the visitor flow.
 # GitHub's legacy builder uses _config.yml for the same exclusions.
 /.agents/* / 302

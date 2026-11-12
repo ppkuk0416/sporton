@@ -1,8 +1,8 @@
 # SPORTON
 
-SPORTON lets Korean-speaking users find domestic and overseas sports schedules, scores and results in Korean time, follow teams, pin matches and inspect supported match details. The AI page exposes the available KBL/NBA schedules and analysis status; absent predictions or training data stay unavailable.
+SPORTON lets Korean-speaking users find domestic and overseas sports schedules, scores and results in Korean time, follow teams, pin matches and inspect supported match details.
 
-The application uses static HTML/CSS and vanilla JavaScript. The optional Node.js server serves the site and read-only score/detail/AI APIs. Node.js 22+ is required; the prepared cloud uses Node 24. There is no bundler, TypeScript project or application package dependency to install.
+The application uses static HTML/CSS and vanilla JavaScript. The optional Node.js server serves the site and read-only score/detail APIs. Node.js 22+ is required; the prepared cloud uses Node 24. There is no bundler, TypeScript project or application package dependency to install.
 
 Product facts and constraints:
 
@@ -11,6 +11,6 @@ Product facts and constraints:
 - A logo URL does not prove that its asset loaded or was independently verified. Unknown team artwork has a neutral unavailable state.
 - Delayed and saved data keep their original timestamps and an explicit warning. Do not present these states as live.
 - Firebase community/chat configuration is still pending; the score workflow runs independently. Do not invent credentials or enable unrestricted database writes.
-- The user selected a charcoal dashboard with diffuse lighting, translucent surfaces, lime accents, rounded controls and an 8px grid. Quality refinements preserve that choice.
+- The user approved a structural redesign into a chronological match timeline, retaining charcoal/lime identity, team logos and the 8px grid. AI analysis was explicitly removed; archived offline engine files are not an active product feature.
 
 This captures the user's existing brief and current code, not claims of a new deployment, connected Firebase project, current upstream data or a completed security audit.

@@ -19,19 +19,9 @@ npm run check
 
 GitHub 원본을 검토해 Impeccable, Cloudflare security-audit, ECC verification-loop를 프로젝트에 한정해 추가했습니다. 선택 이유·적용 결과·검증 한계는 [스킬 검토 보고서](docs/SKILLS_REVIEW.md), 작업별 사용 기준은 [AGENTS.md](AGENTS.md)를 참고하세요. 전역 훅·자동 기억 수집·MCP 설정은 설치하지 않습니다. `npm run skills:check`로 고정한 원본 파일의 무결성을 확인합니다.
 
-## AI 분석 엔진
+## AI 분석 서비스 종료
 
-KBL/NBA 경기 결과를 리그별로 분리해 저장하고, 시간순 walk-forward 검증을 거친 baseline 모델로 경기 전 확률·공정 핸디·예상 총점을 생성하는 독립 모듈이 추가되었습니다. 실제 배당·부상 데이터가 없으면 추천은 `PASS`이며 임의 수치로 대체하지 않습니다.
-
-- 구조·운영 방법: [`docs/AI_SYSTEM.md`](docs/AI_SYSTEM.md)
-- 공급원·이용 제한: [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md)
-- 환경변수 예시: [`.env.example`](.env.example)
-
-```sh
-npm run ai:migrate
-npm run ai:collect -- --from 2026-10-16 --to 2026-10-17
-npm run ai:daily
-```
+사용자 요청으로 AI 분석 화면, 메뉴, 공개 자료 게시와 예약 파이프라인을 제거했습니다. 이전 개발용 엔진 및 저장 자료는 기존 기록 보존용이며 운영 사이트에서 제공하지 않습니다.
 
 ## 현재 운영 서버
 

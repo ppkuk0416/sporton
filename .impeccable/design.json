@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T13:13:04.400812+00:00",
+  "title": "Design System: SPORTON charcoal timeline",
+  "extensions": {
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "768px"
+      },
+      {
+        "name": "stacked-teams",
+        "value": "1100px"
+      }
+    ],
+    "shadows": [
+      {
+        "name": "scoreboard",
+        "value": "none",
+        "purpose": "Fine rules and tonal surfaces separate timeline rows."
+      }
+    ],
+    "motion": [
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Disable legacy animation and transitions for reduced-motion preference."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Selected date",
+      "kind": "button",
+      "description": "Current date in the seven-day strip.",
+      "html": "<button class=\"score-day\" aria-pressed=\"true\"><span>오늘</span><b>12</b></button>",
+      "css": ".score-day{display:grid;justify-items:center;gap:8px;min-width:48px;min-height:72px;padding:8px;border:0;border-radius:8px;background:var(--score-accent,#D3F897);color:var(--score-on-accent,#1B2418);font-family:system-ui}.score-day span{font-size:12px}.score-day b{font-size:22px;font-variant-numeric:tabular-nums}.score-day:focus-visible{outline:2px solid var(--score-accent,#D3F897);outline-offset:3px}"
+    }
+  ]
+}

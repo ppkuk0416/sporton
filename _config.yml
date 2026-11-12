@@ -14,6 +14,7 @@ exclude:
   - README.md
   - OPERATIONS.md
   - PRODUCT_STRATEGY.md
+  - data/ai
   - ai-engine
   - docs
   - pm-skills

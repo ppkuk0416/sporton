@@ -1,23 +1,23 @@
 {
   "name": "SPORTON — 실시간 라이브스코어",
   "short_name": "SPORTON",
-  "description": "NBA, EPL, K리그, KBO 실시간 스코어 & 배당률 & 예측",
+  "description": "국내·해외 스포츠 경기 일정, 점수와 결과를 시간순으로 확인하세요.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A1628",
-  "theme_color": "#0A1628",
+  "background_color": "#191D1C",
+  "theme_color": "#191D1C",
   "lang": "ko",
   "orientation": "portrait-primary",
   "categories": ["sports", "news"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230A1628'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-family='sans-serif'>⚽</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%23191D1C'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-family='sans-serif'>⚽</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230A1628'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='280' font-family='sans-serif'>⚽</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%23191D1C'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='280' font-family='sans-serif'>⚽</text></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"

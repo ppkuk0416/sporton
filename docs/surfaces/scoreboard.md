@@ -1,11 +1,21 @@
-# Scoreboard and AI schedules
+# Chronological scoreboard
 
-Mode: **Operate**.
+Mode: **Operate**. Build path: **code-led**, using the working product and real saved provider records; no approved image comp.
 
-Targets: `index.html`, `score-center.css`, `football-standings.css`, `ai.html`, `ai-dashboard.css`.
+User decisions: remove AI analysis; redesign the structure; prioritize balance and consistency; choose “시간순 경기 타임라인”. Preserve charcoal/lime, team artwork and 8px rhythm.
 
-Success means finding a date/league/team, reading a score and its freshness, pinning/following a match and opening details without losing context. On the AI surface, users distinguish schedules, available predictions and unavailable analysis.
+THESIS: Find a match by date and kickoff time, then read its score and freshness in a single chronological list.
 
-Preserve the established charcoal/glass/lime design and 8px grid. Prioritize legibility, consistent data states, keyboard access and compact mobile controls. Check actual Korean team names, long foreign names, saved snapshots, upstream failures and missing artwork at narrow, intermediate and wide widths.
+OWN-WORLD: SPORTON charcoal #191D1C ground, lime #D3F897 selection, existing Korean system sans, tabular times and scores. Real provider team artwork is the visual material. No stock imagery, invented statistics or decorative charts.
 
-The source/audit state is described in `PRODUCT.md` and `docs/DATA_OPERATIONS.md`. A clean visual detector is not proof that live data, Firebase rules or the deployed API are ready.
+STORY: Select a date, scope by sport/status/search or expanded league filters, scan actual kickoff groups, favorite or pin a match and open its details without losing context.
+
+FIRST VIEWPORT: Existing brand/navigation; actual selected-date heading and compact counts; sport tabs; seven real dates; search/filter/refresh; labeled source delay when applicable; first kickoff group and scores. Mobile prioritizes date selection, then compact stacked teams; desktop aligns teams on opposite sides of the score.
+
+FORM: seed:d6543589f6464afd. The dealt structural candidates were wide list with pinned side board, chronological timeline, and left league navigation. The user chose the timeline. Signature move: a continuous left time axis and one sticky time label per real kickoff minute. Familiar buttons, tabs, native date input and filter disclosure remain standard controls.
+
+Targets: index.html, score-center.css, score-center.js, sports-core.js, watchboard.css and football-standings.css.
+
+Invariants: existing sources/IDs/logos, real score values, delayed/stored labels, favorite/pin persistence, details/back, URL context, keyboard focus, reduced motion, 48px controls and mobile safe area. Unknown kickoff time sorts last. Sort by parsed instant, not a text clock or live-first ranking.
+
+States: loading, saved snapshot, upstream unavailable, missing logo, long names, empty search, favorite/my-team empty state and detail failure. Test 320–1920px, narrow zoom equivalent, date navigation and internal table/filter scrolling. A visual review is not proof of Firebase connectivity, live feed freshness or a completed security audit.

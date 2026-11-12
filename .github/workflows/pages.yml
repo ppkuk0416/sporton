@@ -6,7 +6,6 @@ on:
       - '*.html'
       - '*.css'
       - '*.js'
-      - 'ai-engine/**'
       - 'server/**'
       - 'manifest.json'
       - '_config.yml'
@@ -14,7 +13,7 @@ on:
       - 'data/**'
       - '.github/workflows/pages.yml'
   workflow_run:
-    workflows: ['Collect Korean scores', 'SPORTON AI pipeline']
+    workflows: ['Collect Korean scores']
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -42,22 +41,15 @@ jobs:
           node-version: '22'
       - name: Validate the exact checkout before publishing
         run: npm run check
-      - name: Use the AI snapshot from the completed pipeline
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'SPORTON AI pipeline'
-        uses: actions/download-artifact@v4
-        with:
-          name: sporton-ai-public
-          path: data/ai
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
       - uses: actions/configure-pages@v5
       - name: Audit team and record data
         run: npm run data:audit
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp _redirects index.html ai.html privacy.html tokens.css styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js ai-dashboard.js ai-dashboard.css football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
-          cp -R data _site/
+          cp _redirects index.html privacy.html tokens.css styles.css app.js sports-core.js team-logos.js score-center.js score-center.css watchboard.js watchboard.css score-alerts.js score-diagnostics.js football-standings.js football-standings.css sporton-config.js sw.js manifest.json CNAME robots.txt sitemap.xml _site/
+          mkdir -p _site/data
+          cp -R data/domestic data/overseas data/standings data/teams _site/data/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

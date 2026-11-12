@@ -183,12 +183,9 @@
                 </div>
 </div></details>
                 <div class="score-results-tools"><span id="scoreResultCount" aria-live="polite"></span><button id="scoreRefresh" class="score-chip" aria-label="경기 새로고침">${icons.refresh}<span class="score-refresh-label">새로고침</span></button></div><div id="scoreActiveFilters" class="score-active-filters" aria-label="적용된 필터" hidden></div>`;
+            document.getElementById('scoreDateControls').append(toolbar.querySelector('.score-date-row'));
             document.getElementById('scoreSearch').value = this.query;
-            const dateChange = date => {
-                if (!C.validDate(date)) return;
-                this.date = date; document.getElementById('scoreDate').value = date;
-                this.saveLocation(); this.load();
-            };
+            const dateChange = date => this.selectDate(date);
             document.getElementById('scoreDate').addEventListener('change', e => dateChange(e.target.value));
             document.getElementById('scorePrev').addEventListener('click', () => dateChange(C.shiftDate(this.date, -1)));
             document.getElementById('scoreNext').addEventListener('click', () => dateChange(C.shiftDate(this.date, 1)));
@@ -207,6 +204,7 @@
                 this.status = b.dataset.status; if(this.status!=='myteams')this.activeTeam=''; this.saveLocation(); this.render();
             }));
             document.getElementById('scoreSearch').addEventListener('input', e => { this.query = e.target.value; this.render(); this.saveLocation(); });
+            document.getElementById('scoreDateStrip').addEventListener('click', event => { const button=event.target.closest('[data-score-date]');if(button)this.selectDate(button.dataset.scoreDate); });
             document.getElementById('scoreRetry').addEventListener('click', () => this.load(true));
             document.getElementById('scoreRefresh').addEventListener('click', () => this.load(true));
             document.querySelectorAll('[data-score-nav]').forEach(b => b.addEventListener('click', () => {
@@ -217,12 +215,30 @@
                 if (action === 'myteams' || action === 'live') { this.region = 'all'; app.currentSport = 'all'; document.querySelectorAll('.sport-tab').forEach(t => t.classList.toggle('active',t.dataset.sport==='all')); }
                 if (app.currentView !== 'home') app.switchView('home');
                 this.saveLocation(); this.load();
-                if (action === 'date') { document.getElementById('scoreDate').focus(); document.getElementById('scoreToolbar').scrollIntoView({block:'start',behavior:'smooth'}); }
+                if (action === 'date') { document.getElementById('scoreDate').focus(); document.getElementById('scoreDateControls').scrollIntoView({block:'start',behavior:'smooth'}); }
             }));
             document.addEventListener('visibilitychange', () => { if (!document.hidden && app.currentView === 'home') this.load(); });
             window.addEventListener('online', () => this.load(true));
             window.addEventListener('offline', () => this.render());
             this.render();
+        },
+        selectDate(date) {
+            if (!C.validDate(date)) return;
+            this.date=date;document.getElementById('scoreDate').value=date;this.saveLocation();this.load();
+        },
+        renderDates() {
+            const host=document.getElementById('scoreDateStrip');
+            document.getElementById('scoreDateTitle').textContent=new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',timeZone:'Asia/Seoul'}).format(new Date(this.date+'T12:00:00+09:00'))+' 경기';
+            if (host.dataset.selected===this.date) return;
+            host.dataset.selected=this.date;host.replaceChildren();
+            for (let offset=-3;offset<=3;offset++) {
+                const date=C.shiftDate(this.date,offset),button=document.createElement('button');button.type='button';button.dataset.scoreDate=date;
+                button.className='score-day'+(date===this.date?' is-selected':'');button.setAttribute('aria-pressed',String(date===this.date));button.setAttribute('aria-label',date+' 경기 선택');
+                if(date===C.kstDate())button.setAttribute('aria-current','date');
+                const day=document.createElement('span');day.textContent=date===C.kstDate()?'오늘':new Intl.DateTimeFormat('ko-KR',{weekday:'short',timeZone:'Asia/Seoul'}).format(new Date(date+'T12:00:00+09:00'));
+                const number=document.createElement('b');number.textContent=String(Number(date.slice(-2)));button.append(day,number);host.append(button);
+            }
+            const selected=host.querySelector('.is-selected');host.scrollLeft=Math.max(0,selected.offsetLeft-host.offsetLeft-(host.clientWidth-selected.clientWidth)/2);
         },
         saveLocation() {
             const url = new URL(location.href);
@@ -248,7 +264,6 @@
         },
         showFilters(count) {
             const items=[];
-            if(this.date!==C.kstDate())items.push(['date',this.date]);
             if(this.region!=='all')items.push(['region',this.region==='kr'?'국내':'해외']);
             if(app.currentSport!=='all')items.push(['sport',ApiService.sportConfig[app.currentSport]?.name||app.currentSport]);
             if(this.leagueId)items.push(['league',C.LEAGUES.find(l=>l.id===this.leagueId)?.name||this.leagueId]);
@@ -305,6 +320,7 @@
         render() {
             const container = document.getElementById('homeGamesContainer');
             if (!container || !document.getElementById('scoreDate')) return;
+            this.renderDates();
             const feeds = this.lastDate === this.date ? this.feeds.filter(l =>
                 (this.region === 'all' || l.region === this.region) &&
                 (app.currentSport === 'all' || l.sport === app.currentSport)).map(f => ({...f,state:C.feedState(f)})) : [];
@@ -364,25 +380,26 @@
                 container.append(empty); return;
             }
             this.emptyKey='';
-            const groups = new Map();
-            filtered.forEach(m => { const key = m.leagueId; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(m); });
+            const groups = C.groupByStartTime(filtered);
             const visibleGroups=[],visibleRows=new Set();
-            for (const [id, games] of groups) {
-                const feed = feeds.find(f => f.id === id);
+            for (const slot of groups) {
+                const id=slot.key,games=slot.matches;
                 let saved=this.groups.get(id);
-                if(!saved){const group=document.createElement('section');group.className='score-league';const header=document.createElement('div');header.className='score-league-heading';const name=document.createElement('h3');name.textContent=feed.name;const meta=document.createElement('span');header.append(name,meta);group.append(header);saved={group,header,meta};this.groups.set(id,saved);}
-                const {group,header,meta}=saved;
-                const facts = [feed.region === 'kr' ? '네이버 스포츠' : 'ESPN', feed.fetchedAt ? clock(feed.fetchedAt) : '미연결', feed.state === 'stale' ? '갱신 지연' : feed.mode === 'snapshot' ? '이전 기록' : ''].filter(Boolean);
-                meta.replaceChildren(...facts.map(text=>{const part=document.createElement('span');part.textContent=text;return part;}));
-                meta.setAttribute('aria-label',facts.join(', '));
+                if(!saved){
+                    const group=document.createElement('section');group.className='score-league score-time-group';group.dataset.startsAt=slot.startsAt===null?'unknown':String(slot.startsAt);
+                    const header=document.createElement('div');header.className='score-league-heading';
+                    const name=document.createElement('h3');name.textContent=slot.startsAt===null?'시간 미정':clock(slot.startsAt).slice(0,5);
+                    const meta=document.createElement('span'),list=document.createElement('div');list.className='score-time-matches';header.append(name,meta);group.append(header,list);
+                    saved={group,header,meta,list};this.groups.set(id,saved);
+                }
+                const {group,meta,list}=saved;meta.textContent=games.length+'경기';
                 const rowNodes=games.map(m=>{const key=m.leagueId+':'+m.id;visibleRows.add(key);const signature=JSON.stringify({...m,fetchedAt:undefined,favorite:this.favorites.has(m.id)});let savedRow=this.rows.get(key);if(!savedRow||savedRow.signature!==signature){savedRow={signature,node:this.row(m)};this.rows.set(key,savedRow);}savedRow.node._match=m;return savedRow.node;});
-                const desired=[header,...rowNodes];
-                if(desired.length!==group.children.length||desired.some((node,i)=>group.children[i]!==node))group.replaceChildren(...desired);
+                if(rowNodes.length!==list.children.length||rowNodes.some((node,i)=>list.children[i]!==node))list.replaceChildren(...rowNodes);
                 visibleGroups.push(group);
             }
             if(visibleGroups.length!==container.children.length||visibleGroups.some((node,i)=>container.children[i]!==node))container.replaceChildren(...visibleGroups);
             for(const key of this.rows.keys())if(!visibleRows.has(key))this.rows.delete(key);
-            for(const id of this.groups.keys())if(!groups.has(id))this.groups.delete(id);
+            for(const id of this.groups.keys())if(!groups.some(group=>group.key===id))this.groups.delete(id);
         },
         row(m) {
             const row = document.createElement('div'); row.className = 'score-row' + (m.status === 'live' ? ' is-live' : '');
@@ -396,7 +413,7 @@
             const detail = document.createElement('button'); detail.className = 'score-match-button'; detail.setAttribute('aria-label', m.awayTeam + ' 대 ' + m.homeTeam + ' 경기 상세');
             const state = document.createElement('span'); state.className = 'score-state state-' + m.status;
             const isLive = m.status === 'live' && m.feedState === 'ok' && m.mode === 'poll';
-            state.textContent = m.status === 'upcoming' && m.isoDate ? clock(m.isoDate).slice(0, 5) : isLive ? m.time : m.status === 'live' ? '마지막 기록' : C.LABELS[m.status];
+            state.textContent = isLive ? m.time : m.status === 'live' ? '마지막 기록' : C.LABELS[m.status];
             const teams = document.createElement('span'); teams.className = 'score-team-pair';
             for (const side of ['away', 'home']) {
                 const team = document.createElement('span'); team.className = 'score-team';
@@ -404,7 +421,9 @@
                 const name = document.createElement('span'); name.textContent = m[side + 'Team']; team.append(name);
                 const value = document.createElement('b'); value.textContent = m[side + 'Score'] == null ? '—' : String(m[side + 'Score']); team.append(value); teams.append(team);
             }
-            const source = document.createElement('span'); source.className = 'score-row-meta'; source.textContent = m.feedState !== 'ok' ? '갱신 지연' : m.mode === 'snapshot' ? '이전 기록' : C.LABELS[m.status];
+            const source = document.createElement('span'); source.className = 'score-row-meta';
+            const league=document.createElement('span');league.textContent=C.LEAGUES.find(item=>item.id===m.leagueId)?.name||m.league;
+            const quality=document.createElement('small');quality.textContent=m.feedState !== 'ok'?'갱신 지연':m.mode === 'snapshot'?'수집본':m.region==='kr'?'네이버 스포츠':'ESPN';source.append(league,quality);
             detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(row._match || m));
             row.append(star, detail); return row;
         }

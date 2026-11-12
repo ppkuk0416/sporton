@@ -1,7 +1,7 @@
 // Only the installed, versioned shell is available offline. Live data is never cached here.
-const CACHE_NAME = 'sporton-shell-v22';
-const ASSET_VERSION = '20261112-hallmark1';
-const SHELL = ['/index.html', '/ai.html', ...['tokens.css','styles.css','sports-core.js','team-logos.js','app.js','score-center.js','score-center.css','sporton-config.js','watchboard.js','watchboard.css','score-alerts.js','score-diagnostics.js','football-standings.js','football-standings.css'].map(p => '/' + p + '?v=' + ASSET_VERSION), '/ai-dashboard.js?v=20261112-hallmark1', '/ai-dashboard.css?v=20261112-hallmark1', '/manifest.json'];
+const CACHE_NAME = 'sporton-shell-v23';
+const ASSET_VERSION = '20261112-timeline1';
+const SHELL = ['/index.html', ...['tokens.css','styles.css','sports-core.js','team-logos.js','app.js','score-center.js','score-center.css','sporton-config.js','watchboard.js','watchboard.css','score-alerts.js','score-diagnostics.js','football-standings.js','football-standings.css'].map(p => '/' + p + '?v=' + ASSET_VERSION), '/manifest.json'];
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
@@ -11,8 +11,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     if (event.request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/data/')) return;
-    const navigation = event.request.mode === 'navigate' && ['/', '/index.html', '/ai.html'].includes(url.pathname);
-    const key = navigation ? (url.pathname === '/ai.html' ? '/ai.html' : '/index.html') : url.pathname + url.search;
+    const navigation = event.request.mode === 'navigate' && ['/', '/index.html'].includes(url.pathname);
+    const key = navigation ? '/index.html' : url.pathname + url.search;
     if (!navigation && !SHELL.includes(key)) return;
     // Keep the install snapshot coherent; do not fill this cache with arbitrary URL queries.
     event.respondWith(fetch(event.request).catch(async () => {

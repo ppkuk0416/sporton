@@ -124,5 +124,16 @@
                 || a.league.localeCompare(b.league, 'ko') || a.isoDate.localeCompare(b.isoDate);
         });
     }
-    return { LEAGUES, LABELS, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState };
+    function groupByStartTime(matches) {
+        const stamp = match => { const value = Date.parse(match.isoDate); return Number.isFinite(value) ? Math.floor(value / 60000) * 60000 : null; };
+        const sorted = [...matches].sort((a,b) => (stamp(a) ?? Infinity) - (stamp(b) ?? Infinity) || String(a.leagueId).localeCompare(String(b.leagueId)) || String(a.id).localeCompare(String(b.id)));
+        const groups = new Map();
+        for (const match of sorted) {
+            const startsAt = stamp(match), key = startsAt === null ? 'unknown' : String(startsAt);
+            if (!groups.has(key)) groups.set(key, {key, startsAt, matches:[]});
+            groups.get(key).matches.push(match);
+        }
+        return [...groups.values()];
+    }
+    return { LEAGUES, LABELS, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState, groupByStartTime };
 });
