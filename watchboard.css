@@ -9,7 +9,7 @@
 .watchboard-card { position: relative; min-width: 0; padding: var(--ui-space-2); border: 1px solid var(--score-line); border-radius: 16px; background: var(--score-hover); }
 .watchboard-meta { padding-right: 48px; margin-bottom: var(--ui-space-2); font-size: 11px; }
 .watchboard-remove { position: absolute; top: var(--ui-space-1); right: var(--ui-space-1); }
-.watchboard-remove, .watchboard-pin { min-width: 48px; min-height: 48px; padding: var(--ui-space-1); border: 0; border-radius: 16px; background: transparent; color: var(--score-muted); font: inherit; font-size: 11px; white-space: nowrap; cursor: pointer; }
+.watchboard-remove, .watchboard-pin { min-width: 48px; min-height: 48px; padding: var(--ui-space-1); border: 0; border-radius: 16px; background: transparent; color: var(--score-muted); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .watchboard-remove:hover, .watchboard-pin:hover { color: var(--score-accent); background: var(--score-accent-soft); }
 .watchboard-pin[aria-pressed=true] { color: var(--score-accent); font-weight: 700; }
 .watchboard-detail { display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
@@ -37,5 +37,5 @@
     .watchboard-heading { gap: var(--ui-space-1); }
     .watchboard-grid { grid-template-columns: 1fr; }
     .watchboard-team { font-size: 14px; }
-    .score-row > .watchboard-pin { min-width: 32px; padding-inline: 0; font-size: 10px; }
+    .score-row > .watchboard-pin { min-width: 48px; min-height: 48px; padding-inline: var(--ui-space-1); font-size: 12px; }
 }

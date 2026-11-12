@@ -17,7 +17,7 @@
 .ai-freshness, .ai-caption { color: var(--score-muted); font-size: 12px; line-height: 24px; }
 .ai-warning { padding: var(--ui-space-2); border: 1px solid rgba(224,177,111,.22); border-radius: 16px; background: rgba(144,103,48,.12); color: #E8C78F; font-size: 13px; }
 .ai-status-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--ui-space-2); }
-.ai-status-grid > article, .ai-card, .ai-performance, .ai-panel { display: grid; gap: var(--ui-space-2); min-width: 0; padding: var(--ui-space-3); border: 1px solid var(--score-line); border-radius: var(--score-radius); background: var(--score-surface); }
+.ai-status-grid > article, .ai-card, .ai-performance, .ai-panel { display: grid; gap: var(--ui-space-1); min-width: 0; padding: var(--ui-space-3); border: 1px solid var(--score-line); border-radius: var(--score-radius); background: var(--score-surface); }
 .ai-status-grid b { color: var(--score-accent); }
 .ai-status-grid span, .ai-card small, .ai-card p, .ai-performance p { color: var(--score-muted); font-size: 13px; }
 .ai-cards { display: grid; gap: var(--ui-space-2); }
@@ -41,11 +41,16 @@
     .ai-hero .section-title { font-size: 28px; line-height: 40px; }
     .ai-subtitle { font-size: 14px; }
     .ai-hero { margin-bottom: var(--ui-space-3); }
-    .ai-controls { gap: var(--ui-space-1); }
-    .ai-controls label { flex-basis: 100%; margin-left: 0; }
-    .ai-controls input { width: 100%; min-width: 0; }
-    .ai-controls > button { margin-left: auto; }
-    .ai-status-grid { grid-template-columns: 1fr; }
+    .ai-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: var(--ui-space-1); }
+    .ai-controls label { grid-column: 1/-1; grid-row: 2; margin-left: 0; }
+    .ai-controls input { flex: 1; width: 0; min-width: 0; }
+    .ai-controls > button { grid-column: 2; grid-row: 1; }
+    .ai-status-grid { gap: var(--ui-space-1); grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .ai-status-grid > article { align-content: start; gap: var(--ui-space-1); }
+    .ai-status-grid h2 { font-size: 16px; }
+    .ai-status-grid b { font-size: 14px; line-height: 24px; }
+    .ai-status-grid span { font-size: 12px; line-height: 20px; }
+    .ai-dashboard { gap: var(--ui-space-2); }
     .ai-status-grid > article, .ai-card, .ai-performance, .ai-panel { padding: var(--ui-space-2); }
     .ai-match > div { gap: var(--ui-space-1); }
     .ai-match b { font-size: 14px; }

@@ -1,7 +1,7 @@
 // Only the installed, versioned shell is available offline. Live data is never cached here.
-const CACHE_NAME = 'sporton-shell-v20';
-const ASSET_VERSION = '20261102-quality1';
-const SHELL = ['/index.html', '/ai.html', ...['styles.css','sports-core.js','team-logos.js','app.js','score-center.js','score-center.css','sporton-config.js','watchboard.js','watchboard.css','score-alerts.js','score-diagnostics.js','football-standings.js','football-standings.css'].map(p => '/' + p + '?v=' + ASSET_VERSION), '/ai-dashboard.js?v=20261102-quality1', '/ai-dashboard.css?v=20261102-quality1', '/manifest.json'];
+const CACHE_NAME = 'sporton-shell-v21';
+const ASSET_VERSION = '20261112-polish1';
+const SHELL = ['/index.html', '/ai.html', ...['styles.css','sports-core.js','team-logos.js','app.js','score-center.js','score-center.css','sporton-config.js','watchboard.js','watchboard.css','score-alerts.js','score-diagnostics.js','football-standings.js','football-standings.css'].map(p => '/' + p + '?v=' + ASSET_VERSION), '/ai-dashboard.js?v=20261112-polish1', '/ai-dashboard.css?v=20261112-polish1', '/manifest.json'];
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

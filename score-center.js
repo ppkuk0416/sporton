@@ -3,6 +3,15 @@
     'use strict';
     const C = window.SportonCore;
     const config = window.SPORTON_CONFIG || {};
+    const icon = path => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
+    const icons = {
+        previous: icon('<path d="m14 6-6 6 6 6"/>'),
+        next: icon('<path d="m10 6 6 6-6 6"/>'),
+        search: icon('<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>'),
+        filter: icon('<path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'),
+        refresh: icon('<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 6.1A8 8 0 0 1 19.7 12M4.3 12A8 8 0 0 0 17.9 17.9"/>'),
+        star: icon('<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>')
+    };
     const memo = new Map();
     const pending = new Map();
     const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -146,13 +155,14 @@
             if (!toolbar) return;
             toolbar.innerHTML = `
                 <div class="score-date-row">
-                    <button class="score-icon-button" id="scorePrev" aria-label="전날 경기">‹</button>
+                    <button class="score-icon-button" id="scorePrev" aria-label="전날 경기">${icons.previous}</button>
                     <label class="score-date-label"><input type="date" id="scoreDate" aria-label="경기 날짜" value="${this.date}"></label>
-                    <button class="score-icon-button" id="scoreNext" aria-label="다음날 경기">›</button>
+                    <button class="score-icon-button" id="scoreNext" aria-label="다음날 경기">${icons.next}</button>
                     <button class="score-chip" id="scoreToday">오늘</button>
                     <span class="score-timezone" title="모든 경기 시간은 한국 시간">KST</span>
                 </div>
                 <div class="score-quick-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>
+                <label class="score-search">${icons.search}<input type="search" id="scoreSearch" placeholder="팀 또는 리그 검색" aria-label="팀 또는 리그 검색" maxlength="80"></label>
                 <div id="scoreFavoriteTeams" class="score-favorite-teams" aria-label="저장한 관심 팀"></div>
                 <div class="score-filter-row">
                     <div class="score-status-tabs" aria-label="경기 상태">
@@ -165,13 +175,13 @@
                     </div>
 
                 </div>
-                <details class="score-extra-filters" ${this.query ? 'open' : ''}><summary>필터·검색</summary><div class="score-extra-content"><div class="score-mobile-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>                <div class="score-region-tabs" aria-label="경기 지역">
+                <details class="score-extra-filters"><summary aria-label="리그·지역 필터">${icons.filter}<span class="score-filter-label">필터</span></summary><div class="score-extra-content"><div class="score-mobile-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>                <div class="score-region-tabs" aria-label="경기 지역">
                     <button class="score-chip" data-region="kr">🇰🇷 국내</button>
                     <button class="score-chip" data-region="world">해외</button>
                     <button class="score-chip" data-region="all">전체</button>
                 </div>
-<label class="score-search"><span aria-hidden="true">⌕</span><input type="search" id="scoreSearch" placeholder="팀 또는 리그 검색" aria-label="팀 또는 리그 검색" maxlength="80"></label></div></details>
-                <div class="score-results-tools"><span id="scoreResultCount" aria-live="polite"></span><button id="scoreRefresh" class="score-chip">새로고침</button></div><div id="scoreActiveFilters" class="score-active-filters" aria-label="적용된 필터" hidden></div>`;
+</div></details>
+                <div class="score-results-tools"><span id="scoreResultCount" aria-live="polite"></span><button id="scoreRefresh" class="score-chip" aria-label="경기 새로고침">${icons.refresh}<span class="score-refresh-label">새로고침</span></button></div><div id="scoreActiveFilters" class="score-active-filters" aria-label="적용된 필터" hidden></div>`;
             document.getElementById('scoreSearch').value = this.query;
             const dateChange = date => {
                 if (!C.validDate(date)) return;
@@ -245,9 +255,9 @@
             if(this.activeTeam)items.push(['team',this.favoriteTeams.get(this.activeTeam)?.name||'선택한 팀']);
             if(this.query)items.push(['query','검색: '+this.query]);
             const bar=document.getElementById('scoreActiveFilters');const signature=JSON.stringify(items);
-            if(signature!==this.filterSignature){this.filterSignature=signature;bar.replaceChildren();bar.hidden=!items.length;for(const [key,label] of items){const b=document.createElement('button');b.className='score-chip active';b.dataset.clearFilter=key;b.textContent=label+' ×';b.setAttribute('aria-label',label+' 필터 해제');b.onclick=()=>this.clearFilter(key);bar.append(b);}if(items.length){const reset=document.createElement('button');reset.className='score-chip';reset.dataset.clearFilter='all';reset.textContent='오늘 전체 경기';reset.onclick=()=>this.clearFilter('all');bar.append(reset);}}
+            if(signature!==this.filterSignature){this.filterSignature=signature;bar.replaceChildren();bar.hidden=!items.length;for(const [key,label] of items){const b=document.createElement('button');b.className='score-chip score-filter-token';b.dataset.clearFilter=key;b.textContent=label+' ×';b.setAttribute('aria-label',label+' 필터 해제');b.onclick=()=>this.clearFilter(key);bar.append(b);}if(items.length){const reset=document.createElement('button');reset.className='score-chip';reset.dataset.clearFilter='all';reset.textContent='오늘 전체 경기';reset.onclick=()=>this.clearFilter('all');bar.append(reset);}}
             const result=document.getElementById('scoreResultCount');const text=this.busy?'경기 확인 중':(items.length?'필터 적용 · ':'')+count+'경기';if(result.textContent!==text)result.textContent=text;
-            const refresh=document.getElementById('scoreRefresh');refresh.disabled=this.busy;refresh.textContent=this.busy?'조회 중':'새로고침';
+            const refresh=document.getElementById('scoreRefresh');refresh.disabled=this.busy;refresh.querySelector('.score-refresh-label').textContent=this.busy?'조회 중':'새로고침';refresh.setAttribute('aria-label',this.busy?'경기 조회 중':'경기 새로고침');
         },
         toggleTeam(match, side) {
             const key = C.teamKey(match, side);
@@ -373,7 +383,7 @@
         },
         row(m) {
             const row = document.createElement('div'); row.className = 'score-row' + (m.status === 'live' ? ' is-live' : '');
-            const star = document.createElement('button'); star.className = 'score-star'; star.textContent = this.favorites.has(m.id) ? '★' : '☆';
+            const star = document.createElement('button'); star.className = 'score-star'; star.innerHTML = icons.star;
             star.setAttribute('aria-label', m.awayTeam + ' 대 ' + m.homeTeam + ' 관심 경기'); star.setAttribute('aria-pressed', String(this.favorites.has(m.id)));
             star.addEventListener('click', () => {
                 this.favorites.has(m.id) ? this.favorites.delete(m.id) : this.favorites.add(m.id);
