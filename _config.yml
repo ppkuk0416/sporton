@@ -1,6 +1,7 @@
 # Keep the legacy main/root Pages builder consistent with the public-only
 # artifact assembled by .github/workflows/pages.yml.
 exclude:
+  - .impeccable
   - .hallmark
   - .agents
   - .github

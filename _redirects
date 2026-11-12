@@ -6,6 +6,7 @@
 # GitHub's legacy builder uses _config.yml for the same exclusions.
 /.agents/* / 302
 /.hallmark/* / 302
+/.impeccable/* / 302
 /.github/* / 302
 /.sporton/* / 302
 /server/* / 302
