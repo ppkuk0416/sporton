@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/nutlope/hallmark",
+  "commit": "04977e15f3dfd6ee4b74c887dac3eb52665d6c92",
+  "version": "2.0.0",
+  "license": "MIT",
+  "execution": "reviewed temporary checkout; cloud Hallmark skill explicitly invoked; no global hooks or config changed",
+  "files": {
+    "SKILL.md": "25a1ff92d925b2389e8409f42fb8ad7e033fceca8b5d1f07ed4ca4c28da53dc3",
+    "scripts/sloplint.mjs": "23fb94903ae0e3b709019380443163bdc50390a246911e3423b83695e4bc8037",
+    "scripts/sloplint-render.mjs": "228f14808cbf872ab6dcc5f4f9e8d58a5a9060028f1530bec80e24dbd12737f3",
+    "references/gates.md": "63ad234a1acab5e081dfe8ecf2331518a43cbf42760dc5c6ababfb24d7b3e50c",
+    "references/flow.md": "d24fa0bbfd8ea6f8add579029598e09815a697fc99a4abdb8c17f67155e368e5",
+    "references/redesign.md": "cd3fc1dd10af22bb0374b41340fbab8f2b3be997ea5b63716da3d44ba0bb0552"
+  },
+  "browser": {
+    "engine": "system Chromium",
+    "puppeteerCore": "25.17.0"
+  }
+}

@@ -5,8 +5,8 @@
 .football-view-tabs button.active { border-color: transparent; background: var(--score-accent); color: var(--score-on-accent); font-weight: 700; }
 .football-standings-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--ui-space-2); margin-top: var(--ui-space-2); }
 .football-standings-controls label { display: flex; align-items: center; gap: var(--ui-space-1); max-width: 100%; font-size: 14px; font-weight: 650; }
-.football-standings-controls select { max-width: 100%; min-width: 0; min-height: 48px; padding: var(--ui-space-1); border: 1px solid var(--score-line); border-radius: 16px; background: var(--score-surface); color: var(--score-ink); font: inherit; }
-.football-standings-controls button:disabled { opacity: .6; }
+.football-standings-controls select { max-width: 100%; min-width: 0; min-height: 48px; padding: var(--ui-space-1); border: 1px solid var(--score-field-line); border-radius: 16px; background: var(--score-surface); color: var(--score-ink); font: inherit; }
+.football-standings-controls button:disabled { opacity: .65; cursor: not-allowed; background: var(--score-disabled-surface); color: var(--score-disabled-ink); }
 #footballStandingsStatus, #footballStandingsSeason { margin-block: var(--ui-space-2); color: var(--score-muted); font-size: 12px; line-height: 24px; }
 #footballStandingsContent { min-height: 64px; }
 .football-table-group h3 { margin: var(--ui-space-3) 0 var(--ui-space-2); font-size: 16px; }
@@ -27,7 +27,7 @@
 .football-standings-open #homeGamesContainer { display: none !important; }
 @media (max-width: 768px) {
     .football-standings { padding: var(--ui-space-2); }
-    .football-table tbody th { position: sticky; z-index: 1; left: 0; box-shadow: 2px 0 4px #191F280A; }
+    .football-table tbody th { position: sticky; z-index: 1; left: 0; box-shadow: 2px 0 4px var(--score-shadow-table); }
     .football-table-scroll { max-height: 60vh; }
     .football-view-tabs button { flex: 1; }
 }

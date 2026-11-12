@@ -10,7 +10,7 @@ const ai = require('./ai.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['index.html', 'ai.html', 'app.js', 'styles.css', 'sports-core.js', 'team-logos.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'ai-dashboard.js', 'ai-dashboard.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['index.html', 'ai.html', 'app.js', 'tokens.css', 'styles.css', 'sports-core.js', 'team-logos.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'ai-dashboard.js', 'ai-dashboard.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': mime['.json'], 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }

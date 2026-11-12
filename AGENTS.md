@@ -7,6 +7,7 @@ Read `PRODUCT.md` for product facts and `DESIGN.md` plus `docs/DESIGN_SYSTEM.md`
 ## Select skills by task
 
 - UI review/refinement: `.agents/skills/impeccable/SKILL.md`. The scoreboard is an Operate surface; see `docs/surfaces/scoreboard.md`. A detector warning is evidence to inspect, not authorization to replace the approved design.
+- When the user names Hallmark, apply the cloud Hallmark skill in app scope using the locked `DESIGN.md`. The reviewed GitHub tool provenance and preflight are in `.hallmark/`; the latest application report is `docs/HALLMARK_POLISH.md`. Keep Hallmark's checks scoped to the actual score/AI surfaces and preserve data wiring.
 - Verification: `.agents/skills/verification-loop/SKILL.md`. Use this repository's actual commands; report missing build, TypeScript, linter or coverage stages as not configured rather than installing unrelated tools or claiming they passed.
 - Security-specific work: `.agents/skills/security-audit/SKILL.md`. Its guidance mode is scoped; installation is not a completed audit. Full audits require an explicit full-audit request, its independent-verification workflow and its execution isolation. Never weaken that isolation to run a security reproduction.
 

@@ -29,7 +29,7 @@
 .score-alert-scope, .score-alert-feedback { color: var(--score-muted); font-size: 12px; }
 .score-alert-scope { flex: 1; min-width: 160px; }
 .score-alert-feedback { flex-basis: 100%; }
-.score-alert-toast { position: fixed; z-index: 1500; bottom: calc(96px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(calc(100vw - 32px),624px); padding: var(--ui-space-2) var(--ui-space-3); border-radius: var(--score-radius); background: #2B352A; color: var(--score-ink); font-size: 14px; box-shadow: 0 8px 32px #191F281A; }
+.score-alert-toast { position: fixed; z-index: 1500; bottom: calc(96px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - var(--ui-space-4)); max-width: 624px; padding: var(--ui-space-2) var(--ui-space-3); border-radius: var(--score-radius); background: var(--score-toast-surface); color: var(--score-ink); font-size: 14px; box-shadow: 0 8px 32px var(--score-shadow-toast); }
 .score-alert-toast[hidden], .score-alert-permission[hidden] { display: none; }
 @media (max-width: 1000px) { .watchboard-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 768px) {

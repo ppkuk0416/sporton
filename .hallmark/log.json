@@ -1,0 +1,49 @@
+[
+ {
+  "mode": "redesign",
+  "depth": "polish",
+  "scope": "app",
+  "shape": "app screen",
+  "theme": "locked SPORTON charcoal glass",
+  "axes": {
+   "palette": "charcoal / lime",
+   "type": "system Korean sans",
+   "spacing": "8px"
+  },
+  "hero": "not applicable: app scope",
+  "nav": "existing capsule navigation and desktop rail",
+  "footer": "existing source and privacy links",
+  "imagery": "provider artwork only",
+  "photos": [],
+  "entry": "score and AI dashboard consistency",
+  "fingerprint": "sporton-charcoal-glass-app-polish",
+  "sections": [
+   "score filters",
+   "provider state",
+   "league match cards",
+   "AI schedules and analysis status"
+  ],
+  "signature": "real league-grouped score cards with stable team artwork and honest source timestamps",
+  "waived": [
+   "39b",
+   "72"
+  ],
+  "prompt": "Apply Hallmark to SPORTON while preserving the approved design and the user preference for overall balance and consistency",
+  "verification": {
+   "floorFails": 0,
+   "openReflex": 0,
+   "waived": 2,
+   "warnings": 2,
+   "linksKept": "6/6",
+   "fieldsKept": "30/30",
+   "headingsKept": "33/33",
+   "figuresKept": "4/5, remaining figure is the live API read timestamp",
+   "finishReview": "subagent: ship, 0 findings, gap none"
+  },
+  "warningDisposition": {
+   "kept": "09:22 was an API read time and changed during the real subsequent query; no before record was altered.",
+   "render": "cdnjs Font Awesome did not load in the managed Chromium path. Current score and AI controls use authored SVG and the declared system font; legacy/CDN coverage remains limited."
+  },
+  "date": "2026-11-12"
+ }
+]

@@ -10,6 +10,7 @@
         search: icon('<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>'),
         filter: icon('<path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'),
         refresh: icon('<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 6.1A8 8 0 0 1 19.7 12M4.3 12A8 8 0 0 0 17.9 17.9"/>'),
+        heart: icon('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>'),
         star: icon('<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>')
     };
     const memo = new Map();
@@ -170,13 +171,13 @@
                         <button class="score-chip" data-status="live"><span class="score-live-dot" aria-hidden="true"></span>진행 중</button>
                         <button class="score-chip" data-status="upcoming">예정</button>
                         <button class="score-chip" data-status="finished">종료</button>
-                        <button class="score-chip" data-status="favorites">★ 관심 경기</button>
-                        <button class="score-chip" data-status="myteams">♡ 내 팀</button>
+                        <button class="score-chip" data-status="favorites">${icons.star}관심 경기</button>
+                        <button class="score-chip" data-status="myteams">${icons.heart}내 팀</button>
                     </div>
 
                 </div>
                 <details class="score-extra-filters"><summary aria-label="리그·지역 필터">${icons.filter}<span class="score-filter-label">필터</span></summary><div class="score-extra-content"><div class="score-mobile-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>                <div class="score-region-tabs" aria-label="경기 지역">
-                    <button class="score-chip" data-region="kr">🇰🇷 국내</button>
+                    <button class="score-chip" data-region="kr">국내</button>
                     <button class="score-chip" data-region="world">해외</button>
                     <button class="score-chip" data-region="all">전체</button>
                 </div>
@@ -336,7 +337,7 @@
             const notice = document.getElementById('scoreNotice');
             const messages = [];
             if (!navigator.onLine) messages.push('인터넷 연결이 끊겼습니다. 마지막으로 받은 정보를 표시합니다.');
-            if (issues.length) messages.push(issues.length+'개 리그 연결 지연 · 마지막 확인 점수입니다.');
+            if (issues.length) messages.push(issues.length+'개 리그 갱신 지연: 마지막 확인 점수');
             if (snapshots.length && !issues.length) messages.push(this.busy?'최신 점수를 확인하고 있습니다.':'마지막으로 확인한 점수입니다. 새로고침해 주세요.');
             const retry=document.getElementById('scoreRetry');retry.disabled=this.busy;retry.textContent=this.busy?'조회 중':'새로고침';
             notice.title=issues.map(f=>f.name).join(' · '); notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
@@ -369,9 +370,11 @@
             for (const [id, games] of groups) {
                 const feed = feeds.find(f => f.id === id);
                 let saved=this.groups.get(id);
-                if(!saved){const group=document.createElement('section');group.className='score-league';const header=document.createElement('div');header.className='score-league-heading';const name=document.createElement('h3');name.textContent=(feed.region==='kr'?'🇰🇷 ':'')+feed.name;const meta=document.createElement('span');header.append(name,meta);group.append(header);saved={group,header,meta};this.groups.set(id,saved);}
+                if(!saved){const group=document.createElement('section');group.className='score-league';const header=document.createElement('div');header.className='score-league-heading';const name=document.createElement('h3');name.textContent=feed.name;const meta=document.createElement('span');header.append(name,meta);group.append(header);saved={group,header,meta};this.groups.set(id,saved);}
                 const {group,header,meta}=saved;
-                meta.textContent = (feed.region === 'kr' ? '네이버 스포츠' : 'ESPN') + ' · ' + (feed.fetchedAt ? clock(feed.fetchedAt) : '미연결') + (feed.state === 'stale' ? ' · 갱신 지연' : feed.mode === 'snapshot' ? ' · 이전 기록' : '');
+                const facts = [feed.region === 'kr' ? '네이버 스포츠' : 'ESPN', feed.fetchedAt ? clock(feed.fetchedAt) : '미연결', feed.state === 'stale' ? '갱신 지연' : feed.mode === 'snapshot' ? '이전 기록' : ''].filter(Boolean);
+                meta.replaceChildren(...facts.map(text=>{const part=document.createElement('span');part.textContent=text;return part;}));
+                meta.setAttribute('aria-label',facts.join(', '));
                 const rowNodes=games.map(m=>{const key=m.leagueId+':'+m.id;visibleRows.add(key);const signature=JSON.stringify({...m,fetchedAt:undefined,favorite:this.favorites.has(m.id)});let savedRow=this.rows.get(key);if(!savedRow||savedRow.signature!==signature){savedRow={signature,node:this.row(m)};this.rows.set(key,savedRow);}savedRow.node._match=m;return savedRow.node;});
                 const desired=[header,...rowNodes];
                 if(desired.length!==group.children.length||desired.some((node,i)=>group.children[i]!==node))group.replaceChildren(...desired);

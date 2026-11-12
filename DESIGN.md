@@ -20,7 +20,7 @@ spacing:
 
 ## Overview
 
-Preserve the visual world selected from the user's reference video. `score-center.css` and its `--score-*` / `--ui-space-*` tokens are the implementation authority. The detailed component contract is in `docs/DESIGN_SYSTEM.md`.
+Preserve the visual world selected from the user's reference video. `tokens.css` owns the `--score-*` / `--ui-space-*` tokens; `score-center.css` owns their shared implementation. The detailed component contract is in `docs/DESIGN_SYSTEM.md`.
 
 ## Colors
 

@@ -1,0 +1,67 @@
+/* Hallmark · checked: 2026-11-12 · genre: modern-minimal (inferred)
+ * built: the project · redesign: polish · shape: app screen · v2.0.0
+ * floor: 0 FAIL, 0 open REFLEX, 2 waived · finish-review: subagent, ship, 0 findings, gap none */
+:root {
+    --ui-space-1: 8px;
+    --ui-space-2: 16px;
+    --ui-space-3: 24px;
+    --ui-space-4: 32px;
+    --ui-space-5: 40px;
+    --ui-space-6: 48px;
+    --ui-space-8: 64px;
+    --score-surface: rgba(30, 34, 32, .82);
+    --score-panel: #252B28;
+    --score-hover: rgba(238, 245, 230, .07);
+    --score-on-accent: #1B2418;
+    --score-line: rgba(227, 239, 217, .14);
+    --score-accent: #D3F897;
+    --score-accent-soft: rgba(211, 248, 151, .12);
+    --score-ink: #F1F3EC;
+    --score-muted: #ADB8B1;
+    --score-live: #D3F897;
+    --score-radius: 24px;
+    --score-warning-ink: #E8C78F;
+    --score-warning-surface: rgba(144, 103, 48, .12);
+    --score-form-win-bg: #EAF7F0;
+    --score-form-win-ink: #116346;
+    --score-form-draw-bg: #F0F2F5;
+    --score-form-draw-ink: #3C4857;
+    --score-form-loss-bg: #FCEEEE;
+    --score-form-loss-ink: #B34040;
+    --border-color: var(--score-line);
+    --accent-color: var(--score-accent);
+    --score-ground: #191D1C;
+    --score-ambient-cool: rgba(83,126,146,.34);
+    --score-ambient-warm: rgba(136,94,89,.22);
+    --score-ambient-olive: rgba(130,148,55,.12);
+    --score-header-surface: rgba(27,33,32,.76);
+    --score-nav-selected: rgba(240,246,231,.12);
+    --score-nav-surface: rgba(14,20,20,.36);
+    --score-pending: #B36C16;
+    --score-surface-highlight: rgba(255,255,255,.035);
+    --score-selection-edge: rgba(211,248,151,.32);
+    --score-input-surface: rgba(14,20,20,.25);
+    --score-warning-edge: rgba(224,177,111,.22);
+    --score-league-cool: rgba(137,180,198,.08);
+    --score-league-olive: rgba(183,203,119,.08);
+    --score-league-warm: rgba(208,158,143,.08);
+    --score-card-surface: rgba(24,28,25,.7);
+    --score-card-highlight: rgba(255,255,255,.025);
+    --score-card-hover: rgba(28,33,29,.88);
+    --score-live-edge: rgba(211,248,151,.4);
+    --score-artwork-surface: #F3F5EF;
+    --score-artwork-ink: #4E6049;
+    --score-artwork-unavailable: rgba(240,245,231,.06);
+    --score-comparison-secondary: #D4816B;
+    --score-error-ink: #F0A6A0;
+    --score-rail-surface: rgba(25,33,31,.76);
+    --score-mobile-nav: rgba(28,34,31,.94);
+    --score-toast-surface: #2B352A;
+    --score-shadow-toast: #191F281A;
+    --score-shadow-table: #191F280A;
+    --score-field-line: #78877D;
+    --score-disabled-surface: #2C322E;
+    --score-disabled-ink: #B7C0B9;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    --font-heading: var(--font-body);
+}

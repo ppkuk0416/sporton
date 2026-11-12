@@ -1,0 +1,27 @@
+{
+  "scanned": "2026-11-12",
+  "findings": {
+    "fonts": "system Korean sans, styles.css:19-20",
+    "palette": "charcoal/glass/lime, DESIGN.md:4 and score-center.css:10-29",
+    "spacing": "8px grid, score-center.css:4-10",
+    "framework": "static HTML and vanilla JavaScript, package.json:1-28",
+    "screens": [
+      "/ → index.html, app",
+      "/ai.html → ai.html, app"
+    ]
+  },
+  "preserve": [
+    "SPORTON brand and provider team artwork",
+    "charcoal/glass/lime system",
+    "8px spacing and responsive shell",
+    "existing links, event handlers, URLs and snapshot timestamps"
+  ],
+  "introduce": [
+    "shared semantic colour tokens",
+    "consistent control states and focus",
+    "Hallmark app-scope inspection and finish review"
+  ],
+  "scope": "app",
+  "depth": "polish",
+  "evidence": "existing user brief, PRODUCT.md and DESIGN.md; no new metrics or stock imagery"
+}
