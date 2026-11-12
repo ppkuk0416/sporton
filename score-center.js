@@ -353,8 +353,6 @@
             const notice = document.getElementById('scoreNotice');
             const messages = [];
             if (!navigator.onLine) messages.push('인터넷 연결이 끊겼습니다. 마지막으로 받은 정보를 표시합니다.');
-            if (issues.length) messages.push(issues.length+'개 리그 갱신 지연: 마지막 확인 점수');
-            if (snapshots.length && !issues.length) messages.push(this.busy?'최신 점수를 확인하고 있습니다.':'마지막으로 확인한 점수입니다. 새로고침해 주세요.');
             const retry=document.getElementById('scoreRetry');retry.disabled=this.busy;retry.textContent=this.busy?'조회 중':'새로고침';
             notice.title=issues.map(f=>f.name).join(' · '); notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
             container.setAttribute('aria-busy', String(this.busy));

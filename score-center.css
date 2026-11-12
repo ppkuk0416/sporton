@@ -103,7 +103,7 @@ body.view-home .sport-tabs .sport-tab.active { color: var(--score-accent) !impor
 .score-active-filters .score-chip { flex-shrink: 0; min-height: 40px; font-size: 12px; }
 .score-active-filters .score-filter-token { background: var(--score-hover); border-color: transparent; color: var(--score-ink); }
 .score-source-status { padding: 0 0 var(--ui-space-2); color: var(--score-muted); font-size: 12px; line-height: 16px; }
-.home-sports-feed:has(.score-notice:not([hidden])) .score-source-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.home-sports-feed .score-source-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .score-notice { display: flex; align-items: center; gap: var(--ui-space-2); margin-bottom: var(--ui-space-3); padding: var(--ui-space-1) var(--ui-space-2); border: 1px solid var(--score-warning-edge); border-radius: 8px; background: var(--score-warning-surface); color: var(--score-warning-ink); font-size: 12px; line-height: 20px; }
 .score-notice[hidden], .score-notice br { display: none !important; }
 #scoreNoticeText { flex: 1; min-width: 0; }
