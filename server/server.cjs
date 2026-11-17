@@ -9,12 +9,43 @@ const { getDetail, validRequest } = require('./details.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['astryx-ui.js', 'astryx-ui.css', 'astryx-ui.js.LEGAL.txt', 'third-party-notices.txt', 'index.html', 'app.js', 'tokens.css', 'styles.css', 'sports-core.js', 'team-logos.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['astryx-ui.js', 'astryx-ui.css', 'astryx-ui.js.LEGAL.txt', 'third-party-notices.txt', 'index.html', 'app.js', 'tokens.css', 'styles.css', 'sports-core.js', 'team-logos.js', 'korean-names.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
+// Number of reverse proxies in front of this server that append to X-Forwarded-For.
+// 0 (default) uses the socket address; behind one proxy/CDN set TRUST_PROXY_HOPS=1 so
+// each visitor gets an own rate-limit budget instead of sharing the proxy's address.
+const TRUST_PROXY_HOPS = Math.max(0, Math.min(5, Number.parseInt(process.env.TRUST_PROXY_HOPS || '0', 10) || 0));
+// The health endpoint reports the asset release that index.html actually references.
+const RELEASE = process.env.SPORTON_RELEASE || (require('node:fs').readFileSync(path.join(ROOT, 'index.html'), 'utf8').match(/\?v=([\w.-]+)/)?.[1] ?? 'unknown');
+const API_ORIGIN = (() => { try { return new URL(require('node:fs').readFileSync(path.join(ROOT, 'sporton-config.js'), 'utf8').match(/domesticApiBase:\s*'([^']+)'/)[1]).origin; } catch { return ''; } })();
+const CSP = ["default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' https: data:", "font-src 'self'", "connect-src 'self'" + (API_ORIGIN ? ' ' + API_ORIGIN : '') + ' https://site.web.api.espn.com', "manifest-src 'self'", "worker-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'"].join('; ');
+const SECURITY_HEADERS = {
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-Frame-Options': 'DENY',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+    'Strict-Transport-Security': 'max-age=31536000'
+};
+function clientAddress(req, hops = TRUST_PROXY_HOPS) {
+    if (hops > 0) {
+        const chain = String(req.headers['x-forwarded-for'] || '').split(',').map(s => s.trim()).filter(Boolean);
+        if (chain.length >= hops) return chain[chain.length - hops];
+    }
+    return req.socket.remoteAddress || 'unknown';
+}
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': mime['.json'], 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }
 const server = http.createServer(async (req, res) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    try { await handle(req, res); }
+    catch (error) {
+        // One failed request must never stop the process (unhandled rejections exit Node 22).
+        console.error('request failed', req.method, String(req.url).slice(0, 200), error?.message);
+        if (!res.headersSent) json(res, 500, { error: 'Internal error' }); else res.destroy();
+    }
+});
+async function handle(req, res) {
+    for (const [name, value] of Object.entries(SECURITY_HEADERS)) res.setHeader(name, value);
     const origin = req.headers.origin;
     if (origin && allowedOrigins.has(origin)) { res.setHeader('Access-Control-Allow-Origin', origin); res.setHeader('Vary', 'Origin'); }
     if (req.method === 'OPTIONS') {
@@ -23,14 +54,14 @@ const server = http.createServer(async (req, res) => {
     if (!['GET', 'HEAD'].includes(req.method)) { json(res, 405, { error: 'Method not allowed' }); return; }
     let url;try{url = new URL(req.url, 'http://localhost');}catch{json(res,400,{error:'Invalid URL'});return;}
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/health') {
-        const key = req.socket.remoteAddress, now = Date.now(), item = rate.get(key);
+        const key = clientAddress(req), now = Date.now(), item = rate.get(key);
         const count = item && now - item.at < 60000 ? item.count + 1 : 1;
         rate.set(key, { at: item?.at && now - item.at < 60000 ? item.at : now, count });
         if (rate.size > 1000) for (const [ip,v] of rate) if (now-v.at>60000) rate.delete(ip);
         if (count>120) { json(res,429,{error:'Too many requests'});return; }
     }
     if (rate.size > 4000) rate.delete(rate.keys().next().value);
-    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', release: '20261013-priorities8', mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
+    if (url.pathname === '/api/health') { json(res, 200, { status: 'ok', release: RELEASE, mode: 'poll', intervalSeconds: 5, idleIntervalSeconds: 10, cacheSeconds: 4 }); return; }
     if (['/ai','/ai/','/ai.html'].includes(url.pathname)) { res.writeHead(302, {Location:'/'}); res.end(); return; }
     if (url.pathname.startsWith('/api/ai/')) { json(res,404,{error:'Not found'}); return; }
     if (url.pathname === '/api/detail') {
@@ -69,9 +100,14 @@ const server = http.createServer(async (req, res) => {
     if (!publicFiles.has(file) && !/^data\/(domestic|overseas)\/\d{4}-\d{2}-\d{2}\.json$/.test(file) && !/^data\/standings\/(kleague2?|eng\.1|esp\.1|ger\.1|ita\.1|fra\.1|uefa\.champions)\.json$/.test(file)) { json(res, 404, { error: 'Not found' }); return; }
     try {
         const data = await fs.readFile(path.join(ROOT, file));
-        res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': file === 'sw.js' || file.endsWith('.json') ? 'no-cache' : 'no-cache' });
+        // Versioned script/style URLs never change content; everything else revalidates.
+        const immutable = /\.(js|css)$/.test(file) && file !== 'sw.js' && url.searchParams.has('v');
+        const headers = { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream', 'Cache-Control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache' };
+        if (file.endsWith('.html')) headers['Content-Security-Policy'] = CSP;
+        res.writeHead(200, headers);
         res.end(req.method === 'HEAD' ? undefined : data);
     } catch { json(res, 404, { error: 'Not found' }); }
-});
+}
 if (require.main === module) server.listen(PORT, '0.0.0.0', () => console.log('SPORTON http://localhost:' + PORT));
+server.clientAddress = clientAddress;
 module.exports = server;

@@ -59,11 +59,11 @@ node scripts/collect-domestic.cjs
 SCORE_DATE=2025-05-01 node scripts/collect-domestic.cjs
 ```
 
-## Firebase와 관리자
+## 화면 구성과 운영 설정
 
-공통 Firebase 웹앱 설정은 `sporton-config.js`의 `firebase`에 지정합니다. 서비스계정·비밀키는 넣지 않습니다. Firestore 보안 규칙, 사용자 인증, 메시지 제한은 서버/프로젝트에 별도 설정해야 합니다. 설정이 없으면 채팅이 연결되지 않으며 스코어보드는 독립적으로 동작합니다.
+`app.js`는 화면 전환·종목 선택·알림만 맡는 작은 셸이고, 점수 조회와 렌더링은 `score-center.js`가 담당합니다. 해외 팀 한글 표기는 `korean-names.js`에 있습니다. 예전 커뮤니티·채팅·관리자·배당 화면과 Firebase/Font Awesome 의존성은 2026-11-17 릴리스에서 제거했습니다(`docs/SHELL_CLEANUP.md`).
 
-공개 비밀번호와 localStorage로 관리자 권한을 판단하던 방식은 비활성화했습니다. 운영자 관리 기능은 실제 인증·권한 검증을 구현한 후 활성화해야 합니다.
+점수 서버가 프록시나 CDN 뒤에서 동작하면 `TRUST_PROXY_HOPS=1`(프록시 수)을 설정해야 방문자별 요청 제한이 프록시 주소 하나로 합쳐지지 않습니다. 보안 헤더와 CSP는 `server/server.cjs`, 정적 호스팅용 `_headers`, `index.html`의 meta 태그에 같은 정책으로 들어 있습니다.
 
 ## 검증과 데이터 정확성
 

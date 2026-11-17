@@ -11,8 +11,12 @@
         filter: icon('<path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'),
         refresh: icon('<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 6.1A8 8 0 0 1 19.7 12M4.3 12A8 8 0 0 0 17.9 17.9"/>'),
         heart: icon('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>'),
-        star: icon('<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>')
+        star: icon('<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>'),
+        calendar: icon('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/>')
     };
+    // A final result does not change, so an old fetch time is not a freshness problem for it.
+    const FINAL = new Set(['finished', 'cancelled', 'postponed']);
+    const settled = (feed, date) => feed.matches?.length ? feed.matches.every(m => FINAL.has(m.status)) : date < C.kstDate();
     const memo = new Map();
     const pending = new Map();
     const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -111,27 +115,6 @@
         invalidate() { for (const value of memo.values()) value.at = 0; }
     };
 
-    // Every legacy live/upcoming view uses the same domestic + overseas league registry.
-    C.LEAGUES.filter(l => l.region === 'kr').forEach(l => {
-        if (!ApiService.sportConfig[l.sport]) ApiService.sportConfig[l.sport] = { name: '배구', icon: '🏐', leagues: [] };
-        ApiService.sportConfig[l.sport].leagues.unshift({ ...l, icon: '🇰🇷' });
-    });
-    ApiService.getMatchesBySport = async function (sport, filter) {
-        const today = C.kstDate();
-        const dates = filter === 'upcoming' ? [0, 1, 2, 3].map(i => C.shiftDate(today, i)) : [today];
-        const all = (await Promise.all(dates.map(date => Scores.load(date, 'all', sport)))).flat();
-        const result = {};
-        for (const feed of all) {
-            const group = result[feed.sport] ||= { name: this.sportConfig[feed.sport]?.name || feed.sport, icon: this.sportConfig[feed.sport]?.icon || '🏐', leagues: [] };
-            let league = group.leagues.find(l => l.id === feed.id);
-            if (!league) { league = { ...feed, matches: [], source: feed.region === 'kr' ? 'naver' : 'espn' }; group.leagues.push(league); }
-            if (feed.state !== 'ok') league.state = feed.state;
-            const seen = new Set(league.matches.map(m => m.id));
-            feed.matches.filter(m => !seen.has(m.id) && (!filter || m.status === filter)).forEach(m => league.matches.push(m));
-        }
-        return result;
-    };
-
     const Center = {
         date: C.kstDate(), region: 'all', status: 'all', query: '', feeds: [], sequence: 0,
         favorites: new Set(), favoriteTeams: new Map(), busy: false, lastDate: '', leagueId: '', activeTeam: '',
@@ -157,7 +140,7 @@
             toolbar.innerHTML = `
                 <div class="score-date-row">
                     <button class="score-icon-button" id="scorePrev" aria-label="전날 경기">${icons.previous}</button>
-                    <label class="score-date-label"><input type="date" id="scoreDate" aria-label="경기 날짜" value="${this.date}"></label>
+                    <label class="score-date-label">${icons.calendar}<input type="date" id="scoreDate" aria-label="경기 날짜 선택" value="${this.date}"></label>
                     <button class="score-icon-button" id="scoreNext" aria-label="다음날 경기">${icons.next}</button>
                     <button class="score-chip" id="scoreToday">오늘</button>
                     <span class="score-timezone" title="모든 경기 시간은 한국 시간">KST</span>
@@ -215,7 +198,7 @@
                 if (action === 'myteams' || action === 'live') { this.region = 'all'; app.currentSport = 'all'; document.querySelectorAll('.sport-tab').forEach(t => t.classList.toggle('active',t.dataset.sport==='all')); }
                 if (app.currentView !== 'home') app.switchView('home');
                 this.saveLocation(); this.load();
-                if (action === 'date') { document.getElementById('scoreDate').focus(); document.getElementById('scoreDateControls').scrollIntoView({block:'start',behavior:'smooth'}); }
+                if (action === 'date') { const input=document.getElementById('scoreDate'); document.getElementById('scoreDateControls').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); input.focus({preventScroll:true}); try { input.showPicker(); } catch {} }
             }));
             document.addEventListener('visibilitychange', () => { if (!document.hidden && app.currentView === 'home') this.load(); });
             window.addEventListener('online', () => this.load(true));
@@ -342,8 +325,6 @@
             }
             document.querySelectorAll('[data-region]').forEach(b => { const active = b.dataset.region === this.region; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
             document.querySelectorAll('[data-status]').forEach(b => { const active = b.dataset.status === this.status; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
-            const refresh = document.getElementById('homeRefreshBtn');
-            if (refresh) { refresh.disabled = this.busy; refresh.classList.toggle('refreshing', this.busy); }
             const matches = feeds.flatMap(f => f.matches.map(m => ({ ...m, feedState: f.state, mode: f.mode, fetchedAt: f.fetchedAt })));
             const filtered = C.filterMatches(matches, { date: this.date, region: this.region, sport: app.currentSport, status: this.status, query: this.query, favorites: this.favorites, favoriteTeams:new Set(this.favoriteTeams.keys()),leagueId:this.leagueId,team:this.activeTeam });
             this.showFilters(filtered.length);
@@ -352,7 +333,8 @@
             document.getElementById('scoreTotal').textContent = matches.length;
             document.getElementById('scoreLive').textContent = live;
             document.getElementById('scoreUpcoming').textContent = matches.filter(m => m.status === 'upcoming').length;
-            const issues = feeds.filter(f => f.state !== 'ok');
+            const issues = feeds.filter(f => f.state === 'error' || (f.state === 'stale' && !settled(f, this.date)));
+            const final = feeds.length > 0 && feeds.every(f => f.state !== 'error' && settled(f, this.date));
             const snapshots = feeds.filter(f => f.mode === 'snapshot');
             const notice = document.getElementById('scoreNotice');
             const messages = [];
@@ -361,11 +343,9 @@
             notice.title=issues.map(f=>f.name).join(' · '); notice.hidden = !messages.length; document.getElementById('scoreNoticeText').textContent = messages.join(' ');
             container.setAttribute('aria-busy', String(this.busy));
             const statusEl = document.getElementById('apiStatus');
-            if (statusEl) { const healthy = feeds.some(f => f.state === 'ok'); statusEl.classList.toggle('connected', healthy); statusEl.querySelector('.status-text').textContent = this.busy ? '조회 중' : healthy ? '데이터 연결' : '연결 확인'; }
-            const dates = feeds.filter(f => f.fetchedAt).map(f => Date.parse(f.fetchedAt));
-            document.getElementById('homeUpdateTime').textContent = dates.length ? clock(Math.min(...dates)) : '확인 중';
+            if (statusEl) { const healthy = feeds.some(f => f.state === 'ok' || (f.state === 'stale' && settled(f, this.date))); statusEl.classList.toggle('connected', healthy); statusEl.querySelector('.status-text').textContent = this.busy ? '조회 중' : healthy ? '데이터 연결' : '연결 확인'; }
             const sourceStatus = document.getElementById('scoreSourceStatus');
-            sourceStatus.textContent = this.busy ? '데이터 확인 중…' : !feeds.length || issues.length === feeds.length ? '데이터 연결 확인 필요' : issues.length ? '일부 공급 연결 지연' : snapshots.length ? '마지막 확인 점수 · 새로고침 필요' : live ? '진행 경기 5초마다 확인' : '10초마다 데이터 확인';
+            sourceStatus.textContent = this.busy ? '데이터 확인 중…' : !feeds.length || issues.length === feeds.length ? '데이터 연결 확인 필요' : issues.length ? '일부 공급 연결 지연' : final ? '종료된 경기 결과' : snapshots.length ? '마지막 확인 점수 · 새로고침 필요' : live ? '진행 경기 5초마다 확인' : '10초마다 데이터 확인';
             if (!this.rows) this.rows=new Map();
             if (!this.groups) this.groups=new Map();
             if (!filtered.length) {
@@ -425,7 +405,7 @@
             }
             const source = document.createElement('span'); source.className = 'score-row-meta';
             const league=document.createElement('span');league.textContent=C.LEAGUES.find(item=>item.id===m.leagueId)?.name||m.league;
-            const quality=document.createElement('small');quality.textContent=m.feedState !== 'ok'?'갱신 지연':m.mode === 'snapshot'?'수집본':m.region==='kr'?'네이버 스포츠':'ESPN';source.append(league,quality);
+            const quality=document.createElement('small');quality.textContent=FINAL.has(m.status)?(m.region==='kr'?'네이버 스포츠':'ESPN'):m.feedState !== 'ok'?'갱신 지연':m.mode === 'snapshot'?'수집본':m.region==='kr'?'네이버 스포츠':'ESPN';source.append(league,quality);
             detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(row._match || m));
             row.append(star, detail); return row;
         }
@@ -468,7 +448,7 @@
             const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;if(cls)n.className=cls;return n;};
             document.getElementById('gameDetailTitle').textContent=m.awayTeam+' vs '+m.homeTeam;
             document.getElementById('gameDetailMeta').textContent=m.league+' · '+C.LABELS[m.status]+' · 한국 시간';
-            const sb=document.getElementById('gameDetailScoreboard');sb.style.display='flex';sb.replaceChildren();
+            const sb=document.getElementById('gameDetailScoreboard');sb.hidden=false;sb.style.display='flex';sb.replaceChildren();
             for(const side of ['away','home']) {
                 const team=el('div',null,'gd-team');team.append(window.SportonTeamLogos.create(m,side),el('span',m[side+'Team'],'gd-team-name'));
                 const follow=el('button',Center.favoriteTeams.has(C.teamKey(m,side))?'♥ 관심 팀':'♡ 관심 팀','score-follow');
@@ -481,8 +461,8 @@
             if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
             const state=C.feedState({...data,mode:'poll',matches:[m]});this.renderedState=state;
-            box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(m.status==='live'?'5초':'10초')+'마다 확인'));
-            if(state!=='ok'&&this.data)box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
+            box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(FINAL.has(m.status)?'최종 결과':(m.status==='live'?'5초':'10초')+'마다 확인')));
+            if(state!=='ok'&&this.data&&!FINAL.has(m.status))box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
             if(!this.data)box.append(el('p','상세 기록을 불러오고 있습니다.'));
             if(data.periods){
                 box.append(el('h3',m.sport==='baseball'?'이닝별 점수':m.sport==='volleyball'?'세트별 점수':'구간별 점수'));
@@ -496,7 +476,7 @@
                 if(!data.events?.length)eventSection.append(el('p',m.status==='upcoming'?'경기 시작 전입니다.':data.recordAvailable?'현재 제공된 득점·카드 기록이 없습니다.':'제공처에서 상세 기록을 받지 못했습니다.'));
             }
             if(m.sport==='basketball'&&data.players?.length){const leaderStats=[['PTS','득점'],['REB','리바운드'],['AST','어시스트']];const cards=el('div',null,'score-leaders');for(const [key,label] of leaderStats){const leaders={};for(const side of ['away','home']){const rows=data.players.filter(g=>g.side===side).flatMap(g=>{const i=g.columns.findIndex(c=>c===key||c===({PTS:'득점',REB:'리바운드',AST:'어시스트'}[key]));return i<0?[]:g.entries.map(p=>({name:p.name,value:p.values[i]}));}).filter(p=>p.value!==null&&p.value!==''&&Number.isFinite(Number(p.value)));rows.sort((a,b)=>Number(b.value)-Number(a.value));leaders[side]=rows[0];}if(!leaders.away&&!leaders.home)continue;const row=el('div',null,'score-leader-row');for(const side of ['away','label','home']){if(side==='label')row.append(el('strong',label));else{const leader=leaders[side],cell=el('div',null,'score-leader-side');cell.append(el('b',leader?leader.value:'—'),el('span',leader?leader.name:'기록 없음'));row.append(cell);}}cards.append(row);}if(cards.childNodes.length)box.append(el('h3','주요 선수'),cards);}
-            if(m.sport==='basketball'&&data.flow?.length>1){const flow=data.flow,points=[];for(const item of flow){const parts=String(item.clock||'').split(':');let seconds=parts.length===2?Number(parts[0])*60+Number(parts[1]):Number(parts[0]);if(!Number.isFinite(seconds)||!Number.isFinite(item.home)||!Number.isFinite(item.away)||!Number.isInteger(item.period)||item.period<1)continue;const length=item.period<=4?720:300,start=item.period<=4?(item.period-1)*720:2880+(item.period-5)*300;if(seconds<0||seconds>length)continue;points.push({time:start+length-seconds,diff:item.away-item.home});}if(points.length>1){const maxPeriod=Math.max(...flow.map(x=>Number(x.period)||1)),duration=maxPeriod<=4?2880:2880+(maxPeriod-4)*300,scale=Math.max(5,...points.map(x=>Math.abs(x.diff))),ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 180');svg.setAttribute('role','img');svg.setAttribute('aria-label','경기 시간에 따른 '+m.awayTeam+'의 점수 차');const axis=document.createElementNS(ns,'line');axis.setAttribute('x1','0');axis.setAttribute('x2','600');axis.setAttribute('y1','90');axis.setAttribute('y2','90');axis.setAttribute('stroke','#b8c6d1');svg.append(axis);const line=document.createElementNS(ns,'polyline');line.setAttribute('points',points.map(p=>Math.min(600,Math.max(0,p.time/duration*600)).toFixed(1)+','+(90-p.diff/scale*75).toFixed(1)).join(' '));line.setAttribute('fill','none');line.setAttribute('stroke','#008565');line.setAttribute('stroke-width','3');svg.append(line);const chart=el('div',null,'score-flow');chart.append(el('p',m.awayTeam+' 우세 ↑ · '+m.homeTeam+' 우세 ↓'),svg,el('small','득점 시점의 점수 차 · 제공: ESPN'));box.append(el('h3','경기 흐름'),chart);}}
+            if(m.sport==='basketball'&&data.flow?.length>1){const flow=data.flow,points=[];for(const item of flow){const parts=String(item.clock||'').split(':');let seconds=parts.length===2?Number(parts[0])*60+Number(parts[1]):Number(parts[0]);if(!Number.isFinite(seconds)||!Number.isFinite(item.home)||!Number.isFinite(item.away)||!Number.isInteger(item.period)||item.period<1)continue;const length=item.period<=4?720:300,start=item.period<=4?(item.period-1)*720:2880+(item.period-5)*300;if(seconds<0||seconds>length)continue;points.push({time:start+length-seconds,diff:item.away-item.home});}if(points.length>1){const maxPeriod=Math.max(...flow.map(x=>Number(x.period)||1)),duration=maxPeriod<=4?2880:2880+(maxPeriod-4)*300,scale=Math.max(5,...points.map(x=>Math.abs(x.diff))),ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 180');svg.setAttribute('role','img');svg.setAttribute('aria-label','경기 시간에 따른 '+m.awayTeam+'의 점수 차');const axis=document.createElementNS(ns,'line');axis.setAttribute('x1','0');axis.setAttribute('x2','600');axis.setAttribute('y1','90');axis.setAttribute('y2','90');axis.setAttribute('class','score-flow-axis');svg.append(axis);const line=document.createElementNS(ns,'polyline');line.setAttribute('points',points.map(p=>Math.min(600,Math.max(0,p.time/duration*600)).toFixed(1)+','+(90-p.diff/scale*75).toFixed(1)).join(' '));line.setAttribute('class','score-flow-line');svg.append(line);const chart=el('div',null,'score-flow');chart.append(el('p',m.awayTeam+' 우세 ↑ · '+m.homeTeam+' 우세 ↓'),svg,el('small','득점 시점의 점수 차 · 제공: ESPN'));box.append(el('h3','경기 흐름'),chart);}}
             if(data.stats?.length){box.append(el('h3','팀 기록 비교'));const compare=el('div',null,'score-stat-comparison');const teamHead=el('div',null,'score-stat-teams');teamHead.append(el('span',m.awayTeam),el('span',m.homeTeam));compare.append(teamHead);for(const stat of data.stats){const row=el('div',null,'score-stat-row'),head=el('div',null,'score-stat-values');head.append(el('strong',stat.away??'—'),el('span',stat.label),el('strong',stat.home??'—'));row.append(head);const a=stat.away===null||stat.away===undefined||String(stat.away).trim()===''?NaN:Number(stat.away),h=stat.home===null||stat.home===undefined||String(stat.home).trim()===''?NaN:Number(stat.home);if(Number.isFinite(a)&&Number.isFinite(h)&&a>=0&&h>=0){const bar=el('div',null,'score-stat-bar'),left=el('span'),right=el('span');const total=a+h;left.style.width=(total?a/total*100:0)+'%';right.style.width=(total?h/total*100:0)+'%';bar.append(left,right);row.append(bar);}compare.append(row);}box.append(compare);}
             if(eventSection)box.append(eventSection);if(data.players?.length){box.append(el('h3','선수 기록'));for(const group of data.players){if(!['away','home'].includes(group.side)||!Array.isArray(group.columns)||!Array.isArray(group.entries))continue;const details=el('details',null,'score-player-group');details.append(el('summary',m[group.side+'Team']+' · '+group.title));const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');for(const label of ['선수',...group.columns])head.append(el('th',label));table.append(head);for(const entry of group.entries){const tr=el('tr');tr.append(el('th',entry.name));for(const value of entry.values||[])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);details.append(wrap);box.append(details);}}
             if(data.recordState==='error')box.append(el('p','상세 기록 공급 연결이 지연되고 있습니다.','score-warning'));
@@ -518,11 +498,7 @@
     app.switchView=function(view,...args){if(view!=='gameDetail'&&this.currentView==='gameDetail'){try{const url=new URL(location.href);url.searchParams.delete('matchLeague');url.searchParams.delete('match');history.replaceState(history.state,'',url);}catch{}}return previousSwitchView(view,...args);};
     window.addEventListener('popstate',()=>{if(app.currentView==='gameDetail')restoreDetailRoute();});
     window.SportonDetail=Detail;
-    app.showGameDetail=function(match){this._prevView=this.currentView;this.switchView('gameDetail');try{const url=new URL(location.href);url.searchParams.set('matchLeague',match.leagueId);url.searchParams.set('match',match.providerId||match.id);history.replaceState(history.state,'',url);}catch{}Detail.sequence++;Detail.match=match;Detail.data=null;Detail.busy=false;Detail.lastRequestAt=0;Detail.render();Detail.load();GameDetailChat.destroy();GameDetailChat.init(match.id);};
-    setInterval(()=>{if(document.hidden||app.currentView!=='gameDetail'||!Detail.match)return;if(Detail.data&&Detail.renderedState!==C.feedState({...Detail.data,mode:'poll',matches:[Detail.data.match]}))Detail.render();if(Detail.busy)return;if(Date.now()-Detail.lastRequestAt>=(Detail.data?.match?.status==='live'||Detail.match.status==='live'?5000:10000))Detail.load();},1000);
-    // Public Firebase config is initialized once, before legacy DOM ready handlers.
-    if (config.firebase && typeof firebase !== 'undefined') {
-        try { if (!firebase.apps.length) firebase.initializeApp(config.firebase); Community.db = firebase.firestore(); } catch (e) { console.warn('Firebase 초기화 실패'); }
-    }
-    document.addEventListener('DOMContentLoaded', () => { document.body.classList.toggle('score-no-chat',!config.firebase); Center.init(); const params=new URLSearchParams(location.search);if(params.has('matchLeague')&&params.has('match'))app.switchView('gameDetail');if(app.currentView==='home')Center.load();else if(app.currentView==='gameDetail')restoreDetailRoute(); });
+    app.showGameDetail=function(match){this._prevView=this.currentView;this.switchView('gameDetail');try{const url=new URL(location.href);url.searchParams.set('matchLeague',match.leagueId);url.searchParams.set('match',match.providerId||match.id);history.replaceState(history.state,'',url);}catch{}Detail.sequence++;Detail.match=match;Detail.data=null;Detail.busy=false;Detail.lastRequestAt=0;Detail.render();Detail.load();};
+    setInterval(()=>{if(document.hidden||app.currentView!=='gameDetail'||!Detail.match)return;if(Detail.data&&Detail.renderedState!==C.feedState({...Detail.data,mode:'poll',matches:[Detail.data.match]}))Detail.render();if(Detail.busy)return;const status=Detail.data?.match?.status||Detail.match.status;if(Date.now()-Detail.lastRequestAt>=(status==='live'?5000:FINAL.has(status)?60000:10000))Detail.load();},1000);
+    document.addEventListener('DOMContentLoaded', () => { Center.init(); const params=new URLSearchParams(location.search);if(params.has('matchLeague')&&params.has('match'))app.switchView('gameDetail');if(app.currentView==='home')Center.load();else if(app.currentView==='gameDetail')restoreDetailRoute(); });
 })();

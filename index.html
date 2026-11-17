@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self'; connect-src 'self' https://sporton-live-api.parkbeomkuk.chatgpt.site https://site.web.api.espn.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="description" content="국내·해외 스포츠 경기 일정, 점수, 결과 — KBO, K리그, KBL, NBA">
-    <meta name="keywords" content="라이브스코어, 스포츠 배당률, NBA 라이브, EPL 경기, 실시간 스코어, 스포츠 예측">
+    <meta name="keywords" content="스포츠 스코어, 경기 일정, KBO, K리그, KBL, V리그, NBA, EPL, MLB">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sporton.live/">
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
@@ -20,7 +22,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@sporton_kr">
-    <meta name="twitter:title" content="SPORTON — 실시간 라이브스코어">
+    <meta name="twitter:title" content="SPORTON — 국내·해외 스포츠 스코어">
     <meta name="twitter:description" content="국내·해외 경기 일정, 점수, 결과">
     <meta name="twitter:image" content="https://sporton.live/og-image.png">
     <!-- PWA -->
@@ -59,7 +61,7 @@
           "@type": "WebPage",
           "@id": "https://sporton.live/#webpage",
           "url": "https://sporton.live",
-          "name": "SPORTON — 실시간 스포츠 라이브스코어 & 배당률",
+          "name": "SPORTON — 국내·해외 스포츠 스코어",
           "description": "국내·해외 경기 일정, 점수, 결과를 한국 시간으로 확인하세요.",
           "isPartOf": { "@id": "https://sporton.live/#website" },
           "about": { "@id": "https://sporton.live/#organization" },
@@ -70,734 +72,99 @@
     </script>
     
     <link rel="preconnect" href="https://sporton-live-api.parkbeomkuk.chatgpt.site" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css?v=20261112-astryx1">
-    <link rel="stylesheet" href="/astryx-ui.css?v=20261112-astryx1">
-    <link rel="stylesheet" href="/score-center.css?v=20261112-astryx1">
-    <link rel="stylesheet" href="/watchboard.css?v=20261112-astryx1">
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-<link rel="stylesheet" href="/football-standings.css?v=20261112-astryx1">
+    <link rel="stylesheet" href="/styles.css?v=20261117-shell1">
+    <link rel="stylesheet" href="/astryx-ui.css?v=20261117-shell1">
+    <link rel="stylesheet" href="/score-center.css?v=20261117-shell1">
+    <link rel="stylesheet" href="/watchboard.css?v=20261117-shell1">
+    <link rel="stylesheet" href="/football-standings.css?v=20261117-shell1">
 </head>
-<body>
-
+<body class="view-home">
+<a class="skip-link" href="#scoreDateTitle">경기 목록으로 건너뛰기</a>
 <header class="header" id="header">
     <div class="container">
         <div class="header-content">
-            <button class="logo" id="logoHome" type="button" aria-label="SPORTON 홈으로"><svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="10" fill="currentColor"/><path d="M19 7 10 18h6l-3 7 10-12h-6l2-6Z" fill="white"/></svg><span>SPORTON</span></button>
-            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button class="score-nav-item active" data-score-nav="today">오늘 경기</button><button class="score-nav-item" data-score-nav="live">진행 중</button><button class="score-nav-item" data-score-nav="myteams">내 팀</button></nav>
+            <button class="logo" id="logoHome" type="button" aria-label="SPORTON 오늘 경기"><svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="10" fill="currentColor"/><path d="M19 7 10 18h6l-3 7 10-12h-6l2-6Z" fill="white"/></svg><span>SPORTON</span></button>
+            <nav class="nav score-desktop-nav" aria-label="경기 탐색"><button type="button" class="score-nav-item active" data-score-nav="today">오늘 경기</button><button type="button" class="score-nav-item" data-score-nav="live">진행 중</button><button type="button" class="score-nav-item" data-score-nav="myteams">내 팀</button></nav>
             <div class="header-actions">
-                <button class="admin-dashboard-btn" id="adminDashboardBtn" onclick="AdminDashboard.open()" title="관리자 대시보드"><i class="fas fa-chart-bar"></i> 대시보드</button>
-                <button class="icon-btn" id="notifBellBtn" title="경기 알림 받기" onclick="NotificationManager.requestPermission()" style="position:relative;">
-                    <i class="fas fa-bell"></i>
-                </button>
                 <div class="api-status" id="apiStatus" role="status">
-                    <span class="status-dot"></span>
+                    <span class="status-dot" aria-hidden="true"></span>
                     <span class="status-text">데이터 확인 중</span>
                 </div>
             </div>
         </div>
     </div>
 </header>
-<div class="api-banner" id="apiBanner">
+
+<main class="main-content" id="main">
     <div class="container">
-        <div class="banner-content">
-            <i class="fas fa-satellite-dish"></i>
-            <span>ESPN API로 NBA·NFL·MLB·NHL·EPL 등 실시간 스코어를 제공합니다 (API 키 불필요)</span>
-            <div class="banner-actions">
-                <button class="btn btn-primary" id="setupApiBtn"><i class="fas fa-cog"></i> 설정</button>
+        <div class="content-main">
+            <div class="score-page-heading">
+                <div><h1 id="scoreDateTitle" tabindex="-1">경기 타임라인</h1><p class="score-page-description">시작 시간순으로 보는 국내·해외 경기 일정과 점수</p></div>
+                <div class="score-heading-tools" id="scoreDateControls"></div>
             </div>
+            <div class="score-summary" aria-label="선택 날짜 경기 현황"><span>전체 <b id="scoreTotal">—</b></span><span>진행 중 <b id="scoreLive">—</b></span><span>예정 <b id="scoreUpcoming">—</b></span></div>
+                <div class="sport-tabs" id="sportTabs" role="group" aria-label="종목">
+                    <button class="sport-tab active" type="button" aria-pressed="true" data-sport="all"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="15" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/></svg></span><span>전체</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="soccer"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 7 5 4-2 6H9l-2-6 5-4ZM12 3v4m9 4h-4M7 11H3m6 6-2 3m8-3 2 3"/></svg></span><span>축구</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="basketball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M6 5c8 5 8 9 0 14M18 5c-8 5-8 9 0 14"/></svg></span><span>농구</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="baseball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 5c6 4 6 10 0 14M18 5c-6 4-6 10 0 14m-9-9 2-1m-2 6 2 1m2-6 2 1m-2 5 2-1"/></svg></span><span>야구</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="volleyball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 12 8 4M12 12V3m0 9-8 5m3-12 10 6m-2 9v-6m-10-1 5-3"/></svg></span><span>배구</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="hockey"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3 8 13h4v4h-8L4 6M15 3 7 17H3v3h6l3-5"/></svg></span><span>하키</span></button>
+                    <button class="sport-tab" type="button" aria-pressed="false" data-sport="football"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 2 9 4 20c11 2 18-5 16-16ZM5 19 19 5m-8 3 5 5m-8-2 5 5"/></svg></span><span>NFL</span></button>
+                </div>
+
+            <section class="content-section active" id="homeSection" aria-labelledby="scoreDateTitle">
+                <div class="home-sports-feed">
+                    <noscript><p class="score-script-notice">경기 조회에는 자바스크립트가 필요합니다. 브라우저에서 자바스크립트를 켠 뒤 새로고침해 주세요.</p></noscript>
+                    <div class="score-date-strip" id="scoreDateStrip" role="group" aria-label="경기 날짜 탐색"></div>
+                    <div class="score-toolbar" id="scoreToolbar"></div>
+                    <div class="score-source-status" id="scoreSourceStatus" role="status" aria-live="polite">데이터 확인 중…</div>
+                    <div class="score-notice" id="scoreNotice" hidden><span id="scoreNoticeText"></span><button type="button" class="score-chip" id="scoreRetry">새로고침</button></div>
+                    <div id="homeGamesContainer" class="score-timeline" aria-busy="true">
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="gameDetailSection" aria-labelledby="gameDetailTitle">
+                <div class="game-detail-header">
+                    <button type="button" class="btn-back" id="gameDetailBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg><span>경기 목록</span></button>
+                    <div>
+                        <h2 class="game-detail-match-title" id="gameDetailTitle"></h2>
+                        <div class="game-detail-match-meta" id="gameDetailMeta"></div>
+                    </div>
+                </div>
+                <div class="game-detail-scoreboard" id="gameDetailScoreboard" hidden></div>
+                <div class="game-detail-body" id="gameDetailBody"><p class="game-detail-loading">상세 기록을 불러오고 있습니다.</p></div>
+            </section>
         </div>
     </div>
-</div>
-
-<!-- PWA 설치 배너 -->
-<div id="pwaInstallBar" style="display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:linear-gradient(90deg,#0d2b55,#0a3d6e);border-bottom:1px solid rgba(0,217,255,0.2);font-size:13px;color:#a8d8ff;">
-    <span><i class="fas fa-mobile-alt" style="color:#00d9ff;margin-right:8px;"></i>홈화면에 추가하면 경기 스코어보드에 빠르게 접속할 수 있어요!</span>
-    <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button id="pwaInstallBtn" style="background:linear-gradient(90deg,#00d9ff,#0099dd);color:#000;font-weight:700;font-size:12px;padding:6px 14px;border:none;border-radius:8px;cursor:pointer;">설치하기</button>
-        <button id="pwaInstallDismiss" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;padding:6px 10px;border:none;border-radius:8px;cursor:pointer;">닫기</button>
-    </div>
-</div>
-
-
-
-<main class="main-content">
-    <div class="container">
-        <div class="content-wrapper">
-            <aside class="sidebar">
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">리그</h3>
-                    <div class="league-list" id="leagueList">
-                        <!-- 스포츠 탭 선택에 따라 동적으로 변경됨 -->
-                        <p class="empty-state" style="font-size:var(--text-xs)">스포츠 탭을 선택하세요</p>
-                    </div>
-                </div>
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title"><i class="fas fa-star"></i> 즐겨찾기</h3>
-                    <div class="favorites-list" id="favoritesList"><p class="empty-state">즐겨찾기한 팀이 없습니다</p></div>
-                </div>
-                <!-- 실시간 채팅 패널 -->
-                <div class="live-chat-panel" id="liveChatPanel">
-                    <div class="chat-panel-header">
-                        <span class="chat-live-dot"></span>
-                        <span class="sidebar-title" style="margin:0;font-size:var(--text-sm);">실시간 채팅</span>
-                        <button class="icon-btn" id="chatToggleBtn" title="채팅 접기" style="margin-left:6px;padding:4px 8px;font-size:12px;"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="chat-empty">채팅에 참여하세요 💬</div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input class="chat-nickname-input" id="chatNickname" placeholder="닉네임" maxlength="10">
-                        <div class="chat-msg-row">
-                            <input class="chat-msg-input" id="chatMsgInput" placeholder="메시지 입력..." maxlength="100">
-                            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <div class="content-main">
-                <div class="score-page-heading">
-                    <div><h1 id="scoreDateTitle">경기 타임라인</h1><p class="score-page-description">시작 시간순으로 보는 국내·해외 경기 일정과 점수</p></div>
-                    <div class="score-heading-tools" id="scoreDateControls"></div>
-                </div>
-                <div class="score-summary" aria-label="선택 날짜 경기 현황"><span>전체 <b id="scoreTotal">—</b></span><span>진행 확인 <b id="scoreLive">—</b></span><span>예정 <b id="scoreUpcoming">—</b></span></div>
-                <div class="sport-tabs" id="sportTabs">
-                    <button class="sport-tab active" data-sport="all"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="15" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/></svg></span><span>전체</span></button>
-                    <button class="sport-tab" data-sport="soccer"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 7 5 4-2 6H9l-2-6 5-4ZM12 3v4m9 4h-4M7 11H3m6 6-2 3m8-3 2 3"/></svg></span><span>축구</span></button>
-                    <button class="sport-tab" data-sport="basketball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M6 5c8 5 8 9 0 14M18 5c-8 5-8 9 0 14"/></svg></span><span>농구</span></button>
-                    <button class="sport-tab" data-sport="baseball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 5c6 4 6 10 0 14M18 5c-6 4-6 10 0 14m-9-9 2-1m-2 6 2 1m2-6 2 1m-2 5 2-1"/></svg></span><span>야구</span></button>
-                    <button class="sport-tab" data-sport="volleyball"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 12 8 4M12 12V3m0 9-8 5m3-12 10 6m-2 9v-6m-10-1 5-3"/></svg></span><span>배구</span></button>
-                    <button class="sport-tab" data-sport="hockey"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3 8 13h4v4h-8L4 6M15 3 7 17H3v3h6l3-5"/></svg></span><span>하키</span></button>
-                    <button class="sport-tab" data-sport="football"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 2 9 4 20c11 2 18-5 16-16ZM5 19 19 5m-8 3 5 5m-8-2 5 5"/></svg></span><span>NFL</span></button>
-                </div>
-                <!-- ===== 홈 대시보드 섹션 ===== -->
-                <section class="content-section active" id="homeSection">
-                    <div class="home-dashboard">
-                        <!-- 왼쪽: 오늘의 경기 피드 -->
-                        <div class="home-sports-feed">
-                            <div class="home-feed-header">
-                                
-                                <div class="home-feed-meta">
-                                    <span class="home-live-count" id="homeLiveCount"></span>
-                                    <span>갱신 <span id="homeUpdateTime">-</span></span>
-                                    <button class="btn-refresh" id="homeRefreshBtn" title="새로고침"><i class="fas fa-sync-alt"></i></button>
-                                </div>
-                            </div>
-                            <noscript><p class="score-script-notice">경기 조회에는 자바스크립트가 필요합니다. 브라우저에서 자바스크립트를 켠 뒤 새로고침해 주세요.</p></noscript>
-                            <div class="score-date-strip" id="scoreDateStrip" aria-label="경기 날짜 탐색"></div>
-                            <div class="score-toolbar" id="scoreToolbar"></div>
-                            <div class="score-source-status" id="scoreSourceStatus" role="status" aria-live="polite">데이터 확인 중…</div>
-                            <div class="score-notice" id="scoreNotice" hidden><span id="scoreNoticeText"></span><br><button class="score-chip" id="scoreRetry">새로고침</button></div>
-                            <div id="homeGamesContainer" class="score-timeline" aria-busy="false">
-                                <div class="skeleton-card"></div>
-                                <div class="skeleton-card"></div>
-                                <div class="skeleton-card"></div>
-                            </div>
-                        </div>
-                        <!-- 오른쪽: 실시간 채팅 (핵심 기능) -->
-                        <div class="home-chat-embed">
-                            <div class="home-chat-header">
-                                <span class="chat-live-dot"></span>
-                                <span style="font-weight:700;font-size:14px;">실시간 채팅</span>
-                            </div>
-                            <div class="home-chat-messages" id="homeChatMessages">
-                                <div class="chat-empty">닉네임 입력 후 바로 채팅! 로그인 불필요 💬</div>
-                            </div>
-                            <div class="home-chat-input">
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-                                    <i class="fas fa-user-circle" style="color:var(--accent-blue);font-size:14px;flex-shrink:0;"></i>
-                                    <input class="chat-nickname-input" id="homeChatNick" placeholder="닉네임 (변경 가능)" maxlength="12" style="flex:1;font-size:12px;padding:6px 10px;">
-                                </div>
-                                <div class="chat-msg-row">
-                                    <input class="chat-msg-input" id="homeChatMsgInput" placeholder="메시지를 입력하세요..." maxlength="100">
-                                    <button class="chat-send-btn" id="homeChatSendBtn"><i class="fas fa-paper-plane"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="content-section" id="liveSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><span class="live-indicator"></span> 라이브 경기</h2>
-                        <div class="section-actions">
-                            <span class="update-time">최근 업데이트: <span id="liveUpdateTime">-</span></span>
-                            <button class="btn-refresh" id="refreshLiveBtn"><i class="fas fa-sync-alt"></i></button>
-                        </div>
-                    </div>
-                    <div id="liveMatchesWrapper">
-                        <div class="matches-grid" id="liveMatches">
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                        </div>
-                    </div>
-                    <!-- 광고 슬롯 1: 라이브 경기 하단 -->
-                    <div class="adsense-slot" style="display:none;margin:16px 0;text-align:center;">
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                    </div>
-                </section>
-
-                <section class="content-section" id="upcomingSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> 예정 경기</h2>
-                        <div class="section-actions">
-                            <span class="update-time">최근 업데이트: <span id="upcomingUpdateTime">-</span></span>
-                            <button class="btn-refresh" id="refreshUpcomingBtn"><i class="fas fa-sync-alt"></i></button>
-                        </div>
-                    </div>
-                    <div id="upcomingMatchesWrapper">
-                        <div class="matches-grid" id="upcomingMatches">
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                        </div>
-                    </div>
-                    <!-- 광고 슬롯 2: 예정 경기 하단 -->
-                    <div class="adsense-slot" style="display:none;margin:16px 0;text-align:center;">
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                    </div>
-                </section>
-
-                
-
-                <!-- ===== 경기 상세 섹션 ===== -->
-                <section class="content-section" id="gameDetailSection">
-                    <div class="game-detail-header">
-                        <button class="btn-back" id="gameDetailBack"><i class="fas fa-arrow-left"></i> 돌아가기</button>
-                        <div>
-                            <div class="game-detail-match-title" id="gameDetailTitle"></div>
-                            <div class="game-detail-match-meta" id="gameDetailMeta"></div>
-                        </div>
-                    </div>
-                    <!-- 스코어보드 -->
-                    <div class="game-detail-scoreboard" id="gameDetailScoreboard" style="display:none;"></div>
-                    <!-- 상세 데이터 -->
-                    <div class="game-detail-body" id="gameDetailBody">
-                        <div class="game-detail-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>
-                    </div>
-                    <!-- 경기별 실시간 채팅 -->
-                    <div class="gd-chat-section" id="gdChatSection" style="display:none;">
-                        <div class="gd-chat-header">
-                            <div class="chat-live-dot"></div>
-                            <span>실시간 채팅</span>
-                        </div>
-                        <div class="gd-chat-emoji-row">
-                            <button class="gd-chat-emoji-btn" data-emoji="😱" title="놀람">😱</button>
-                            <button class="gd-chat-emoji-btn" data-emoji="⚽" title="골">⚽</button>
-                            <button class="gd-chat-emoji-btn" data-emoji="🔥" title="불">🔥</button>
-                            <button class="gd-chat-emoji-btn" data-emoji="👏" title="박수">👏</button>
-                            <button class="gd-chat-emoji-btn" data-emoji="😭" title="슬픔">😭</button>
-                            <button class="gd-chat-emoji-btn" data-emoji="🏀" title="농구">🏀</button>
-                        </div>
-                        <div class="gd-chat-messages" id="gdChatMessages">
-                            <div class="chat-empty">첫 메시지를 남겨보세요! 💬</div>
-                        </div>
-                        <div class="gd-chat-input-area">
-                            <input class="gd-chat-nick" id="gdChatNick" placeholder="닉네임 (익명)" maxlength="12">
-                            <div class="gd-chat-row">
-                                <input class="gd-chat-msg-input" id="gdChatInput" placeholder="메시지 입력... (Enter 전송)" maxlength="200">
-                                <button class="gd-chat-send" id="gdChatSendBtn"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 캘린더 위젯 섹션 -->
-
-                <!-- 커뮤니티 섹션 -->
-                <section class="content-section" id="communitySection">
-
-                    <!-- 커뮤니티 탭 네비게이션 -->
-                    <div class="community-tabs">
-                        <button class="comm-tab active" data-tab="board"><i class="fas fa-list-alt"></i> 게시판</button>
-                        <button class="comm-tab" data-tab="kbo"><span>⚾</span> KBO 응원방</button>
-                        <button class="comm-tab" data-tab="debate"><i class="fas fa-fire-alt"></i> 설전방 🔥</button>
-                    </div>
-
-                    <!-- ===== 탭 1: 게시판 ===== -->
-                    <div id="commBoardTab">
-                        <div class="section-header">
-                            <h2 class="section-title"><i class="fas fa-comments"></i> 스포츠 게시판</h2>
-                            <button class="btn btn-primary" id="writePostBtn"><i class="fas fa-pen"></i> 글쓰기</button>
-                        </div>
-
-                        <!-- Firebase 설정 안내 배너 -->
-                        <div class="firebase-banner" id="firebaseBanner">
-                            <i class="fas fa-database"></i>
-                            <div>
-                                <strong>Firebase 설정이 필요합니다</strong>
-                                <p>아래 가이드를 따라 Firebase를 연결하면 실제 커뮤니티가 작동합니다.</p>
-                            </div>
-                            <button class="btn btn-primary btn-sm" id="firebaseSetupBtn"><i class="fas fa-cog"></i> 설정하기</button>
-                        </div>
-
-                        <!-- 글쓰기 폼 -->
-                        <div class="post-form" id="postForm" style="display:none">
-                            <div class="form-card">
-                                <h3><i class="fas fa-pen"></i> 새 글 작성</h3>
-                                <div id="postFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <span>Firebase가 연결되지 않았습니다. 등록하려면 먼저 Firebase를 연결해주세요.</span>
-                                    <button onclick="document.getElementById('firebaseSetupBtn').click()" style="margin-left:auto; background:var(--gradient-accent); border:none; color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; white-space:nowrap;">지금 연결하기</button>
-                                </div>
-                                <div class="form-group">
-                                    <label>닉네임</label>
-                                    <input type="text" id="postNickname" class="form-input" placeholder="닉네임을 입력하세요" maxlength="20">
-                                </div>
-                                <div class="form-group">
-                                    <label>카테고리</label>
-                                    <select id="postCategory" class="form-input">
-                                        <option value="자유">자유</option>
-                                        <option value="설전">🔥 설전 (토론/논쟁)</option>
-                                        <option value="KBO">⚾ KBO</option>
-                                        <option value="분석">경기 분석</option>
-                                        <option value="정보">정보 공유</option>
-                                        <option value="질문">질문</option>
-                                        <option value="축구">축구</option>
-                                        <option value="야구">야구</option>
-                                        <option value="농구">농구</option>
-                                    </select>
-                                </div>
-                                <!-- 설전 카테고리 선택 시 찬반 주제 입력 -->
-                                <div class="form-group" id="debateTopicGroup" style="display:none">
-                                    <label>찬성 측 주장 <small style="color:var(--text-muted)">(설전 카테고리)</small></label>
-                                    <input type="text" id="debateAgree" class="form-input" placeholder="예: 류현진은 KBO 역대 최고" maxlength="60">
-                                    <label style="margin-top:8px">반대 측 주장</label>
-                                    <input type="text" id="debateDisagree" class="form-input" placeholder="예: 아니다, 선동열이 최고다" maxlength="60">
-                                </div>
-                                <div class="form-group">
-                                    <label>제목</label>
-                                    <input type="text" id="postTitle" class="form-input" placeholder="제목을 입력하세요" maxlength="100">
-                                </div>
-                                <div class="form-group">
-                                    <label>내용</label>
-                                    <textarea id="postContent" class="form-input form-textarea" placeholder="내용을 입력하세요" maxlength="2000"></textarea>
-                                </div>
-                                <div class="form-actions">
-                                    <button class="btn btn-secondary" id="cancelPostBtn">취소</button>
-                                    <button class="btn btn-primary" id="submitPostBtn"><i class="fas fa-paper-plane"></i> 등록</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 카테고리 필터 -->
-                        <div class="category-filters" id="categoryFilters">
-                            <button class="category-chip active" data-category="전체">전체</button>
-                            <button class="category-chip chip-debate" data-category="설전">🔥 설전</button>
-                            <button class="category-chip chip-kbo" data-category="KBO">⚾ KBO</button>
-                            <button class="category-chip" data-category="자유">자유</button>
-                            <button class="category-chip" data-category="분석">경기 분석</button>
-                            <button class="category-chip" data-category="정보">정보 공유</button>
-                            <button class="category-chip" data-category="질문">질문</button>
-                            <button class="category-chip" data-category="축구">축구</button>
-                            <button class="category-chip" data-category="야구">야구</button>
-                            <button class="category-chip" data-category="농구">농구</button>
-                        </div>
-
-                        <!-- 인기 게시글 -->
-                        <div id="hotSection" class="hot-section" style="display:none">
-                            <div class="hot-label"><i class="fas fa-fire"></i> 🔥 인기 게시글 (추천 5개 이상)</div>
-                            <div class="post-list" id="hotList"></div>
-                            <hr style="border-color:rgba(255,255,255,0.08);margin:var(--space-3) 0">
-                        </div>
-                        <div class="post-list" id="postList">
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                        </div>
-
-                        <!-- 게시글 상세보기 -->
-                        <div class="post-detail" id="postDetail" style="display:none">
-                            <button class="btn btn-secondary back-btn" id="backToListBtn"><i class="fas fa-arrow-left"></i> 목록으로</button>
-                            <div class="post-detail-card" id="postDetailContent"></div>
-                            <!-- 설전 찬반 투표 섹션 -->
-                            <div id="debateVoteSection" style="display:none" class="debate-vote-section">
-                                <div class="debate-vote-title"><i class="fas fa-fire-alt"></i> 이 논쟁, 당신의 선택은?</div>
-                                <div class="debate-vote-bar-wrap">
-                                    <button class="debate-vote-btn agree" id="debateAgreeBtn">
-                                        <span class="debate-vote-label" id="debateAgreeLabel">찬성</span>
-                                        <span class="debate-vote-pct" id="debateAgreePct">50%</span>
-                                    </button>
-                                    <div class="debate-bar">
-                                        <div class="debate-bar-agree" id="debateBarAgree" style="width:50%"></div>
-                                        <div class="debate-bar-disagree" id="debateBarDisagree" style="width:50%"></div>
-                                    </div>
-                                    <button class="debate-vote-btn disagree" id="debateDisagreeBtn">
-                                        <span class="debate-vote-pct" id="debateDisagreePct">50%</span>
-                                        <span class="debate-vote-label" id="debateDisagreeLabel">반대</span>
-                                    </button>
-                                </div>
-                                <div class="debate-vote-count" id="debateVoteCount">0명 참여</div>
-                            </div>
-                            <div class="comment-section">
-                                <h3><i class="fas fa-comment"></i> 댓글 <span id="commentCount">0</span>개</h3>
-                                <div class="comment-list" id="commentList"></div>
-                                <div class="comment-form">
-                                    <input type="text" id="commentNickname" class="form-input" placeholder="닉네임" maxlength="20" style="width:150px">
-                                    <input type="text" id="commentContent" class="form-input" placeholder="댓글을 입력하세요" maxlength="500" style="flex:1">
-                                    <button class="btn btn-primary" id="submitCommentBtn"><i class="fas fa-paper-plane"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== 탭 2: KBO 응원방 ===== -->
-                    <div id="commKboTab" style="display:none">
-                        <div class="section-header">
-                            <h2 class="section-title">⚾ KBO 팀 응원방</h2>
-                            <span class="kbo-season-badge">⚾ KBO 팬 응원방</span>
-                        </div>
-                        <p class="kbo-tab-desc">팀을 선택해 응원방에 입장하세요. 라이벌 팬들과 치열하게 싸워보세요!</p>
-
-                        <!-- KBO 팀 그리드 -->
-                        <div class="kbo-team-grid" id="kboTeamGrid">
-                            <!-- JS로 동적 생성 -->
-                        </div>
-
-                        <!-- KBO 팀 채팅방 -->
-                        <div class="kbo-chat-room" id="kboChatRoom" style="display:none">
-                            <div class="kbo-chat-header" id="kboChatHeader">
-                                <button class="kbo-back-btn" id="kboBackBtn"><i class="fas fa-arrow-left"></i></button>
-                                <span id="kboChatTeamName">팀명</span>
-                            </div>
-                            <div class="kbo-chat-messages" id="kboChatMessages">
-                                <div class="chat-empty">입장하면 채팅이 시작됩니다!</div>
-                            </div>
-                            <div class="kbo-chat-input-row">
-                                <input type="text" id="kboChatNick" class="form-input" placeholder="닉네임" maxlength="15" style="width:90px;flex-shrink:0;">
-                                <input type="text" id="kboChatInput" class="form-input" placeholder="메시지 입력... (Enter)" maxlength="200" style="flex:1;">
-                                <button class="btn btn-primary" id="kboChatSendBtn"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== 탭 3: 설전방 ===== -->
-                    <div id="commDebateTab" style="display:none">
-                        <div class="section-header">
-                            <h2 class="section-title"><i class="fas fa-fire-alt" style="color:#ff6b35"></i> 설전방</h2>
-                            <button class="btn btn-primary" id="writeDebateBtn"><i class="fas fa-bolt"></i> 논쟁 올리기</button>
-                        </div>
-                        <p class="kbo-tab-desc" style="color:var(--accent-orange,#f4a261)">뜨거운 스포츠 논쟁을 올리고 찬반 투표로 승부를 가리세요!</p>
-
-                        <!-- 설전 글쓰기 폼 -->
-                        <div class="post-form" id="debateForm" style="display:none">
-                            <div class="form-card" style="border-color:rgba(255,107,53,0.3)">
-                                <h3><i class="fas fa-fire-alt" style="color:#ff6b35"></i> 논쟁 주제 올리기</h3>
-                                <div id="debateFormFirebaseWarning" style="display:none; align-items:center; gap:10px; background:rgba(239,71,111,0.1); border:1px solid rgba(239,71,111,0.4); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#EF476F;">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <span>Firebase가 연결되지 않았습니다.</span>
-                                </div>
-                                <div class="form-group">
-                                    <label>닉네임</label>
-                                    <input type="text" id="debateNickname" class="form-input" placeholder="닉네임" maxlength="20">
-                                </div>
-                                <div class="form-group">
-                                    <label>논쟁 제목</label>
-                                    <input type="text" id="debateTitle" class="form-input" placeholder="예: KBO 역대 최고 투수는 누구?" maxlength="100">
-                                </div>
-                                <div class="debate-sides-form">
-                                    <div class="form-group">
-                                        <label class="debate-side-label agree">🔵 찬성 측</label>
-                                        <input type="text" id="debateFormAgree" class="form-input" placeholder="예: 류현진" maxlength="50">
-                                    </div>
-                                    <div class="debate-vs">VS</div>
-                                    <div class="form-group">
-                                        <label class="debate-side-label disagree">🔴 반대 측</label>
-                                        <input type="text" id="debateFormDisagree" class="form-input" placeholder="예: 선동열" maxlength="50">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>내용 (선택)</label>
-                                    <textarea id="debateContent" class="form-input form-textarea" placeholder="논쟁 배경을 설명해주세요" maxlength="1000" style="height:80px"></textarea>
-                                </div>
-                                <div class="form-actions">
-                                    <button class="btn btn-secondary" id="cancelDebateBtn">취소</button>
-                                    <button class="btn btn-primary" id="submitDebateBtn" style="background:linear-gradient(135deg,#ff6b35,#ef476f)"><i class="fas fa-fire-alt"></i> 논쟁 시작!</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 설전 목록 -->
-                        <div class="debate-list" id="debateList">
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                        </div>
-                    </div>
-
-                </section>
-
-                <!-- ===== 리더보드 섹션 ===== -->
-                
-
-                <!-- ===== 내 팀 섹션 ===== -->
-                <section class="content-section" id="myteamSection">
-                    <div class="section-header">
-                        <h2 class="section-title"><i class="fas fa-heart" style="color:#ef476f"></i> 내 팀</h2>
-                    </div>
-                    <div id="myteamOnboarding" class="myteam-onboarding" style="display:none">
-                        <div class="myteam-onboard-icon"><i class="fas fa-heart"></i></div>
-                        <h3>팔로우한 팀이 없습니다</h3>
-                        <p>경기 카드의 <i class="far fa-heart" style="color:#ef476f"></i> 버튼을 눌러 팀을 팔로우하면<br>여기서 한 번에 모아볼 수 있습니다.</p>
-                        <button class="btn btn-primary" onclick="app.switchView('live')"><i class="fas fa-bolt"></i> 라이브 경기 보기</button>
-                    </div>
-                    <div id="myteamMatchesWrapper"></div>
-                </section>
-            </div>
-
-
-        </div>
-    </div>
-
-    <!-- ── 순위표 섹션 (축구) ── -->
-    <div class="container" id="standingsContainer" style="display:none; padding-bottom: 40px;">
-        <div class="standings-section">
-            <div class="standings-section-title">
-                <i class="fas fa-trophy" style="color:#f4a261"></i>
-                리그 순위표
-            </div>
-            <div class="standings-tabs" id="standingsTabs"></div>
-            <div id="standingsContent">
-                <div class="standings-loading">순위 데이터를 불러오는 중...</div>
-            </div>
-        </div>
-    </div>
+    <div id="standingsContainer" hidden></div>
 </main>
 
-
-<footer class="footer score-footer"><div class="container"><span>© SPORTON</span><span>네이버 스포츠 · ESPN</span><a href="/privacy.html">개인정보처리방침</a><a href="/third-party-notices.txt">오픈소스 라이선스</a><span id="oddsRefreshTs" hidden></span></div></footer>
+<footer class="footer score-footer"><div class="container"><span>© SPORTON</span><span>네이버 스포츠 · ESPN</span><a href="/privacy.html">개인정보처리방침</a><a href="/third-party-notices.txt">오픈소스 라이선스</a></div></footer>
 
 <nav class="mobile-nav" aria-label="모바일 경기 탐색">
-    <button class="score-nav-item active" data-score-nav="today"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h1m6 0h1"/></svg></span><span>오늘 경기</span></button>
-    <button class="score-nav-item" data-score-nav="live"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><span>진행 중</span></button>
-    <button class="score-nav-item" data-score-nav="myteams"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span><span>내 팀</span></button>
-    <button class="score-nav-item" data-score-nav="date"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1m-8 3h1m6 0h1"/></svg></span><span>날짜 선택</span></button>
-
+    <button type="button" class="score-nav-item active" data-score-nav="today"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h1m6 0h1"/></svg></span><span>오늘 경기</span></button>
+    <button type="button" class="score-nav-item" data-score-nav="live"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><span>진행 중</span></button>
+    <button type="button" class="score-nav-item" data-score-nav="myteams"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span><span>내 팀</span></button>
+    <button type="button" class="score-nav-item" data-score-nav="date"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1m-8 3h1m6 0h1"/></svg></span><span>날짜 선택</span></button>
 </nav>
 
-<!-- 로그인 모달 제거됨 - 로그인 없이 바로 채팅 가능 -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-<!-- ===== 공유 카드 모달 ===== -->
-<div class="modal" id="shareCardModal">
-    <div class="modal-overlay" onclick="ShareCard.closeModal()"></div>
-    <div class="modal-content" style="max-width:460px;text-align:center">
-        <div class="modal-header">
-            <h2><i class="fas fa-share-alt"></i> 예측 공유</h2>
-            <button class="modal-close" onclick="ShareCard.closeModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <canvas id="shareCanvas" width="600" height="315" style="width:100%;border-radius:12px;display:block;margin-bottom:16px;"></canvas>
-            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                <button class="share-action-btn" onclick="ShareCard.downloadCard()"><i class="fas fa-download"></i> 저장</button>
-                <button class="share-action-btn twitter" onclick="ShareCard.shareTwitter()"><i class="fab fa-twitter"></i> 트위터</button>
-                <button class="share-action-btn native" id="shareNativeBtn" onclick="ShareCard.shareNative()" style="display:none"><i class="fas fa-share"></i> 공유</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 친구 초대 모달 ===== -->
-<div class="modal" id="inviteModal">
-    <div class="modal-overlay" onclick="InviteSystem.closeModal()"></div>
-    <div class="modal-content" style="max-width:440px">
-        <div class="modal-header">
-            <h2><i class="fas fa-user-plus"></i> 친구 초대</h2>
-            <button class="modal-close" onclick="InviteSystem.closeModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="invite-reward-banner">
-                <i class="fas fa-gift"></i>
-                <div>
-                    <strong>친구가 가입하면 두 사람 모두 보너스 포인트!</strong>
-                    <p>친구 1명 초대 = +50pt 지급</p>
-                </div>
-            </div>
-            <div class="invite-code-display">
-                <span class="invite-label">내 초대 코드</span>
-                <span class="invite-code-val" id="inviteCodeVal">-</span>
-            </div>
-            <div style="display:flex;gap:8px;margin-bottom:16px;">
-                <input type="text" id="inviteUrl" readonly style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;color:var(--text-muted);font-size:12px;outline:none;">
-                <button class="btn btn-primary" onclick="InviteSystem.copyLink()" style="flex-shrink:0;padding:10px 16px;"><i class="fas fa-copy"></i></button>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                <button class="social-share-invite" onclick="InviteSystem.shareKakao()">
-                    <i class="fas fa-comment" style="color:#FAE100"></i> 카카오톡
-                </button>
-                <button class="social-share-invite" onclick="InviteSystem.shareTwitter()">
-                    <i class="fab fa-twitter" style="color:#1da1f2"></i> 트위터
-                </button>
-                <button class="social-share-invite" onclick="InviteSystem.shareNative()" style="grid-column:1/-1;">
-                    <i class="fas fa-share-alt"></i> 더 많은 앱으로 공유
-                </button>
-            </div>
-            <div class="invite-stats" id="inviteStats" style="display:none">
-                <span><i class="fas fa-users"></i> 초대한 친구 <strong id="inviteCount">0</strong>명</span>
-                <span><i class="fas fa-coins"></i> 획득 포인트 <strong id="invitePoints">0</strong>pt</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 관리자 대시보드 모달 ===== -->
-<div class="admin-modal" id="adminDashboardModal">
-    <div class="modal-overlay" onclick="AdminDashboard.close()"></div>
-    <div class="admin-modal-content">
-        <div class="admin-modal-header">
-            <h2><i class="fas fa-chart-line"></i> 관리자 대시보드</h2>
-            <button class="modal-close" onclick="AdminDashboard.close()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="admin-stats-grid">
-            <div class="admin-stat-card">
-                <div class="admin-stat-label"><i class="fas fa-users"></i> DAU (오늘)</div>
-                <div class="admin-stat-value" id="adDau">-</div>
-                <div class="admin-stat-sub">오늘 방문 고유 유저</div>
-            </div>
-            <div class="admin-stat-card">
-                <div class="admin-stat-label"><i class="fas fa-gamepad"></i> 예측 참여 (오늘)</div>
-                <div class="admin-stat-value" id="adPredictions">-</div>
-                <div class="admin-stat-sub">오늘 제출된 예측 수</div>
-            </div>
-            <div class="admin-stat-card">
-                <div class="admin-stat-label"><i class="fas fa-comments"></i> 채팅 메시지 (오늘)</div>
-                <div class="admin-stat-value" id="adChats">-</div>
-                <div class="admin-stat-sub">오늘 전송된 채팅 수</div>
-            </div>
-            <div class="admin-stat-card">
-                <div class="admin-stat-label"><i class="fas fa-user-plus"></i> 신규 가입 (오늘)</div>
-                <div class="admin-stat-value" id="adNewUsers">-</div>
-                <div class="admin-stat-sub">오늘 가입한 유저 수</div>
-            </div>
-        </div>
-        <div class="admin-ga-input">
-            <label>Google Analytics 4 측정 ID (G-XXXXXXXXXX)</label>
-            <div style="display:flex;gap:8px;">
-                <input type="text" id="adGaId" placeholder="G-XXXXXXXXXX" />
-                <button class="admin-action-btn" style="flex:0 0 auto;padding:10px 14px;" onclick="AdminDashboard.saveGaId()"><i class="fas fa-save"></i></button>
-            </div>
-        </div>
-        <div class="admin-ga-input" style="margin-top:12px;">
-            <label style="display:flex;align-items:center;gap:8px;"><i class="fas fa-dollar-sign" style="color:#f4a261;"></i> Google AdSense 게시자 ID (ca-pub-XXXXXXXXXXXXXXXX)</label>
-            <div style="display:flex;gap:8px;margin-top:6px;">
-                <input type="text" id="adAdsenseId" placeholder="ca-pub-XXXXXXXXXXXXXXXX" style="font-family:monospace;" />
-                <button class="admin-action-btn" style="flex:0 0 auto;padding:10px 14px;" onclick="AdminDashboard.saveAdsenseId()"><i class="fas fa-save"></i></button>
-            </div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;">
-                💡 <a href="https://adsense.google.com" target="_blank" style="color:#f4a261;">Google AdSense</a> 가입 → 내 사이트 등록 → 게시자 ID 복사 후 붙여넣기
-            </div>
-        </div>
-        <div class="admin-log-section">
-            <div class="admin-log-title">최근 이벤트 로그</div>
-            <div class="admin-log-list" id="adEventLog">
-                <div class="admin-log-item"><span style="color:rgba(255,255,255,0.3);">이벤트가 없습니다</span><span></span></div>
-            </div>
-        </div>
-        <div class="admin-actions">
-            <button class="admin-action-btn" onclick="AdminDashboard.refresh()"><i class="fas fa-sync-alt"></i> 새로고침</button>
-            <button class="admin-action-btn" onclick="AdminDashboard.exportCsv()"><i class="fas fa-download"></i> CSV 내보내기</button>
-            <button class="admin-action-btn" style="color:#ff6b6b;border-color:rgba(255,107,107,0.2);" onclick="AdminDashboard.exitAdmin()"><i class="fas fa-sign-out-alt"></i> 관리자 종료</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="apiModal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-key"></i> API 키 설정</h2>
-            <button class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <!-- Firebase -->
-            <div class="api-info" style="border-left:3px solid #ff6d00;padding-left:12px;">
-                <h3>🔥 Firebase 설정</h3>
-                <p>실시간 채팅 · 경기 댓글 · 커뮤니티 기능</p>
-                <ul>
-                    <li>✅ 무료 Spark 플랜으로 충분</li>
-                    <li>✅ 실시간 채팅 · 댓글 · 게시판 한번에</li>
-                </ul>
-                <div style="background:rgba(255,109,0,0.08);border:1px solid rgba(255,109,0,0.2);border-radius:8px;padding:10px;margin:10px 0;font-size:13px;">
-                    💡 console.firebase.google.com → 프로젝트 설정 → 내 앱 → SDK 구성 복사
-                </div>
-                <a href="https://console.firebase.google.com/" target="_blank" class="api-link"><i class="fas fa-external-link-alt"></i> Firebase 콘솔 열기</a>
-            </div>
-            <div class="form-group">
-                <label for="firebaseConfigInModal">Firebase Config (JSON)</label>
-                <textarea id="firebaseConfigInModal" class="config-input" rows="7" placeholder='{
-  "apiKey": "...",
-  "authDomain": "...",
-  "projectId": "...",
-  "storageBucket": "...",
-  "messagingSenderId": "...",
-  "appId": "..."
-}'></textarea>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-secondary" id="cancelModalBtn">취소</button>
-            <button class="btn btn-primary" id="saveApiKeysBtn"><i class="fas fa-save"></i> 저장</button>
-        </div>
-    </div>
-</div>
-
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Firebase 설정 모달 -->
-<div class="firebase-modal" id="firebaseModal">
-    <div class="modal-overlay" id="firebaseModalOverlay"></div>
-    <div class="modal-content">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3)">
-            <h2 style="display:flex;align-items:center;gap:0.5rem"><i class="fas fa-database" style="color:var(--accent-gold)"></i> Firebase 연결 설정</h2>
-            <button class="modal-close" id="closeFirebaseBtn"><i class="fas fa-times"></i></button>
-        </div>
-        <p style="color:var(--text-secondary);margin-bottom:var(--space-3)">아래 순서대로 따라하면 5분 안에 커뮤니티가 작동해요!</p>
-        <ol class="firebase-steps">
-            <li><div><strong>Firebase 접속</strong><br><a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → 구글 로그인</div></li>
-            <li><div><strong>프로젝트 만들기</strong><br>"프로젝트 추가" → 이름 입력 (예: livescore-pro) → 계속 → 완료</div></li>
-            <li><div><strong>웹 앱 추가</strong><br>프로젝트 홈에서 &lt;/&gt; 아이콘 클릭 → 앱 닉네임 입력 → "앱 등록"</div></li>
-            <li><div><strong>설정 코드 복사</strong><br>아래처럼 생긴 코드가 나와요. <code style="color:var(--accent-gold)">firebaseConfig = { ... }</code> 안의 내용 전체를 복사해서 아래에 붙여넣으세요</div></li>
-            <li><div><strong>Firestore 활성화</strong><br>왼쪽 메뉴 "Firestore Database" → "데이터베이스 만들기" → "테스트 모드" 선택 → 완료</div></li>
-        </ol>
-        <div class="form-group">
-            <label>Firebase Config 붙여넣기 (apiKey, authDomain 등이 포함된 객체)</label>
-            <textarea class="config-input" id="firebaseConfigInput" placeholder='{
-  "apiKey": "여기에 붙여넣으세요",
-  "authDomain": "...",
-  "projectId": "...",
-  "storageBucket": "...",
-  "messagingSenderId": "...",
-  "appId": "..."
-}'></textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-3)">
-            <button class="btn btn-secondary" id="cancelFirebaseBtn">취소</button>
-            <button class="btn btn-primary" id="saveFirebaseBtn"><i class="fas fa-save"></i> 연결하기</button>
-        </div>
-    </div>
-</div>
-
-<script src="/sporton-config.js?v=20261112-astryx1"></script>
-<script src="/team-logos.js?v=20261112-astryx1"></script>
-<script src="/sports-core.js?v=20261112-astryx1"></script>
-<script src="/app.js?v=20261112-astryx1"></script>
-<script src="/score-diagnostics.js?v=20261112-astryx1"></script>
-<script async src="/astryx-ui.js?v=20261112-astryx1"></script>
-<script src="/score-center.js?v=20261112-astryx1"></script>
-<script src="/watchboard.js?v=20261112-astryx1"></script>
-<script src="/score-alerts.js?v=20261112-astryx1"></script>
-<script src="/football-standings.js?v=20261112-astryx1"></script>
+<script src="/sporton-config.js?v=20261117-shell1"></script>
+<script src="/team-logos.js?v=20261117-shell1"></script>
+<script src="/sports-core.js?v=20261117-shell1"></script>
+<script src="/korean-names.js?v=20261117-shell1"></script>
+<script src="/app.js?v=20261117-shell1"></script>
+<script src="/score-diagnostics.js?v=20261117-shell1"></script>
+<script async src="/astryx-ui.js?v=20261117-shell1"></script>
+<script src="/score-center.js?v=20261117-shell1"></script>
+<script src="/watchboard.js?v=20261117-shell1"></script>
+<script src="/score-alerts.js?v=20261117-shell1"></script>
+<script src="/football-standings.js?v=20261117-shell1"></script>
 </body>
 </html>

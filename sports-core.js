@@ -54,7 +54,7 @@
             if (g.cancel) status = 'cancelled';
             else if (g.suspended) status = 'suspended';
             const isoDate = typeof g.gameDateTime === 'string'
-                ? g.gameDateTime.replace(/(Z|[+-]\d\d:\d\d)$/, '') + '+09:00' : '';
+                ? (/(Z|[+-]\d\d:\d\d)$/.test(g.gameDateTime) ? g.gameDateTime : g.gameDateTime + '+09:00') : '';
             const scored = ['live', 'finished', 'suspended', 'delayed'].includes(status);
             return {
                 id: 'naver:' + g.gameId, providerId: String(g.gameId), source: '네이버 스포츠',

@@ -30,3 +30,27 @@ test('HTTP routes reject bad ranges, private paths, unsupported methods and unkn
     assert.equal((await fetch(base+'/src/ui/astryx-controls.jsx')).status,404);
     assert.equal((await fetch(base + '/missing.html')).status, 404);
 });
+
+test('responses carry security headers, versioned assets are immutable and health reports the shipped release', async t => {
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const base = 'http://127.0.0.1:' + server.address().port;
+    const html = require('node:fs').readFileSync('index.html', 'utf8'), release = html.match(/\?v=([\w.-]+)/)[1];
+    const page = await fetch(base + '/');
+    for (const header of ['x-content-type-options', 'referrer-policy', 'x-frame-options', 'strict-transport-security']) assert.ok(page.headers.get(header), header);
+    assert.match(page.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+    assert.equal(page.headers.get('cache-control'), 'no-cache');
+    const asset = await fetch(base + '/app.js?v=' + release);
+    assert.match(asset.headers.get('cache-control'), /immutable/);
+    assert.equal((await fetch(base + '/sw.js?v=' + release)).headers.get('cache-control'), 'no-cache');
+    assert.equal((await (await fetch(base + '/api/health')).json()).release, release);
+    assert.ok(!/firebase|font-awesome|onclick=/.test(html), 'legacy runtime dependencies stay removed');
+});
+
+test('rate-limit identity uses the trusted proxy hop only when configured', () => {
+    const req = (xff, ip = '10.0.0.1') => ({ headers: xff ? { 'x-forwarded-for': xff } : {}, socket: { remoteAddress: ip } });
+    assert.equal(server.clientAddress(req('203.0.113.9'), 0), '10.0.0.1', 'untrusted header is ignored by default');
+    assert.equal(server.clientAddress(req('198.51.100.1, 203.0.113.9'), 1), '203.0.113.9', 'spoofed left-most entries are ignored');
+    assert.equal(server.clientAddress(req('198.51.100.1, 203.0.113.9, 10.0.0.2'), 2), '203.0.113.9');
+    assert.equal(server.clientAddress(req(''), 1), '10.0.0.1');
+});

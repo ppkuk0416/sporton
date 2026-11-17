@@ -20,4 +20,4 @@ Invariants: existing sources/IDs/logos, real score values, delayed/stored labels
 
 Astryx enhancement: actual TextInput, searchable sport-grouped Selector, Button and IconButton control islands preserve the timeline and existing score state. Compact touch selection uses a bottom sheet. The user removed the aggregate league-delay banner; keep it absent.
 
-States: loading, saved snapshot, upstream unavailable, missing logo, long names, empty search, favorite/my-team empty state and detail failure. Test 320–1920px, narrow zoom equivalent, date navigation and internal table/filter scrolling. A visual review is not proof of Firebase connectivity, live feed freshness or a completed security audit.
+States: loading, saved snapshot, upstream unavailable, missing logo, long names, empty search, favorite/my-team empty state and detail failure. Test 320–1920px, narrow zoom equivalent, date navigation and internal table/filter scrolling. Final results (finished, cancelled, postponed) are not labelled as delayed: a stored final score is not stale. A visual review is not proof of live feed freshness or a completed security audit.

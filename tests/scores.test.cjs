@@ -79,3 +79,10 @@ test('ESPN collector merges UTC days into one KST day and marks partial failures
     await assert.rejects(collectLeague('https://evil.example', '2025-05-01'));
 });
 
+
+test('Naver kickoff keeps an explicit offset and assumes KST only when none is given', () => {
+    const C = require('../sports-core.js'), league = C.LEAGUES.find(l => l.id === 'kbo');
+    const game = gameDateTime => ({ success: true, result: { games: [{ categoryId: 'kbo', gameId: '20261010LGLT02026', homeTeamName: 'LG', awayTeamName: '롯데', statusCode: 'BEFORE', gameDate: '2026-10-10', gameDateTime }] } });
+    assert.equal(Date.parse(C.normalizeNaver(game('2026-10-10T18:30:00'), league)[0].isoDate), Date.parse('2026-10-10T09:30:00Z'));
+    assert.equal(Date.parse(C.normalizeNaver(game('2026-10-10T09:30:00Z'), league)[0].isoDate), Date.parse('2026-10-10T09:30:00Z'));
+});
