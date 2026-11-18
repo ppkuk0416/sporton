@@ -6,10 +6,11 @@ const core = require('../sports-core.js');
 const { getScores } = require('./domestic.cjs');
 const { collectLeague, collectLeagues } = require('./overseas.cjs');
 const { getDetail, validRequest } = require('./details.cjs');
+const { getOdds } = require('./odds.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.PORT || 4173);
 const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || 'https://sporton.live').split(',').map(s => s.trim()));
-const publicFiles = new Set(['astryx-ui.js', 'astryx-ui.css', 'astryx-ui.js.LEGAL.txt', 'third-party-notices.txt', 'index.html', 'app.js', 'tokens.css', 'styles.css', 'sports-core.js', 'team-logos.js', 'korean-names.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
+const publicFiles = new Set(['astryx-ui.js', 'astryx-ui.css', 'astryx-ui.js.LEGAL.txt', 'third-party-notices.txt', 'index.html', 'app.js', 'tokens.css', 'styles.css', 'sports-core.js', 'team-logos.js', 'korean-names.js', 'data/teams/catalog.json', 'score-center.js', 'score-center.css', 'odds-core.js', 'score-odds.js', 'score-odds.css', 'watchboard.js', 'watchboard.css', 'score-alerts.js', 'score-diagnostics.js', 'football-standings.js', 'football-standings.css', 'sporton-config.js', 'sw.js', 'manifest.json', 'privacy.html', 'robots.txt', 'sitemap.xml']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.xml': 'application/xml', '.txt': 'text/plain' };
 const rate = new Map();
 // Number of reverse proxies in front of this server that append to X-Forwarded-For.
@@ -69,6 +70,13 @@ async function handle(req, res) {
         const league=url.searchParams.get('league'),id=url.searchParams.get('id');
         if(!validRequest(league,id)){json(res,400,{error:'Invalid league or match'});return;}
         const value=await getDetail(league,id);json(res,value.state==='error'?502:200,value);return;
+    }
+    if (url.pathname === '/api/odds') {
+        if (origin && !allowedOrigins.has(origin)) { json(res, 403, { error: 'Origin not allowed' }); return; }
+        const date = url.searchParams.get('date') || core.kstDate();
+        if (!core.validDate(date)) { json(res, 400, { error: 'Use YYYY-MM-DD' }); return; }
+        const value = await getOdds(date);
+        json(res, value.state === 'unconfigured' ? 503 : value.state === 'error' ? 502 : 200, value); return;
     }
     if (url.pathname === '/api/domestic') {
         if (origin && !allowedOrigins.has(origin)) { json(res, 403, { error: 'Origin not allowed' }); return; }

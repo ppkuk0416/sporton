@@ -72,11 +72,12 @@
     </script>
     
     <link rel="preconnect" href="https://sporton-live-api.parkbeomkuk.chatgpt.site" crossorigin>
-    <link rel="stylesheet" href="/styles.css?v=20261117-shell1">
-    <link rel="stylesheet" href="/astryx-ui.css?v=20261117-shell1">
-    <link rel="stylesheet" href="/score-center.css?v=20261117-shell1">
-    <link rel="stylesheet" href="/watchboard.css?v=20261117-shell1">
-    <link rel="stylesheet" href="/football-standings.css?v=20261117-shell1">
+    <link rel="stylesheet" href="/styles.css?v=20261118-odds1">
+    <link rel="stylesheet" href="/astryx-ui.css?v=20261118-odds1">
+    <link rel="stylesheet" href="/score-center.css?v=20261118-odds1">
+    <link rel="stylesheet" href="/watchboard.css?v=20261118-odds1">
+    <link rel="stylesheet" href="/football-standings.css?v=20261118-odds1">
+    <link rel="stylesheet" href="/score-odds.css?v=20261118-odds1">
 </head>
 <body class="view-home">
 <a class="skip-link" href="#scoreDateTitle">경기 목록으로 건너뛰기</a>
@@ -112,6 +113,8 @@
                     <button class="sport-tab" type="button" aria-pressed="false" data-sport="hockey"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3 8 13h4v4h-8L4 6M15 3 7 17H3v3h6l3-5"/></svg></span><span>하키</span></button>
                     <button class="sport-tab" type="button" aria-pressed="false" data-sport="football"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 2 9 4 20c11 2 18-5 16-16ZM5 19 19 5m-8 3 5 5m-8-2 5 5"/></svg></span><span>NFL</span></button>
                 </div>
+
+            <div class="score-league-chips" id="scoreLeagueChips" role="group" aria-label="리그 바로 선택"></div>
 
             <section class="content-section active" id="homeSection" aria-labelledby="scoreDateTitle">
                 <div class="home-sports-feed">
@@ -155,16 +158,18 @@
 
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-<script src="/sporton-config.js?v=20261117-shell1"></script>
-<script src="/team-logos.js?v=20261117-shell1"></script>
-<script src="/sports-core.js?v=20261117-shell1"></script>
-<script src="/korean-names.js?v=20261117-shell1"></script>
-<script src="/app.js?v=20261117-shell1"></script>
-<script src="/score-diagnostics.js?v=20261117-shell1"></script>
-<script async src="/astryx-ui.js?v=20261117-shell1"></script>
-<script src="/score-center.js?v=20261117-shell1"></script>
-<script src="/watchboard.js?v=20261117-shell1"></script>
-<script src="/score-alerts.js?v=20261117-shell1"></script>
-<script src="/football-standings.js?v=20261117-shell1"></script>
+<script src="/sporton-config.js?v=20261118-odds1"></script>
+<script src="/team-logos.js?v=20261118-odds1"></script>
+<script src="/sports-core.js?v=20261118-odds1"></script>
+<script src="/odds-core.js?v=20261118-odds1"></script>
+<script src="/korean-names.js?v=20261118-odds1"></script>
+<script src="/app.js?v=20261118-odds1"></script>
+<script src="/score-diagnostics.js?v=20261118-odds1"></script>
+<script async src="/astryx-ui.js?v=20261118-odds1"></script>
+<script src="/score-odds.js?v=20261118-odds1"></script>
+<script src="/score-center.js?v=20261118-odds1"></script>
+<script src="/watchboard.js?v=20261118-odds1"></script>
+<script src="/score-alerts.js?v=20261118-odds1"></script>
+<script src="/football-standings.js?v=20261118-odds1"></script>
 </body>
 </html>

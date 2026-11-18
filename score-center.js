@@ -12,8 +12,15 @@
         refresh: icon('<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 6.1A8 8 0 0 1 19.7 12M4.3 12A8 8 0 0 0 17.9 17.9"/>'),
         heart: icon('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>'),
         star: icon('<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>'),
-        calendar: icon('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/>')
+        calendar: icon('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/>'),
+        trophy: icon('<path d="M8 4h8v5a4 4 0 0 1-8 0V4Zm0 2H5a3 3 0 0 0 3 4m8-4h3a3 3 0 0 1-3 4m-4 3v4m-4 3h8m-6 0 .5-3h3l.5 3"/>')
     };
+    const MAJOR = C.MAJOR_LEAGUE;
+    const leagueName = id => id === MAJOR ? '주요 리그' : C.LEAGUES.find(l => l.id === id)?.name || id;
+    function majorBadge() {
+        const badge = document.createElement('span'); badge.className = 'score-major-badge'; badge.innerHTML = icons.trophy;
+        const label = document.createElement('span'); label.textContent = '주요'; badge.append(label); return badge;
+    }
     // A final result does not change, so an old fetch time is not a freshness problem for it.
     const FINAL = new Set(['finished', 'cancelled', 'postponed']);
     const settled = (feed, date) => feed.matches?.length ? feed.matches.every(m => FINAL.has(m.status)) : date < C.kstDate();
@@ -133,6 +140,7 @@
             if (['all','live','upcoming','finished','favorites','myteams'].includes(params.get('status'))) this.status=params.get('status');
             const initialLeague=C.LEAGUES.find(l=>l.id===params.get('league'));
             if(initialLeague){this.leagueId=initialLeague.id;this.region=initialLeague.region;app.currentSport=initialLeague.sport;}
+            else if(params.get('league')===MAJOR){this.leagueId=MAJOR;this.region='world';app.currentSport='soccer';}
             if(this.favoriteTeams.has(params.get('team')))this.activeTeam=params.get('team');
             document.querySelectorAll('.sport-tab').forEach(b=>b.classList.toggle('active',b.dataset.sport===app.currentSport));
             const toolbar = document.getElementById('scoreToolbar');
@@ -145,7 +153,6 @@
                     <button class="score-chip" id="scoreToday">오늘</button>
                     <span class="score-timezone" title="모든 경기 시간은 한국 시간">KST</span>
                 </div>
-                <div class="score-quick-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>
                 <label class="score-search">${icons.search}<input type="search" id="scoreSearch" placeholder="팀 또는 리그 검색" aria-label="팀 또는 리그 검색" maxlength="80"></label>
                 <div id="scoreFavoriteTeams" class="score-favorite-teams" aria-label="저장한 관심 팀"></div>
                 <div class="score-filter-row">
@@ -159,7 +166,7 @@
                     </div>
 
                 </div>
-                <details class="score-extra-filters"><summary aria-label="리그·지역 필터">${icons.filter}<span class="score-filter-label">필터</span></summary><div class="score-extra-content"><div class="score-mobile-leagues" aria-label="인기 리그"><button class="score-chip" data-league="">모든 리그</button><button class="score-chip" data-league="kbo">KBO</button><button class="score-chip" data-league="kleague">K리그</button><button class="score-chip" data-league="nba">NBA</button><button class="score-chip" data-league="mlb">MLB</button></div>                <div class="score-region-tabs" aria-label="경기 지역">
+                <details class="score-extra-filters"><summary aria-label="리그·지역 필터">${icons.filter}<span class="score-filter-label">필터</span></summary><div class="score-extra-content">                <div class="score-region-tabs" aria-label="경기 지역">
                     <button class="score-chip" data-region="kr">국내</button>
                     <button class="score-chip" data-region="world">해외</button>
                     <button class="score-chip" data-region="all">전체</button>
@@ -176,13 +183,9 @@
             toolbar.querySelectorAll('[data-region]').forEach(b => b.addEventListener('click', () => {
                 this.region = b.dataset.region; this.leagueId = ''; this.activeTeam = ''; this.saveLocation(); this.load();
             }));
-            toolbar.querySelectorAll('[data-league]').forEach(b => b.addEventListener('click', () => {
-                this.leagueId = b.dataset.league; this.activeTeam = '';
-                const league = C.LEAGUES.find(l => l.id === this.leagueId);
-                if (league) { this.region = league.region; app.filterSport(league.sport); }
-                else {this.region='all';app.filterSport('all');}
-                this.saveLocation();
-            }));
+            document.getElementById('scoreLeagueChips')?.addEventListener('click', event => {
+                const chip = event.target.closest('[data-league]'); if (chip) this.selectLeague(chip.dataset.league);
+            });
             toolbar.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click', () => {
                 this.status = b.dataset.status; if(this.status!=='myteams')this.activeTeam=''; this.saveLocation(); this.render();
             }));
@@ -205,6 +208,34 @@
             window.addEventListener('offline', () => this.render());
             window.SportonAstryx?.mount(this,C,app);
             this.render();
+        },
+        // One entry point for chips, the Astryx selector and filter tokens.
+        // '' keeps the selected sport; 'major' is the European top-league group.
+        selectLeague(id) {
+            const league = C.LEAGUES.find(l => l.id === id);
+            this.activeTeam = '';
+            if (id === MAJOR) { this.leagueId = MAJOR; this.region = 'world'; app.filterSport('soccer'); }
+            else if (league) { this.leagueId = league.id; this.region = league.region; app.filterSport(league.sport); }
+            else { this.leagueId = ''; this.region = 'all'; app.filterSport(app.currentSport); }
+            this.saveLocation();
+        },
+        renderLeagueChips() {
+            const host = document.getElementById('scoreLeagueChips'); if (!host) return;
+            const sport = app.currentSport;
+            const ids = sport === 'all' ? [MAJOR, ...C.MAJOR_LEAGUE_IDS, 'kbo', 'kleague', 'kbl', 'nba', 'mlb']
+                : C.LEAGUES.filter(l => l.sport === sport).map(l => l.id).sort((a, b) => C.MAJOR_LEAGUE_IDS.includes(b) - C.MAJOR_LEAGUE_IDS.includes(a));
+            if (sport === 'soccer') ids.unshift(MAJOR);
+            const items = [['', sport === 'all' ? '전체' : '전체 ' + (ApiService.sportConfig[sport]?.name || '')], ...ids.map(id => [id, leagueName(id)])];
+            const key = JSON.stringify([items, this.leagueId]);
+            if (host.dataset.key === key) return;
+            host.dataset.key = key; host.replaceChildren();
+            for (const [id, label] of items) {
+                const chip = document.createElement('button'); chip.type = 'button'; chip.className = 'score-chip score-league-chip' + (id === MAJOR ? ' is-major-group' : '');
+                chip.dataset.league = id; chip.setAttribute('aria-pressed', String(this.leagueId === id)); chip.classList.toggle('active', this.leagueId === id);
+                if (id === MAJOR) chip.append(majorBadge().firstChild);
+                chip.append(document.createTextNode(label)); host.append(chip);
+            }
+            host.querySelector('.active')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
         },
         selectDate(date) {
             if (!C.validDate(date)) return;
@@ -250,7 +281,7 @@
             const items=[];
             if(this.region!=='all')items.push(['region',this.region==='kr'?'국내':'해외']);
             if(app.currentSport!=='all')items.push(['sport',ApiService.sportConfig[app.currentSport]?.name||app.currentSport]);
-            if(this.leagueId)items.push(['league',C.LEAGUES.find(l=>l.id===this.leagueId)?.name||this.leagueId]);
+            if(this.leagueId)items.push(['league',leagueName(this.leagueId)]);
             if(this.status!=='all')items.push(['status',({live:'진행 중',upcoming:'예정',finished:'종료',favorites:'관심 경기',myteams:'내 팀'})[this.status]]);
             if(this.activeTeam)items.push(['team',this.favoriteTeams.get(this.activeTeam)?.name||'선택한 팀']);
             if(this.query)items.push(['query','검색: '+this.query]);
@@ -312,7 +343,7 @@
                 (this.region === 'all' || l.region === this.region) &&
                 (app.currentSport === 'all' || l.sport === app.currentSport)).map(f => ({...f,state:C.feedState(f)})) : [];
             document.querySelectorAll('.sport-tab').forEach(b=>{const active=b.dataset.sport===app.currentSport;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
-            document.querySelectorAll('[data-league]').forEach(b => { const active=b.dataset.league===this.leagueId;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active)); });
+            this.renderLeagueChips();
             document.querySelectorAll('[data-score-nav]').forEach(b => b.classList.toggle('active', app.currentView==='home' && b.dataset.scoreNav === (this.status === 'live' ? 'live' : this.status === 'myteams' ? 'myteams' : 'today')));
             const teamContainer = document.getElementById('scoreFavoriteTeams'); teamContainer.replaceChildren();
             for (const [key, team] of this.favoriteTeams) {
@@ -325,7 +356,10 @@
             }
             document.querySelectorAll('[data-region]').forEach(b => { const active = b.dataset.region === this.region; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
             document.querySelectorAll('[data-status]').forEach(b => { const active = b.dataset.status === this.status; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
+            const odds = window.SportonOdds;
             const matches = feeds.flatMap(f => f.matches.map(m => ({ ...m, feedState: f.state, mode: f.mode, fetchedAt: f.fetchedAt })));
+            odds?.ensure(this.date, matches, () => this.render());
+            for (const m of matches) { const value = odds?.forMatch(m); if (value) m.odds = value; }
             const filtered = C.filterMatches(matches, { date: this.date, region: this.region, sport: app.currentSport, status: this.status, query: this.query, favorites: this.favorites, favoriteTeams:new Set(this.favoriteTeams.keys()),leagueId:this.leagueId,team:this.activeTeam });
             this.showFilters(filtered.length);
             this.freshnessKey = this.feeds.map(f=>C.feedState(f)).join(',');
@@ -362,26 +396,46 @@
                 container.append(empty); return;
             }
             this.emptyKey='';
-            const groups = C.groupByStartTime(filtered);
-            const visibleGroups=[],visibleRows=new Set();
-            for (const slot of groups) {
-                const id=slot.key,games=slot.matches;
-                let saved=this.groups.get(id);
-                if(!saved){
-                    const group=document.createElement('section');group.className='score-league score-time-group';group.dataset.startsAt=slot.startsAt===null?'unknown':String(slot.startsAt);
-                    const header=document.createElement('div');header.className='score-league-heading';
-                    const name=document.createElement('h3');name.textContent=slot.startsAt===null?'시간 미정':clock(slot.startsAt).slice(0,5);
-                    const meta=document.createElement('span'),list=document.createElement('div');list.className='score-time-matches';header.append(name,meta);group.append(header,list);
-                    saved={group,header,meta,list};this.groups.set(id,saved);
+            const majorFirst = !this.leagueId && filtered.some(C.isMajor) && filtered.some(m => !C.isMajor(m));
+            const sections = majorFirst
+                ? [{ id: 'major', title: '주요 리그', matches: filtered.filter(C.isMajor) }, { id: 'rest', title: '그 외 경기', matches: filtered.filter(m => !C.isMajor(m)) }]
+                : [{ id: 'all', title: '', matches: filtered }];
+            if (!this.sections) this.sections = new Map();
+            const visibleSections = [], visibleRows = new Set(), visibleGroups = new Set();
+            for (const part of sections) {
+                let section = this.sections.get(part.id);
+                if (!section) {
+                    const node = document.createElement('section'); node.className = 'score-section' + (part.id === 'major' ? ' is-major' : '');
+                    const heading = document.createElement('h2'); heading.className = 'score-section-heading';
+                    const body = document.createElement('div'); body.className = 'score-section-body';
+                    node.append(heading, body); section = { node, heading, body }; this.sections.set(part.id, section);
                 }
-                const {group,meta,list}=saved;meta.textContent=games.length+'경기';
-                const rowNodes=games.map(m=>{const key=m.leagueId+':'+m.id;visibleRows.add(key);const signature=JSON.stringify({...m,fetchedAt:undefined,favorite:this.favorites.has(m.id)});let savedRow=this.rows.get(key);if(!savedRow||savedRow.signature!==signature){savedRow={signature,node:this.row(m)};this.rows.set(key,savedRow);}savedRow.node._match=m;return savedRow.node;});
-                if(rowNodes.length!==list.children.length||rowNodes.some((node,i)=>list.children[i]!==node))list.replaceChildren(...rowNodes);
-                visibleGroups.push(group);
+                section.heading.hidden = !part.title;
+                section.heading.replaceChildren(...(part.id === 'major' ? [Object.assign(document.createElement('span'), { className: 'score-section-icon', innerHTML: icons.trophy })] : []), document.createTextNode(part.title), Object.assign(document.createElement('small'), { textContent: part.matches.length + '경기' }));
+                if (part.title) section.node.setAttribute('aria-label', part.title + ' ' + part.matches.length + '경기'); else section.node.removeAttribute('aria-label');
+                const groupNodes = [];
+                for (const slot of C.groupByStartTime(part.matches)) {
+                    const id = part.id + ':' + slot.key, games = slot.matches;
+                    visibleGroups.add(id);
+                    let saved = this.groups.get(id);
+                    if (!saved) {
+                        const group = document.createElement('section'); group.className = 'score-league score-time-group'; group.dataset.startsAt = slot.startsAt === null ? 'unknown' : String(slot.startsAt);
+                        const header = document.createElement('div'); header.className = 'score-league-heading';
+                        const name = document.createElement('h3'); name.textContent = slot.startsAt === null ? '시간 미정' : clock(slot.startsAt).slice(0, 5);
+                        const meta = document.createElement('span'), list = document.createElement('div'); list.className = 'score-time-matches'; header.append(name, meta); group.append(header, list);
+                        saved = { group, header, meta, list }; this.groups.set(id, saved);
+                    }
+                    const { group, meta, list } = saved; meta.textContent = games.length + '경기';
+                    const rowNodes = games.map(m => { const key = m.leagueId + ':' + m.id; visibleRows.add(key); const signature = JSON.stringify({ ...m, fetchedAt: undefined, favorite: this.favorites.has(m.id) }); let savedRow = this.rows.get(key); if (!savedRow || savedRow.signature !== signature) { savedRow = { signature, node: this.row(m) }; this.rows.set(key, savedRow); } savedRow.node._match = m; return savedRow.node; });
+                    if (rowNodes.length !== list.children.length || rowNodes.some((node, i) => list.children[i] !== node)) list.replaceChildren(...rowNodes);
+                    groupNodes.push(group);
+                }
+                if (groupNodes.length !== section.body.children.length || groupNodes.some((node, i) => section.body.children[i] !== node)) section.body.replaceChildren(...groupNodes);
+                visibleSections.push(section.node);
             }
-            if(visibleGroups.length!==container.children.length||visibleGroups.some((node,i)=>container.children[i]!==node))container.replaceChildren(...visibleGroups);
-            for(const key of this.rows.keys())if(!visibleRows.has(key))this.rows.delete(key);
-            for(const id of this.groups.keys())if(!groups.some(group=>group.key===id))this.groups.delete(id);
+            if (visibleSections.length !== container.children.length || visibleSections.some((node, i) => container.children[i] !== node)) container.replaceChildren(...visibleSections);
+            for (const key of this.rows.keys()) if (!visibleRows.has(key)) this.rows.delete(key);
+            for (const id of this.groups.keys()) if (!visibleGroups.has(id)) this.groups.delete(id);
         },
         row(m) {
             const row = document.createElement('div'); row.className = 'score-row' + (m.status === 'live' ? ' is-live' : '');
@@ -404,10 +458,12 @@
                 const value = document.createElement('b'); value.textContent = m[side + 'Score'] == null ? '—' : String(m[side + 'Score']); team.append(value); teams.append(team);
             }
             const source = document.createElement('span'); source.className = 'score-row-meta';
-            const league=document.createElement('span');league.textContent=C.LEAGUES.find(item=>item.id===m.leagueId)?.name||m.league;
+            const league=document.createElement('span');league.className='score-row-league';league.textContent=C.LEAGUES.find(item=>item.id===m.leagueId)?.name||m.league;if(C.isMajor(m))league.append(majorBadge());
             const quality=document.createElement('small');quality.textContent=FINAL.has(m.status)?(m.region==='kr'?'네이버 스포츠':'ESPN'):m.feedState !== 'ok'?'갱신 지연':m.mode === 'snapshot'?'수집본':m.region==='kr'?'네이버 스포츠':'ESPN';source.append(league,quality);
             detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(row._match || m));
-            row.append(star, detail); return row;
+            row.append(star, detail);
+            if (m.odds) { const strip = window.SportonOdds.rowStrip(m); if (strip) { row.classList.add('has-odds'); row.append(strip); } }
+            return row;
         }
     };
     window.SportonScores = Scores;
@@ -425,7 +481,7 @@
     // Refresh age labels even while a request is pending or polling is paused.
     setInterval(() => { if (!document.hidden && app.currentView === 'home' && Center.feeds.map(f=>C.feedState(f)).join(',') !== Center.freshnessKey) Center.render(); }, 1000);
     const oldFilter = app.filterSport.bind(app);
-    app.filterSport = function (sport) { oldFilter(sport); if (Center.leagueId && !C.LEAGUES.some(l=>l.id===Center.leagueId&&(sport==='all'||l.sport===sport))) Center.leagueId=''; Center.saveLocation(); if (this.currentView === 'home') Center.load(); };
+    app.filterSport = function (sport) { oldFilter(sport); if (Center.leagueId === MAJOR ? sport !== 'soccer' : Center.leagueId && !C.LEAGUES.some(l=>l.id===Center.leagueId&&(sport==='all'||l.sport===sport))) Center.leagueId=''; Center.saveLocation(); if (this.currentView === 'home') Center.load(); };
 
     const Detail = {
         match:null, data:null, sequence:0, busy:false, lastRequestAt:0,
@@ -456,7 +512,7 @@
                 follow.addEventListener('click',()=>{Center.toggleTeam(m,side);this.render();});team.append(follow);sb.append(team);
                 if(side==='away')sb.append(el('div',(m.awayScore??'—')+' : '+(m.homeScore??'—'),'gd-score'));
             }
-            const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);
+            const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);window.SportonOdds?.ensure(m.rawDate,[m],()=>{if(app.currentView==='gameDetail')this.render();});
             const actions=el('div',null,'score-detail-actions');const refresh=el('button',this.busy?'조회 중':'기록 새로고침','score-follow');refresh.disabled=this.busy;refresh.onclick=()=>this.load();actions.append(refresh);
             if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
@@ -464,6 +520,7 @@
             box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(FINAL.has(m.status)?'최종 결과':(m.status==='live'?'5초':'10초')+'마다 확인')));
             if(state!=='ok'&&this.data&&!FINAL.has(m.status))box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
             if(!this.data)box.append(el('p','상세 기록을 불러오고 있습니다.'));
+            const oddsBox=window.SportonOdds?.detail({...this.match,...m});if(oddsBox)box.append(oddsBox);
             if(data.periods){
                 box.append(el('h3',m.sport==='baseball'?'이닝별 점수':m.sport==='volleyball'?'세트별 점수':'구간별 점수'));
                 const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');

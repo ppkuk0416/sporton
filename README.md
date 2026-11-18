@@ -63,6 +63,8 @@ SCORE_DATE=2025-05-01 node scripts/collect-domestic.cjs
 
 `app.js`는 화면 전환·종목 선택·알림만 맡는 작은 셸이고, 점수 조회와 렌더링은 `score-center.js`가 담당합니다. 해외 팀 한글 표기는 `korean-names.js`에 있습니다. 예전 커뮤니티·채팅·관리자·배당 화면과 Firebase/Font Awesome 의존성은 2026-11-17 릴리스에서 제거했습니다(`docs/SHELL_CLEANUP.md`).
 
+주요 리그(유럽 5대 리그·챔피언스리그)는 목록 위쪽 `주요 리그` 구역과 리그 칩으로 먼저 보입니다. 배당 비교는 서버에 `ODDS_API_KEY`가 설정된 경우에만 표시되며, 화면 확인용 예시 배당은 `?odds=demo`에서만 `예시` 표시와 함께 나옵니다(`docs/ODDS.md`).
+
 점수 서버가 프록시나 CDN 뒤에서 동작하면 `TRUST_PROXY_HOPS=1`(프록시 수)을 설정해야 방문자별 요청 제한이 프록시 주소 하나로 합쳐지지 않습니다. 보안 헤더와 CSP는 `server/server.cjs`, 정적 호스팅용 `_headers`, `index.html`의 meta 태그에 같은 정책으로 들어 있습니다.
 
 ## 검증과 데이터 정확성

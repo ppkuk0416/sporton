@@ -30,6 +30,7 @@ window.SportonAstryx = {
         };
         sync();
         const changeLeague = value => {
+            if (center.selectLeague) { center.selectLeague(value || ''); return; }
             const league = core.LEAGUES.find(item => item.id === value);
             center.leagueId = league?.id || '';
             center.activeTeam = '';
@@ -39,7 +40,8 @@ window.SportonAstryx = {
         };
         const groups = ['soccer','basketball','baseball','volleyball','hockey','football'].map(sport => ({
             type:'section', title:({soccer:'축구',basketball:'농구',baseball:'야구',volleyball:'배구',hockey:'하키',football:'미식축구'})[sport],
-            options:core.LEAGUES.filter(league => league.sport === sport).map(league => ({value:league.id,label:league.name}))
+            options:[...(sport === 'soccer' && core.MAJOR_LEAGUE ? [{value:core.MAJOR_LEAGUE,label:'주요 리그 (유럽 5대 리그·챔스)'}] : []),
+                ...core.LEAGUES.filter(league => league.sport === sport).map(league => ({value:league.id,label:league.name}))]
         })).filter(group => group.options.length);
         const options = [{value:'',label:'모든 리그'}, ...groups];
         function Search() {

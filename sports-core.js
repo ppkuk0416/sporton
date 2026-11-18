@@ -13,17 +13,21 @@
         { id: 'wkbl', name: 'WKBL', sport: 'basketball', section: 'basketball', region: 'kr', source: 'naver' },
         { id: 'kovo', name: 'V리그 남자', sport: 'volleyball', section: 'volleyball', region: 'kr', source: 'naver' },
         { id: 'wkovo', name: 'V리그 여자', sport: 'volleyball', section: 'volleyball', region: 'kr', source: 'naver' },
-        { id: 'eng.1', name: 'EPL', sport: 'soccer', path: 'soccer/eng.1', region: 'world', source: 'espn' },
+        { id: 'eng.1', name: 'EPL', sport: 'soccer', path: 'soccer/eng.1', region: 'world', source: 'espn', major: true },
         { id: 'nba', name: 'NBA', sport: 'basketball', path: 'basketball/nba', region: 'world', source: 'espn' },
         { id: 'mlb', name: 'MLB', sport: 'baseball', path: 'baseball/mlb', region: 'world', source: 'espn' },
-        { id: 'esp.1', name: '라리가', sport: 'soccer', path: 'soccer/esp.1', region: 'world', source: 'espn' },
-        { id: 'ger.1', name: '분데스리가', sport: 'soccer', path: 'soccer/ger.1', region: 'world', source: 'espn' },
-        { id: 'ita.1', name: '세리에A', sport: 'soccer', path: 'soccer/ita.1', region: 'world', source: 'espn' },
-        { id: 'fra.1', name: '리그앙', sport: 'soccer', path: 'soccer/fra.1', region: 'world', source: 'espn' },
-        { id: 'uefa.champions', name: '챔피언스리그', sport: 'soccer', path: 'soccer/uefa.champions', region: 'world', source: 'espn' },
+        { id: 'esp.1', name: '라리가', sport: 'soccer', path: 'soccer/esp.1', region: 'world', source: 'espn', major: true },
+        { id: 'ger.1', name: '분데스리가', sport: 'soccer', path: 'soccer/ger.1', region: 'world', source: 'espn', major: true },
+        { id: 'ita.1', name: '세리에A', sport: 'soccer', path: 'soccer/ita.1', region: 'world', source: 'espn', major: true },
+        { id: 'fra.1', name: '리그앙', sport: 'soccer', path: 'soccer/fra.1', region: 'world', source: 'espn', major: true },
+        { id: 'uefa.champions', name: '챔피언스리그', sport: 'soccer', path: 'soccer/uefa.champions', region: 'world', source: 'espn', major: true },
         { id: 'nhl', name: 'NHL', sport: 'hockey', path: 'hockey/nhl', region: 'world', source: 'espn' },
         { id: 'nfl', name: 'NFL', sport: 'football', path: 'football/nfl', region: 'world', source: 'espn' }
     ];
+    // Europe's five top divisions and the Champions League: shown first and filterable as one group.
+    const MAJOR_LEAGUE = 'major';
+    const MAJOR_LEAGUE_IDS = LEAGUES.filter(l => l.major).map(l => l.id);
+    const isMajor = match => MAJOR_LEAGUE_IDS.includes(match?.leagueId);
     const LABELS = { live: '진행 중', upcoming: '예정', finished: '종료', postponed: '연기', cancelled: '취소', suspended: '중단', delayed: '지연', unknown: '상태 확인 중' };
     function kstDate(value = new Date()) {
         const d = new Date(value);
@@ -112,7 +116,7 @@
             (!options.date || m.rawDate === options.date) &&
             (!options.region || options.region === 'all' || m.region === options.region) &&
             (!options.sport || options.sport === 'all' || m.sport === options.sport) &&
-            (!options.leagueId || m.leagueId === options.leagueId) &&
+            (!options.leagueId || m.leagueId === options.leagueId || (options.leagueId === MAJOR_LEAGUE && isMajor(m))) &&
             (!options.team || [teamKey(m, 'home'), teamKey(m, 'away')].includes(options.team)) &&
             (!options.status || options.status === 'all' || m.status === options.status ||
                 (options.status === 'favorites' && options.favorites?.has(m.id)) ||
@@ -135,5 +139,5 @@
         }
         return [...groups.values()];
     }
-    return { LEAGUES, LABELS, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState, groupByStartTime };
+    return { LEAGUES, LABELS, MAJOR_LEAGUE, MAJOR_LEAGUE_IDS, isMajor, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState, groupByStartTime };
 });
