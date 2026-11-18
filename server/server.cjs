@@ -18,8 +18,9 @@ const rate = new Map();
 const TRUST_PROXY_HOPS = Math.max(0, Math.min(5, Number.parseInt(process.env.TRUST_PROXY_HOPS || '0', 10) || 0));
 // The health endpoint reports the asset release that index.html actually references.
 const RELEASE = process.env.SPORTON_RELEASE || (require('node:fs').readFileSync(path.join(ROOT, 'index.html'), 'utf8').match(/\?v=([\w.-]+)/)?.[1] ?? 'unknown');
-const API_ORIGIN = (() => { try { return new URL(require('node:fs').readFileSync(path.join(ROOT, 'sporton-config.js'), 'utf8').match(/domesticApiBase:\s*'([^']+)'/)[1]).origin; } catch { return ''; } })();
-const CSP = ["default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' https: data:", "font-src 'self'", "connect-src 'self'" + (API_ORIGIN ? ' ' + API_ORIGIN : '') + ' https://site.web.api.espn.com', "manifest-src 'self'", "worker-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'"].join('; ');
+// index.html's meta CSP is the single source; HTTP adds what a meta tag cannot express.
+// tests/server.test.cjs keeps _headers and sporton-config.js in agreement with it.
+const CSP = (require('node:fs').readFileSync(path.join(ROOT, 'index.html'), 'utf8').match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)?.[1] || "default-src 'self'") + "; frame-ancestors 'none'";
 const SECURITY_HEADERS = {
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',

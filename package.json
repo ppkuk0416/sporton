@@ -14,7 +14,9 @@
     "data:audit": "node scripts/manage-team-data.cjs audit",
     "data:sync": "node scripts/manage-team-data.cjs sync",
     "skills:check": "node scripts/check-skills.cjs",
-    "build": "node scripts/build-ui.cjs"
+    "build": "node scripts/build-ui.cjs",
+    "release:stamp": "node scripts/asset-release.cjs stamp",
+    "e2e": "node tests/e2e/navigation.e2e.cjs"
   },
   "dependencies": {
     "@astryxdesign/core": "0.7.14",

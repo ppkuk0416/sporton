@@ -235,7 +235,9 @@
                 if (id === MAJOR) chip.append(majorBadge().firstChild);
                 chip.append(document.createTextNode(label)); host.append(chip);
             }
-            host.querySelector('.active')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+            // Scroll the chip row only; scrollIntoView would also move the page vertically.
+            const active = host.querySelector('.active');
+            if (active) { const a = active.getBoundingClientRect(), h = host.getBoundingClientRect(); if (h.width) host.scrollLeft += a.left - h.left - (h.width - a.width) / 2; }
         },
         selectDate(date) {
             if (!C.validDate(date)) return;
@@ -393,10 +395,7 @@
                 container.append(empty); return;
             }
             this.emptyKey='';
-            const majorFirst = !this.leagueId && filtered.some(C.isMajor) && filtered.some(m => !C.isMajor(m));
-            const sections = majorFirst
-                ? [{ id: 'major', title: '주요 리그', matches: filtered.filter(C.isMajor) }, { id: 'rest', title: '그 외 경기', matches: filtered.filter(m => !C.isMajor(m)) }]
-                : [{ id: 'all', title: '', matches: filtered }];
+            const sections = C.majorSections(filtered, this.leagueId);
             if (!this.sections) this.sections = new Map();
             const visibleSections = [], visibleRows = new Set(), visibleGroups = new Set();
             for (const part of sections) {
@@ -499,7 +498,7 @@
             const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;if(cls)n.className=cls;return n;};
             document.getElementById('gameDetailTitle').textContent=m.awayTeam+' vs '+m.homeTeam;
             document.getElementById('gameDetailMeta').textContent=m.league+' · '+C.LABELS[m.status]+' · 한국 시간';
-            const sb=document.getElementById('gameDetailScoreboard');sb.hidden=false;sb.style.display='flex';sb.replaceChildren();
+            const sb=document.getElementById('gameDetailScoreboard');sb.hidden=false;sb.replaceChildren();
             for(const side of ['away','home']) {
                 const team=el('div',null,'gd-team');team.append(window.SportonTeamLogos.create(m,side),el('span',m[side+'Team'],'gd-team-name'));
                 const follow=el('button',Center.favoriteTeams.has(C.teamKey(m,side))?'♥ 관심 팀':'♡ 관심 팀','score-follow');

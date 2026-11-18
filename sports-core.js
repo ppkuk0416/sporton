@@ -28,6 +28,26 @@
     const MAJOR_LEAGUE = 'major';
     const MAJOR_LEAGUE_IDS = LEAGUES.filter(l => l.major).map(l => l.id);
     const isMajor = match => MAJOR_LEAGUE_IDS.includes(match?.leagueId);
+    // Old shared links (?view=live, #myteam ...) map onto today's status filter.
+    const LEGACY_STATUS = { live: 'live', upcoming: 'upcoming', myteam: 'myteams', myteams: 'myteams' };
+    const LEGACY_VIEWS = ['home', 'live', 'upcoming', 'myteam', 'myteams', 'community', 'leaderboard', 'nbacalc', 'overunder', 'calendar', 'gameDetail'];
+    // Returns the cleaned query string (without '?') when the URL used a legacy form, otherwise null.
+    function legacyRoute(search, hash) {
+        const params = new URLSearchParams(search || '');
+        const fromHash = String(hash || '').replace(/^#/, '');
+        const view = params.get('view') || (LEGACY_VIEWS.includes(fromHash) ? fromHash : '');
+        if (!params.has('view') && !LEGACY_VIEWS.includes(fromHash)) return null;
+        params.delete('view');
+        if (LEGACY_STATUS[view] && !params.has('status')) params.set('status', LEGACY_STATUS[view]);
+        return params.toString();
+    }
+    // Unfiltered lists put major leagues first; each part stays chronological.
+    function majorSections(matches, leagueId) {
+        const major = matches.filter(isMajor), rest = matches.filter(m => !isMajor(m));
+        return !leagueId && major.length && rest.length
+            ? [{ id: 'major', title: '주요 리그', matches: major }, { id: 'rest', title: '그 외 경기', matches: rest }]
+            : [{ id: 'all', title: '', matches }];
+    }
     const LABELS = { live: '진행 중', upcoming: '예정', finished: '종료', postponed: '연기', cancelled: '취소', suspended: '중단', delayed: '지연', unknown: '상태 확인 중' };
     function kstDate(value = new Date()) {
         const d = new Date(value);
@@ -139,5 +159,5 @@
         }
         return [...groups.values()];
     }
-    return { LEAGUES, LABELS, MAJOR_LEAGUE, MAJOR_LEAGUE_IDS, isMajor, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState, groupByStartTime };
+    return { LEAGUES, LABELS, MAJOR_LEAGUE, MAJOR_LEAGUE_IDS, isMajor, legacyRoute, majorSections, kstDate, validDate, shiftDate, safeUrl, normalizeNaver, normalizeESPN, filterMatches, teamKey, feedState, groupByStartTime };
 });

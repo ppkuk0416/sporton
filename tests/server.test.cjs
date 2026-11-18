@@ -54,3 +54,18 @@ test('rate-limit identity uses the trusted proxy hop only when configured', () =
     assert.equal(server.clientAddress(req('198.51.100.1, 203.0.113.9, 10.0.0.2'), 2), '203.0.113.9');
     assert.equal(server.clientAddress(req(''), 1), '10.0.0.1');
 });
+
+test('one CSP: server and _headers derive from the index.html meta policy, which allows the configured API', async () => {
+    const fs = require('node:fs'), vm = require('node:vm');
+    const meta = fs.readFileSync('index.html', 'utf8').match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)[1];
+    const expected = meta + "; frame-ancestors 'none'";
+    const headers = fs.readFileSync('_headers', 'utf8').match(/Content-Security-Policy: (.+)/)[1].trim();
+    assert.equal(headers, expected, '_headers must equal the index.html meta CSP plus frame-ancestors');
+    const window = {}; vm.runInNewContext(fs.readFileSync('sporton-config.js', 'utf8'), { window });
+    const origin = new URL(window.SPORTON_CONFIG.domesticApiBase).origin;
+    const connect = meta.split(';').map(s => s.trim()).find(s => s.startsWith('connect-src')).split(/\s+/);
+    assert.ok(connect.includes(origin), 'connect-src must allow the configured score API ' + origin);
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    try { assert.equal((await fetch('http://127.0.0.1:' + server.address().port + '/')).headers.get('content-security-policy'), expected); }
+    finally { await new Promise(resolve => server.close(resolve)); }
+});

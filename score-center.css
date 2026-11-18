@@ -5,6 +5,11 @@ body { min-height: 100vh; background: var(--score-ground); color: var(--score-in
 ::selection { background: var(--score-accent); color: var(--score-on-accent); }
 .skip-link { position: absolute; top: var(--ui-space-1); left: var(--ui-space-1); z-index: 1000; padding: var(--ui-space-1) var(--ui-space-2); border-radius: 8px; background: var(--score-accent); color: var(--score-on-accent); font-weight: 700; transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
+.install-bar { border-bottom: 1px solid var(--score-line); background: var(--score-panel); }
+.install-bar .container { display: flex; align-items: center; gap: var(--ui-space-1); min-height: 64px; padding-block: var(--ui-space-1); }
+.install-bar p { flex: 1; min-width: 0; margin: 0; color: var(--score-ink); font-size: 14px; line-height: 20px; }
+.install-bar .score-chip { flex-shrink: 0; font: inherit; font-size: 13px; cursor: pointer; }
+.install-bar .install-bar-accept { border-color: transparent; background: var(--score-accent); color: var(--score-on-accent); font-weight: 700; }
 #scoreDateTitle:focus { outline: none; }
 h1, h2, h3 { min-width: 0; overflow-wrap: break-word; text-wrap: balance; }
 button, input, select, textarea { font-family: inherit; caret-color: var(--score-accent); }
@@ -179,6 +184,7 @@ body:not(.view-home) .score-league-chips { display: none; }
 .btn-back svg { width: 20px; height: 20px; }
 .game-detail-match-title { margin: 0; font-size: 20px; line-height: 28px; font-weight: 700; }
 .game-detail-scoreboard { gap: var(--ui-space-4); padding: var(--ui-space-4); border-radius: var(--score-radius); }
+.game-detail-scoreboard[hidden], .install-bar[hidden] { display: none; }
 .game-detail-scoreboard { background: var(--score-surface) !important; border-color: var(--score-line) !important; }
 .game-detail-match-title, .gd-team-name { color: var(--score-ink) !important; }
 .game-detail-match-meta { color: var(--score-muted) !important; }
