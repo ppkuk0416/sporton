@@ -54,19 +54,3 @@ test('rate-limit identity uses the trusted proxy hop only when configured', () =
     assert.equal(server.clientAddress(req('198.51.100.1, 203.0.113.9, 10.0.0.2'), 2), '203.0.113.9');
     assert.equal(server.clientAddress(req(''), 1), '10.0.0.1');
 });
-
-test('odds route validates dates, stays off without a provider key and serves its public assets', async t => {
-    const previous = process.env.ODDS_API_KEY; delete process.env.ODDS_API_KEY;
-    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-    t.after(() => { if (previous !== undefined) process.env.ODDS_API_KEY = previous; return new Promise(resolve => server.close(resolve)); });
-    const base = 'http://127.0.0.1:' + server.address().port;
-    assert.equal((await fetch(base + '/api/odds?date=2026-02-30')).status, 400);
-    assert.equal((await fetch(base + '/api/odds?date=2026-11-21', { headers: { Origin: 'https://example.com' } })).status, 403);
-    const off = await fetch(base + '/api/odds?date=2026-11-21');
-    assert.equal(off.status, 503);
-    const body = await off.json();
-    assert.equal(body.state, 'unconfigured');
-    assert.deepEqual(body.events, {});
-    for (const file of ['odds-core.js', 'score-odds.js', 'score-odds.css']) { const r = await fetch(base + '/' + file); assert.equal(r.status, 200, file); await r.body.cancel(); }
-    assert.equal((await fetch(base + '/server/odds.cjs')).status, 404);
-});

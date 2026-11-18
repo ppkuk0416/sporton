@@ -12,7 +12,7 @@ Product facts and constraints:
 - Delayed and saved data keep their original timestamps and an explicit warning. Do not present these states as live.
 - The legacy community/chat, admin and Firebase code was removed on 2026-11-17. Reintroducing community features requires real authentication and database rules first.
 - Major leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, Champions League) are listed first and filterable as a group (2026-11-18).
-- Odds comparison (1X2, totals) for major-league fixtures comes only from a configured server-side provider (`docs/ODDS.md`). Sample prices exist solely behind `?odds=demo` and are labelled 예시; never show sample or guessed prices as real. No bookmaker links or betting calls to action.
+- Odds/betting information is out of scope (decided 2026-11-18). Do not add bookmaker odds or betting links.
 - The user approved a structural redesign into a chronological match timeline, retaining charcoal/lime identity, team logos and the 8px grid. AI analysis was explicitly removed; archived offline engine files are not an active product feature.
 
 This captures the user's existing brief and current code, not claims of a new deployment, current upstream data or a completed security audit.

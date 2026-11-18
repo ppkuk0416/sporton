@@ -356,10 +356,7 @@
             }
             document.querySelectorAll('[data-region]').forEach(b => { const active = b.dataset.region === this.region; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
             document.querySelectorAll('[data-status]').forEach(b => { const active = b.dataset.status === this.status; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
-            const odds = window.SportonOdds;
             const matches = feeds.flatMap(f => f.matches.map(m => ({ ...m, feedState: f.state, mode: f.mode, fetchedAt: f.fetchedAt })));
-            odds?.ensure(this.date, matches, () => this.render());
-            for (const m of matches) { const value = odds?.forMatch(m); if (value) m.odds = value; }
             const filtered = C.filterMatches(matches, { date: this.date, region: this.region, sport: app.currentSport, status: this.status, query: this.query, favorites: this.favorites, favoriteTeams:new Set(this.favoriteTeams.keys()),leagueId:this.leagueId,team:this.activeTeam });
             this.showFilters(filtered.length);
             this.freshnessKey = this.feeds.map(f=>C.feedState(f)).join(',');
@@ -461,9 +458,7 @@
             const league=document.createElement('span');league.className='score-row-league';league.textContent=C.LEAGUES.find(item=>item.id===m.leagueId)?.name||m.league;if(C.isMajor(m))league.append(majorBadge());
             const quality=document.createElement('small');quality.textContent=FINAL.has(m.status)?(m.region==='kr'?'네이버 스포츠':'ESPN'):m.feedState !== 'ok'?'갱신 지연':m.mode === 'snapshot'?'수집본':m.region==='kr'?'네이버 스포츠':'ESPN';source.append(league,quality);
             detail.append(state, teams, source); detail.addEventListener('click', () => app.showGameDetail(row._match || m));
-            row.append(star, detail);
-            if (m.odds) { const strip = window.SportonOdds.rowStrip(m); if (strip) { row.classList.add('has-odds'); row.append(strip); } }
-            return row;
+            row.append(star, detail); return row;
         }
     };
     window.SportonScores = Scores;
@@ -512,7 +507,7 @@
                 follow.addEventListener('click',()=>{Center.toggleTeam(m,side);this.render();});team.append(follow);sb.append(team);
                 if(side==='away')sb.append(el('div',(m.awayScore??'—')+' : '+(m.homeScore??'—'),'gd-score'));
             }
-            const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);window.SportonOdds?.ensure(m.rawDate,[m],()=>{if(app.currentView==='gameDetail')this.render();});
+            const body=document.getElementById('gameDetailBody');body.replaceChildren();const box=el('div',null,'score-detail');body.append(box);
             const actions=el('div',null,'score-detail-actions');const refresh=el('button',this.busy?'조회 중':'기록 새로고침','score-follow');refresh.disabled=this.busy;refresh.onclick=()=>this.load();actions.append(refresh);
             if(C.safeUrl(m.sourceUrl)){const a=el('a','제공처 경기 페이지 ↗');a.href=m.sourceUrl;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);}box.append(actions);
             box.append(el('p',m.time||C.LABELS[m.status]));
@@ -520,7 +515,6 @@
             box.append(el('p','제공: '+(m.region==='kr'?'네이버 스포츠':'ESPN')+' · 마지막 수집 '+(data.fetchedAt?clock(data.fetchedAt):'확인 중')+' · '+(FINAL.has(m.status)?'최종 결과':(m.status==='live'?'5초':'10초')+'마다 확인')));
             if(state!=='ok'&&this.data&&!FINAL.has(m.status))box.append(el('p','연결이 지연되어 마지막 기록을 표시합니다. 아래 점수는 현재 점수와 다를 수 있습니다.','score-warning'));
             if(!this.data)box.append(el('p','상세 기록을 불러오고 있습니다.'));
-            const oddsBox=window.SportonOdds?.detail({...this.match,...m});if(oddsBox)box.append(oddsBox);
             if(data.periods){
                 box.append(el('h3',m.sport==='baseball'?'이닝별 점수':m.sport==='volleyball'?'세트별 점수':'구간별 점수'));
                 const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');
