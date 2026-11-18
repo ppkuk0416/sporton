@@ -1,0 +1,3 @@
+# Whitespace/line-ending-only commits. Use: git config blame.ignoreRevsFile .git-blame-ignore-revs
+# For earlier commits that mixed CRLF->LF with real edits, use: git blame -w
+d3f2fffd8024fc4e2fecc4cf00632476374ce143

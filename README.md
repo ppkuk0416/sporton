@@ -65,6 +65,8 @@ SCORE_DATE=2025-05-01 node scripts/collect-domestic.cjs
 
 주요 리그(유럽 5대 리그·챔피언스리그)는 목록 위쪽 `주요 리그` 구역과 리그 칩으로 먼저 보입니다(`?league=major`로 공유 가능). 배당 정보는 다루지 않습니다.
 
+줄바꿈은 `.gitattributes`로 LF 고정입니다. 정규화 커밋은 `.git-blame-ignore-revs`에 있으니 `git config blame.ignoreRevsFile .git-blame-ignore-revs`를 설정하세요. 그 전에 줄바꿈과 실제 수정이 섞인 커밋은 `git blame -w`로 보면 됩니다.
+
 JS/CSS를 수정하면 `npm run release:stamp`로 `?v=` 버전을 올려야 합니다. 버전이 붙은 파일은 1년간 캐시되므로, 올리지 않으면 `npm run check`가 실패합니다. 화면 전환·뒤로가기 동작은 `npm run e2e`(브라우저 점검)로 확인합니다. 보안 정책(CSP)의 원본은 `index.html`의 meta 태그이며, 서버와 `_headers`는 이를 따르고 테스트가 일치 여부를 검사합니다.
 
 점수 서버가 프록시나 CDN 뒤에서 동작하면 `TRUST_PROXY_HOPS=1`(프록시 수)을 설정해야 방문자별 요청 제한이 프록시 주소 하나로 합쳐지지 않습니다. 보안 헤더와 CSP는 `server/server.cjs`, 정적 호스팅용 `_headers`, `index.html`의 meta 태그에 같은 정책으로 들어 있습니다.
