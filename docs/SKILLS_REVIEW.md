@@ -26,7 +26,7 @@
 | Cloudflare | [`c1c8a8c1471069fb0e188eeaff69b8e8db6564a8`](https://github.com/cloudflare/security-audit-skill/tree/c1c8a8c1471069fb0e188eeaff69b8e8db6564a8) | MIT / `skills/security-audit` |
 | ECC | [`b38be6a7f6350964d59328b52f0624e1d1d552d1`](https://github.com/affaan-m/ECC/tree/b38be6a7f6350964d59328b52f0624e1d1d552d1) | MIT / `skills/verification-loop` |
 
-3개 스킬의 원본과 필요한 라이선스/NOTICE를 `.agents/skills/`에 보존했다. 총 88개 파일의 SHA-256, 저장소, 커밋, 원본 경로를 [skills-lock.json](../.agents/skills-lock.json)에 기록했다. `npm run skills:check`는 파일 변경·추가와 심볼릭 링크를 검사하며 CI에도 추가했다. 이 검사는 고정한 파일과의 일치를 확인하며, 코드 자체의 무해성을 증명하는 검사는 아니다.
+3개 스킬의 원본과 필요한 라이선스/NOTICE를 `.agents/skills/`에 보존했다. 총 88개 파일(이후 Anthropic 스킬 추가로 96개)의 SHA-256, 저장소, 커밋, 원본 경로를 [skills-lock.json](../.agents/skills-lock.json)에 기록했다. `npm run skills:check`는 파일 변경·추가와 심볼릭 링크를 검사하며 CI에도 추가했다. 이 검사는 고정한 파일과의 일치를 확인하며, 코드 자체의 무해성을 증명하는 검사는 아니다.
 
 전체 설치 스크립트, 전역 에이전트 설정, Git 훅, MCP, 자동 기억/관찰 수집은 실행하거나 등록하지 않았다. Impeccable의 실행기는 원본 체크섬 목록으로 엔진 다운로드를 검증한다. 실제 실행한 Linux x64 엔진은 0.1.18이며 SHA-256은 `736ed785e74ae2344d3036127f614ddde5ab520a527d8bc82a891612ef71f648`로 일치했다. 바이너리 캐시는 저장소 밖 `/workspace/.cache/impeccable`에 둔다.
 
@@ -78,3 +78,14 @@ npm run skills:check
 ```
 
 원본 업데이트는 새 커밋의 변경·실행기·라이선스를 검토한 후 파일과 lock을 함께 갱신한다. 해시 오류를 없애기 위해 검토 없이 lock만 다시 생성하지 않는다.
+
+## 추가: Anthropic 공식 스킬 (2026-11-18)
+
+사용자 요청으로 [anthropics/skills](https://github.com/anthropics/skills) 커밋 [`e4bb5d960d87126ff3b3a8af1a104b7db67560ba`](https://github.com/anthropics/skills/tree/e4bb5d960d87126ff3b3a8af1a104b7db67560ba)에서 웹사이트 작업에 해당하는 두 스킬만 원본 그대로 설치했다. 두 스킬 모두 Apache-2.0이며 각 폴더에 LICENSE.txt를 보존했다.
+
+| 스킬 | 역할 | 이 저장소에서의 적용 |
+| --- | --- | --- |
+| `frontend-design` | 화면 설계 원칙, 계획→검토→구현→자기 비평, 문구 작성 지침 | Impeccable과 함께 읽는다. 스킬 스스로 "브리프가 이긴다"고 정하므로, 사용자가 고른 차콜·라임 디자인(스킬이 흔한 기본값 2번으로 든 유형)은 유지한다. |
+| `webapp-testing` | Playwright 기반 화면 검증, 정찰 후 조작, 콘솔 로그 확인 | 같은 절차를 따르되, 이 환경에 없는 Python Playwright 대신 미리 설치된 Node Playwright로 실행한다. `with_server.py`는 로컬 서버만 띄우는 도우미로 검토했다. |
+
+문서·발표·스프레드시트(docx/pptx/xlsx/pdf)처럼 사이트와 무관하거나 공개 라이선스가 아닌 스킬은 설치하지 않았다. 설치 후 5개 스킬, 96개 파일이 `npm run skills:check` 무결성 검사를 통과했다. 훅, MCP 서버, 전역 설정은 바꾸지 않았다.
