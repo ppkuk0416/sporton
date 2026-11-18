@@ -1,0 +1,6 @@
+# Text files are stored with LF so editors and scripts cannot flip line endings in diffs.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.png binary
+# Vendored skills are pinned byte-for-byte by .agents/skills-lock.json: never convert them.
+.agents/** -text
