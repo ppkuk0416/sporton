@@ -1,5 +1,5 @@
 {
-  "version": "20261118-r2",
+  "version": "20261126-r3",
   "assets": {
     "app.js": "a623bc81150059a6f1ff0581d2594bf7982e24b09825b3d3f9c332e5dd6bed21",
     "astryx-ui.css": "fc1cdba490597798038a5447968afac480a83fb9a6838ed9f7ca7febaee31528",
@@ -8,8 +8,8 @@
     "football-standings.js": "2c88ac8fbc1a0ba56a1cc5b5693851adeb33d2943c1cca59d0954340948679fa",
     "korean-names.js": "5ff721d33622dc0f9ae2f3321038ac88ad1c7a61a3da388eaf73c2d2b71f7804",
     "score-alerts.js": "a7efa3287795ddb94101135901b211ed83a01402a4de1ea9616445cfa7fd5443",
-    "score-center.css": "942ede40ba6d121efa275ba526e6d610e98c81226a9b095020382ce645aaf50c",
-    "score-center.js": "eed370a6a924ea7585a1688ad04e15b69101e8edf034cb440c01691a60c64da4",
+    "score-center.css": "d4ab56b7edf79908e1e387b19401372cf73f50faa16b3a157c92386af5667bde",
+    "score-center.js": "c2d9804a072fdb25ad85637a93a96b1af8bd648be585d9ead1ef126df5751fbf",
     "score-diagnostics.js": "c48adf7e6a5050b13cae4e11c759e3a1a76827d9df2d4cf6688b77c54a2b6e2c",
     "sporton-config.js": "7dcdb3d0636ee0c33c6ace7cf0ca46b220f59b316a65120a736b65fbc5e3d3a0",
     "sports-core.js": "87415400d39b034d10cbe774da7efab44ca5aabea49dda39c5608acf3f3b1381",

@@ -26,6 +26,8 @@
     --score-form-draw-ink: #3C4857;
     --score-form-loss-bg: #FCEEEE;
     --score-form-loss-ink: #B34040;
+    --score-booking-yellow: #F2C94C;
+    --score-booking-red: #E5534B;
     --border-color: var(--score-line);
     --accent-color: var(--score-accent);
     --score-ground: #191D1C;

@@ -1,0 +1,711 @@
+{
+ "_note": "Synthetic test fixture in the ESPN soccer summary shape. Names and numbers are invented test values, not a real match.",
+ "header": {
+  "id": "990001",
+  "competitions": [
+   {
+    "id": "401879254",
+    "uid": "s:600~l:700~e:401879254~c:401879254",
+    "date": "2026-10-25T14:00Z",
+    "neutralSite": false,
+    "conferenceCompetition": false,
+    "boxscoreAvailable": true,
+    "commentaryAvailable": true,
+    "liveAvailable": false,
+    "onWatchESPN": false,
+    "recent": false,
+    "wallclockAvailable": true,
+    "boxscoreSource": "full",
+    "playByPlaySource": "full",
+    "competitors": [
+     {
+      "id": "384",
+      "uid": "s:600~t:384",
+      "order": 0,
+      "homeAway": "home",
+      "winner": false,
+      "team": {
+       "id": "9001",
+       "guid": "e8703d92-a160-9bbf-cb81-1be6f3fd7969",
+       "uid": "s:600~t:384",
+       "location": "Crystal Palace",
+       "name": "Crystal Palace",
+       "nickname": "Eagles",
+       "abbreviation": "CRY",
+       "displayName": "Home FC",
+       "shortDisplayName": "C Palace",
+       "color": "0202fb",
+       "alternateColor": "000000",
+       "logos": [
+        {
+         "href": "https://a.espncdn.com/i/teamlogos/soccer/500/384.png",
+         "width": 500,
+         "height": 500,
+         "alt": "",
+         "rel": [
+          "full",
+          "default"
+         ],
+         "lastUpdated": "2019-05-08T16:07Z"
+        },
+        {
+         "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/384.png",
+         "width": 500,
+         "height": 500,
+         "alt": "",
+         "rel": [
+          "full",
+          "dark"
+         ],
+         "lastUpdated": "2019-05-08T16:07Z"
+        }
+       ],
+       "groups": {
+        "name": "2026-27 English Premier League"
+       },
+       "links": [
+        {
+         "rel": [
+          "clubhouse",
+          "desktop",
+          "team"
+         ],
+         "href": "https://www.espn.com/soccer/club/_/id/384/crystal-palace",
+         "text": "Clubhouse"
+        }
+       ],
+       "form": "DLDLL"
+      },
+      "score": "1",
+      "linescores": [],
+      "record": [
+       {
+        "type": "total",
+        "summary": "2-1-5",
+        "displayValue": "2-1-5"
+       },
+       {
+        "type": "points",
+        "summary": "7",
+        "displayValue": "7"
+       }
+      ],
+      "possession": false
+     },
+     {
+      "id": "361",
+      "uid": "s:600~t:361",
+      "order": 1,
+      "homeAway": "away",
+      "winner": true,
+      "team": {
+       "id": "9002",
+       "guid": "ec6b4352-98d3-424d-6214-778d79b47a01",
+       "uid": "s:600~t:361",
+       "location": "Newcastle United",
+       "name": "Newcastle United",
+       "nickname": "Magpies/Toon",
+       "abbreviation": "NEW",
+       "displayName": "Away FC",
+       "shortDisplayName": "Newcastle",
+       "color": "000000",
+       "alternateColor": "0B1B3D",
+       "logos": [
+        {
+         "href": "https://a.espncdn.com/i/teamlogos/soccer/500/361.png",
+         "width": 500,
+         "height": 500,
+         "alt": "",
+         "rel": [
+          "full",
+          "default"
+         ],
+         "lastUpdated": "2024-01-04T17:49Z"
+        },
+        {
+         "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/361.png",
+         "width": 500,
+         "height": 500,
+         "alt": "",
+         "rel": [
+          "full",
+          "dark"
+         ],
+         "lastUpdated": "2024-01-04T17:52Z"
+        }
+       ],
+       "groups": {
+        "name": "2026-27 English Premier League"
+       },
+       "links": [
+        {
+         "rel": [
+          "clubhouse",
+          "desktop",
+          "team"
+         ],
+         "href": "https://www.espn.com/soccer/club/_/id/361/newcastle-united",
+         "text": "Clubhouse"
+        }
+       ],
+       "form": "LWLLW"
+      },
+      "score": "3",
+      "linescores": [],
+      "record": [
+       {
+        "type": "total",
+        "summary": "3-2-3",
+        "displayValue": "3-2-3"
+       },
+       {
+        "type": "points",
+        "summary": "11",
+        "displayValue": "11"
+       }
+      ],
+      "possession": false
+     }
+    ],
+    "notes": [],
+    "status": {
+     "type": {
+      "id": "28",
+      "name": "STATUS_FULL_TIME",
+      "state": "post",
+      "completed": true,
+      "description": "Full Time",
+      "detail": "FT",
+      "shortDetail": "FT"
+     }
+    },
+    "broadcasts": [
+     {
+      "type": {
+       "id": "1",
+       "shortName": "TV"
+      },
+      "market": {},
+      "media": {
+       "shortName": "USA Net"
+      },
+      "lang": "en",
+      "region": "us",
+      "isNational": false
+     },
+     {
+      "type": {
+       "id": "1",
+       "shortName": "TV"
+      },
+      "market": {},
+      "media": {
+       "shortName": "Tele"
+      },
+      "lang": "en",
+      "region": "us",
+      "isNational": false
+     }
+    ],
+    "details": [
+     {
+      "clock": {
+       "displayValue": "12'"
+      },
+      "scoringPlay": true,
+      "penaltyKick": true,
+      "ownGoal": false,
+      "team": {
+       "id": "9002"
+      },
+      "participants": [
+       {
+        "athlete": {
+         "displayName": "Away Striker"
+        }
+       }
+      ]
+     },
+     {
+      "clock": {
+       "displayValue": "20'"
+      },
+      "scoringPlay": true,
+      "penaltyKick": false,
+      "ownGoal": false,
+      "team": {
+       "id": "9002"
+      },
+      "participants": [
+       {
+        "athlete": {
+         "displayName": "Away Winger"
+        }
+       },
+       {
+        "athlete": {
+         "displayName": "Away Mid"
+        }
+       }
+      ]
+     },
+     {
+      "clock": {
+       "displayValue": "70'"
+      },
+      "scoringPlay": true,
+      "penaltyKick": false,
+      "ownGoal": false,
+      "team": {
+       "id": "9001"
+      },
+      "participants": [
+       {
+        "athlete": {
+         "displayName": "Home Forward"
+        }
+       }
+      ]
+     }
+    ],
+    "groups": {
+     "id": "1",
+     "name": "English Premiership 2001-2002",
+     "abbreviation": "2001-2002"
+    },
+    "isFinal": false,
+    "isThirdPlace": false,
+    "altGameNote": "Premier League",
+    "boxscoreMinutes": false,
+    "shotMapAvailable": true
+   }
+  ],
+  "links": []
+ },
+ "keyEvents": [
+  {
+   "type": {
+    "type": "kickoff",
+    "text": "Kickoff"
+   },
+   "clock": {
+    "displayValue": "0'"
+   },
+   "text": "First Half begins."
+  },
+  {
+   "type": {
+    "type": "penalty---scored",
+    "text": "Penalty - Scored"
+   },
+   "scoringPlay": true,
+   "clock": {
+    "displayValue": "12'"
+   },
+   "team": {
+    "id": "9002"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Away Striker"
+     }
+    }
+   ],
+   "text": "Goal! Home FC 0, Away FC 1. Away Striker (Away FC) converts the penalty with a right footed shot to the bottom left corner."
+  },
+  {
+   "type": {
+    "type": "yellow-card",
+    "text": "Yellow Card"
+   },
+   "clock": {
+    "displayValue": "15'"
+   },
+   "team": {
+    "id": "9001"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Home Back"
+     }
+    }
+   ],
+   "text": "Home Back (Home FC) is shown the yellow card."
+  },
+  {
+   "type": {
+    "type": "goal---header",
+    "text": "Goal - Header"
+   },
+   "scoringPlay": true,
+   "clock": {
+    "displayValue": "20'"
+   },
+   "team": {
+    "id": "9002"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Away Winger"
+     }
+    },
+    {
+     "athlete": {
+      "displayName": "Away Mid"
+     }
+    }
+   ],
+   "text": "Goal! Home FC 0, Away FC 2. Away Winger (Away FC) header from the centre of the box to the top right corner. Assisted by Away Mid with a cross following a corner."
+  },
+  {
+   "type": {
+    "type": "own-goal",
+    "text": "Own Goal"
+   },
+   "scoringPlay": true,
+   "clock": {
+    "displayValue": "45'+2'"
+   },
+   "team": {
+    "id": "9001"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Home Back"
+     }
+    }
+   ],
+   "text": "Own Goal by Home Back, Home FC. Home FC 0, Away FC 3."
+  },
+  {
+   "type": {
+    "type": "halftime",
+    "text": "Halftime"
+   },
+   "clock": {
+    "displayValue": "45'+3'"
+   },
+   "text": "First Half ends."
+  },
+  {
+   "type": {
+    "type": "substitution",
+    "text": "Substitution"
+   },
+   "clock": {
+    "displayValue": "60'"
+   },
+   "team": {
+    "id": "9002"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Away Sub"
+     }
+    },
+    {
+     "athlete": {
+      "displayName": "Away Striker"
+     }
+    }
+   ],
+   "text": "Substitution, Away FC. Away Sub replaces Away Striker because of an injury."
+  },
+  {
+   "type": {
+    "type": "goal",
+    "text": "Goal"
+   },
+   "scoringPlay": true,
+   "clock": {
+    "displayValue": "70'"
+   },
+   "team": {
+    "id": "9001"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Home Forward"
+     }
+    }
+   ],
+   "text": "Goal! Home FC 1, Away FC 3. Home Forward (Home FC) left footed shot from outside the box to the bottom right corner."
+  },
+  {
+   "type": {
+    "type": "red-card",
+    "text": "Red Card"
+   },
+   "clock": {
+    "displayValue": "88'"
+   },
+   "team": {
+    "id": "9001"
+   },
+   "participants": [
+    {
+     "athlete": {
+      "displayName": "Home Back"
+     }
+    }
+   ],
+   "text": "Home Back (Home FC) is shown the red card."
+  }
+ ],
+ "boxscore": {
+  "teams": [
+   {
+    "homeAway": "home",
+    "team": {
+     "id": "9001"
+    },
+    "statistics": [
+     {
+      "name": "totalPasses",
+      "displayValue": "410"
+     },
+     {
+      "name": "possessionPct",
+      "displayValue": "41.2"
+     },
+     {
+      "name": "totalShots",
+      "displayValue": "8"
+     },
+     {
+      "name": "shotsOnTarget",
+      "displayValue": "3"
+     },
+     {
+      "name": "unknownStat",
+      "displayValue": "1"
+     }
+    ]
+   },
+   {
+    "homeAway": "away",
+    "team": {
+     "id": "9002"
+    },
+    "statistics": [
+     {
+      "name": "totalPasses",
+      "displayValue": "590"
+     },
+     {
+      "name": "possessionPct",
+      "displayValue": "58.8"
+     },
+     {
+      "name": "totalShots",
+      "displayValue": "15"
+     },
+     {
+      "name": "shotsOnTarget",
+      "displayValue": "7"
+     }
+    ]
+   }
+  ]
+ },
+ "rosters": [
+  {
+   "homeAway": "home",
+   "formation": "4-4-2",
+   "team": {
+    "id": "9001"
+   },
+   "roster": [
+    {
+     "starter": true,
+     "jersey": "1",
+     "athlete": {
+      "displayName": "Home Keeper"
+     },
+     "position": {
+      "abbreviation": "G"
+     },
+     "stats": [
+      {
+       "name": "saves",
+       "displayValue": "4"
+      },
+      {
+       "name": "totalGoals",
+       "displayValue": "0"
+      }
+     ]
+    },
+    {
+     "starter": true,
+     "jersey": "4",
+     "athlete": {
+      "displayName": "Home Back"
+     },
+     "position": {
+      "abbreviation": "CD"
+     },
+     "subbedOut": false,
+     "stats": [
+      {
+       "name": "totalGoals",
+       "displayValue": "0"
+      },
+      {
+       "name": "yellowCards",
+       "displayValue": "1"
+      },
+      {
+       "name": "redCards",
+       "displayValue": "1"
+      }
+     ]
+    },
+    {
+     "starter": true,
+     "jersey": "9",
+     "athlete": {
+      "displayName": "Home Forward"
+     },
+     "position": {
+      "abbreviation": "F"
+     },
+     "stats": [
+      {
+       "name": "totalGoals",
+       "displayValue": "1"
+      },
+      {
+       "name": "totalShots",
+       "displayValue": "3"
+      }
+     ]
+    },
+    {
+     "starter": false,
+     "jersey": "18",
+     "athlete": {
+      "displayName": "Home Unused"
+     },
+     "position": {
+      "abbreviation": "M"
+     },
+     "subbedIn": {
+      "didSub": false
+     },
+     "stats": []
+    }
+   ]
+  },
+  {
+   "homeAway": "away",
+   "formation": "4-3-3",
+   "team": {
+    "id": "9002"
+   },
+   "roster": [
+    {
+     "starter": true,
+     "jersey": "9",
+     "athlete": {
+      "displayName": "Away Striker"
+     },
+     "position": {
+      "abbreviation": "F"
+     },
+     "subbedOut": {
+      "didSub": true
+     },
+     "stats": [
+      {
+       "name": "totalGoals",
+       "displayValue": "1"
+      },
+      {
+       "name": "totalShots",
+       "displayValue": "2"
+      }
+     ]
+    },
+    {
+     "starter": true,
+     "jersey": "11",
+     "athlete": {
+      "displayName": "Away Winger"
+     },
+     "position": {
+      "abbreviation": "LW"
+     },
+     "stats": [
+      {
+       "name": "totalGoals",
+       "displayValue": "1"
+      },
+      {
+       "name": "totalShots",
+       "displayValue": "4"
+      }
+     ]
+    },
+    {
+     "starter": true,
+     "jersey": "8",
+     "athlete": {
+      "displayName": "Away Mid"
+     },
+     "position": {
+      "abbreviation": "CM"
+     },
+     "stats": [
+      {
+       "name": "goalAssists",
+       "displayValue": "1"
+      }
+     ]
+    },
+    {
+     "starter": false,
+     "jersey": "20",
+     "athlete": {
+      "displayName": "Away Sub"
+     },
+     "position": {
+      "abbreviation": "F"
+     },
+     "subbedIn": {
+      "didSub": true
+     },
+     "stats": [
+      {
+       "name": "totalShots",
+       "displayValue": "1"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "gameInfo": {
+  "venue": {
+   "fullName": "Test Stadium",
+   "address": {
+    "city": "Test City"
+   }
+  },
+  "attendance": 31250,
+  "officials": [
+   {
+    "displayName": "Test Referee",
+    "position": {
+     "name": "Referee"
+    }
+   }
+  ]
+ }
+}

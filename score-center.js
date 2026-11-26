@@ -477,6 +477,59 @@
     const oldFilter = app.filterSport.bind(app);
     app.filterSport = function (sport) { oldFilter(sport); if (Center.leagueId === MAJOR ? sport !== 'soccer' : Center.leagueId && !C.LEAGUES.some(l=>l.id===Center.leagueId&&(sport==='all'||l.sport===sport))) Center.leagueId=''; Center.saveLocation(); if (this.currentView === 'home') Center.load(); };
 
+    const playerName=name=>window.KoreanNames?.translatePlayer?KoreanNames.translatePlayer(name):name;
+    // Provider clocks look like 45'+2'; display them with a typographic prime.
+    const minute=clock=>String(clock||'').replace(/'/g,'′');
+    function renderSoccerEvents(box,data,m,el){
+        const info=data.info;if(info){const parts=[info.venue&&(info.venue+(info.city?' ('+info.city+')':'')),info.attendance&&'관중 '+info.attendance.toLocaleString('ko-KR')+'명',info.referee&&'주심 '+playerName(info.referee)].filter(Boolean);if(parts.length)box.append(el('p',parts.join(' · '),'gd-info'));}
+        const goals=data.goals||[];
+        if(goals.length){
+            box.append(el('h3','득점 기록'));const list=el('ol',null,'gd-goals');
+            for(const g of goals){const li=el('li',null,'gd-goal');const head=el('div',null,'gd-goal-head');head.append(el('span',minute(g.clock),'gd-clock'),el('strong',playerName(g.player||'선수 미상')),el('span',g.side?m[g.side+'Team']:'','gd-goal-team'));li.append(head);
+                const facts=[['유형',g.method],['상황',g.situation],['도움',g.assist&&playerName(g.assist)]].filter(([,v])=>v);
+                if(facts.length){const dl=el('dl',null,'gd-goal-facts');for(const [k,v] of facts)dl.append(el('dt',k),el('dd',v));li.append(dl);}
+                list.append(li);}
+            box.append(list);
+            if(data.goalsVerified===false)box.append(el('p','제공처의 득점 기록 수가 현재 점수와 일치하지 않습니다. 일부 득점이 아직 반영되지 않았을 수 있습니다.','score-warning'));
+        } else if(m.status!=='upcoming'&&(m.homeScore>0||m.awayScore>0))box.append(el('h3','득점 기록'),el('p','제공처에서 득점자 기록을 아직 받지 못했습니다.'));
+        const events=data.events||[];if(m.status==='upcoming'){box.append(el('h3','경기 타임라인'),el('p','경기 시작 전입니다.'));return;}
+        box.append(el('h3','경기 타임라인'));
+        if(!events.length){box.append(el('p',data.recordAvailable?'현재 제공된 득점·카드·교체 기록이 없습니다.':'제공처에서 상세 기록을 받지 못했습니다.'));return;}
+        const head=el('div',null,'gd-timeline-teams');head.append(el('span',m.awayTeam),el('span',m.homeTeam));
+        const list=el('ol',null,'gd-timeline');
+        const label={goal:'득점','own-goal':'자책골',yellow:'경고',red:'퇴장',sub:'교체','penalty-miss':'PK 실축'};
+        for(const e of events){
+            const li=el('li',null,'gd-event gd-event-'+e.type),cells={away:el('div',null,'gd-event-side'),home:el('div',null,'gd-event-side')};
+            const target=cells[e.side]||cells.away;const mark=el('span',null,'gd-mark gd-mark-'+e.type);mark.setAttribute('aria-hidden','true');if(e.type==='goal'||e.type==='own-goal')mark.textContent='⚽';
+            const text=el('span',null,'gd-event-text');
+            if(e.type==='sub'){text.append(el('span','↑ '+playerName(e.player||'선수 미상'),'gd-sub-in'),el('span','↓ '+playerName(e.playerOut||'선수 미상')+(e.injury?' (부상)':''),'gd-sub-out'));}
+            else text.append(el('strong',playerName(e.player||e.text||'기록')),e.type==='goal'&&e.assist?el('small','도움 '+playerName(e.assist)):'',e.type==='own-goal'?el('small','자책골'):e.method==='페널티킥'?el('small','페널티킥'):'');
+            const sr=el('span',label[e.type]+' · ','gd-sr');target.append(sr,mark,text);
+            li.append(cells.away,el('span',minute(e.clock),'gd-clock'),cells.home);list.append(li);
+        }
+        box.append(head,list);
+    }
+    function renderLineups(box,data,m,el){
+        const subs=(data.events||[]).filter(e=>e.type==='sub'),cards=(data.events||[]).filter(e=>e.type==='yellow'||e.type==='red'),goals=data.goals||[];
+        box.append(el('h3','라인업'));const grid=el('div',null,'gd-lineups');
+        for(const side of ['away','home']){
+            const team=data.lineups.find(l=>l.side===side);const col=el('section',null,'gd-lineup');col.setAttribute('aria-label',m[side+'Team']+' 라인업');
+            const title=el('div',null,'gd-lineup-title');title.append(el('strong',m[side+'Team']),team?.formation?el('span',team.formation,'gd-formation'):'');col.append(title);
+            if(!team){col.append(el('p','제공된 라인업이 없습니다.'));grid.append(col);continue;}
+            const row=(p,inPlay)=>{const li=el('li',null,'gd-player');li.append(el('span',p.jersey??'',"gd-jersey"),el('span',playerName(p.name),'gd-player-name'),el('span',p.position??'','gd-position'));
+                const marks=el('span',null,'gd-player-marks');const n=goals.filter(g=>g.side===side&&!g.ownGoal&&g.player===p.name).length;if(n)marks.append(el('span','⚽'+(n>1?'×'+n:''),'gd-player-goal'));
+                for(const c of cards.filter(c=>c.side===side&&c.player===p.name)){const s=el('span',null,'gd-mark gd-mark-'+c.type);s.setAttribute('aria-label',c.type==='red'?'퇴장':'경고');marks.append(s);}
+                const sub=inPlay?subs.find(s=>s.side===side&&s.player===p.name):subs.find(s=>s.side===side&&s.playerOut===p.name);
+                if(sub)marks.append(el('span',(inPlay?'↑':'↓')+minute(sub.clock),inPlay?'gd-sub-in':'gd-sub-out'));
+                li.append(marks);return li;};
+            const starters=el('ol',null,'gd-player-list');for(const p of team.starters)starters.append(row(p,false));col.append(el('h4','선발'),starters);
+            const used=team.bench.filter(p=>p.subbedIn),rest=team.bench.filter(p=>!p.subbedIn);
+            if(used.length){const list=el('ol',null,'gd-player-list');for(const p of used)list.append(row(p,true));col.append(el('h4','교체 투입'),list);}
+            if(rest.length)col.append(el('p','대기: '+rest.map(p=>playerName(p.name)).join(', '),'gd-bench'));
+            grid.append(col);
+        }
+        box.append(grid);
+    }
     const Detail = {
         match:null, data:null, sequence:0, busy:false, lastRequestAt:0,
         async load() {
@@ -501,6 +554,8 @@
             const sb=document.getElementById('gameDetailScoreboard');sb.hidden=false;sb.replaceChildren();
             for(const side of ['away','home']) {
                 const team=el('div',null,'gd-team');team.append(window.SportonTeamLogos.create(m,side),el('span',m[side+'Team'],'gd-team-name'));
+                const scorers=m.sport==='soccer'?(data.goals||[]).filter(g=>g.side===side):[];
+                if(scorers.length){const list=el('ul',null,'gd-scorers');list.setAttribute('aria-label',m[side+'Team']+' 득점');for(const g of scorers)list.append(el('li',playerName(g.player||'선수 미상')+' '+minute(g.clock)+(g.penalty?' (PK)':g.ownGoal?' (자책)':'')));team.append(list);}
                 const follow=el('button',Center.favoriteTeams.has(C.teamKey(m,side))?'♥ 관심 팀':'♡ 관심 팀','score-follow');
                 follow.setAttribute('aria-label',m[side+'Team']+' 관심 팀');follow.setAttribute('aria-pressed',String(Center.favoriteTeams.has(C.teamKey(m,side))));
                 follow.addEventListener('click',()=>{Center.toggleTeam(m,side);this.render();});team.append(follow);sb.append(team);
@@ -520,7 +575,8 @@
                 for(const label of ['팀',...data.periods.labels,m.sport==='volleyball'?'획득 세트':'합계'])head.append(el('th',label));table.append(head);
                 for(const side of ['away','home']){const tr=el('tr');tr.append(el('th',m[side+'Team']));for(const value of [...data.periods[side],data.periods[side+'Total']])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);box.append(wrap);
             }else if(m.sport==='baseball'||m.sport==='basketball'||m.sport==='hockey')box.append(el('p',m.status==='upcoming'?'경기가 시작되면 제공된 구간별 기록을 표시합니다.':'제공처에서 구간별 기록을 받지 못했습니다.'));
-            let eventSection=null;if(m.sport==='soccer'||(m.sport!=='basketball'&&data.events?.length)){
+            if(m.sport==='soccer'&&this.data)renderSoccerEvents(box,data,m,el);
+            let eventSection=null;if(m.sport!=='soccer'&&m.sport!=='basketball'&&data.events?.length){
                 eventSection=el('details',null,'score-player-group');eventSection.append(el('summary',m.sport==='soccer'?'경기 주요 장면':'득점 장면'));
                 for(const event of data.events||[]){const label={'goal':'⚽ 득점','own-goal':'⚽ 자책골','red':'🟥 퇴장','yellow':'🟨 경고','corner':'코너킥','goal-kick':'골킥','shot':'슈팅','score':'득점'}[event.type]||'기록';eventSection.append(el('p',(event.clock||'')+' '+label+' · '+(event.side?m[event.side+'Team']+' · ':'')+event.text));}
                 if(!data.events?.length)eventSection.append(el('p',m.status==='upcoming'?'경기 시작 전입니다.':data.recordAvailable?'현재 제공된 득점·카드 기록이 없습니다.':'제공처에서 상세 기록을 받지 못했습니다.'));
@@ -528,7 +584,7 @@
             if(m.sport==='basketball'&&data.players?.length){const leaderStats=[['PTS','득점'],['REB','리바운드'],['AST','어시스트']];const cards=el('div',null,'score-leaders');for(const [key,label] of leaderStats){const leaders={};for(const side of ['away','home']){const rows=data.players.filter(g=>g.side===side).flatMap(g=>{const i=g.columns.findIndex(c=>c===key||c===({PTS:'득점',REB:'리바운드',AST:'어시스트'}[key]));return i<0?[]:g.entries.map(p=>({name:p.name,value:p.values[i]}));}).filter(p=>p.value!==null&&p.value!==''&&Number.isFinite(Number(p.value)));rows.sort((a,b)=>Number(b.value)-Number(a.value));leaders[side]=rows[0];}if(!leaders.away&&!leaders.home)continue;const row=el('div',null,'score-leader-row');for(const side of ['away','label','home']){if(side==='label')row.append(el('strong',label));else{const leader=leaders[side],cell=el('div',null,'score-leader-side');cell.append(el('b',leader?leader.value:'—'),el('span',leader?leader.name:'기록 없음'));row.append(cell);}}cards.append(row);}if(cards.childNodes.length)box.append(el('h3','주요 선수'),cards);}
             if(m.sport==='basketball'&&data.flow?.length>1){const flow=data.flow,points=[];for(const item of flow){const parts=String(item.clock||'').split(':');let seconds=parts.length===2?Number(parts[0])*60+Number(parts[1]):Number(parts[0]);if(!Number.isFinite(seconds)||!Number.isFinite(item.home)||!Number.isFinite(item.away)||!Number.isInteger(item.period)||item.period<1)continue;const length=item.period<=4?720:300,start=item.period<=4?(item.period-1)*720:2880+(item.period-5)*300;if(seconds<0||seconds>length)continue;points.push({time:start+length-seconds,diff:item.away-item.home});}if(points.length>1){const maxPeriod=Math.max(...flow.map(x=>Number(x.period)||1)),duration=maxPeriod<=4?2880:2880+(maxPeriod-4)*300,scale=Math.max(5,...points.map(x=>Math.abs(x.diff))),ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 180');svg.setAttribute('role','img');svg.setAttribute('aria-label','경기 시간에 따른 '+m.awayTeam+'의 점수 차');const axis=document.createElementNS(ns,'line');axis.setAttribute('x1','0');axis.setAttribute('x2','600');axis.setAttribute('y1','90');axis.setAttribute('y2','90');axis.setAttribute('class','score-flow-axis');svg.append(axis);const line=document.createElementNS(ns,'polyline');line.setAttribute('points',points.map(p=>Math.min(600,Math.max(0,p.time/duration*600)).toFixed(1)+','+(90-p.diff/scale*75).toFixed(1)).join(' '));line.setAttribute('class','score-flow-line');svg.append(line);const chart=el('div',null,'score-flow');chart.append(el('p',m.awayTeam+' 우세 ↑ · '+m.homeTeam+' 우세 ↓'),svg,el('small','득점 시점의 점수 차 · 제공: ESPN'));box.append(el('h3','경기 흐름'),chart);}}
             if(data.stats?.length){box.append(el('h3','팀 기록 비교'));const compare=el('div',null,'score-stat-comparison');const teamHead=el('div',null,'score-stat-teams');teamHead.append(el('span',m.awayTeam),el('span',m.homeTeam));compare.append(teamHead);for(const stat of data.stats){const row=el('div',null,'score-stat-row'),head=el('div',null,'score-stat-values');head.append(el('strong',stat.away??'—'),el('span',stat.label),el('strong',stat.home??'—'));row.append(head);const a=stat.away===null||stat.away===undefined||String(stat.away).trim()===''?NaN:Number(stat.away),h=stat.home===null||stat.home===undefined||String(stat.home).trim()===''?NaN:Number(stat.home);if(Number.isFinite(a)&&Number.isFinite(h)&&a>=0&&h>=0){const bar=el('div',null,'score-stat-bar'),left=el('span'),right=el('span');const total=a+h;left.style.width=(total?a/total*100:0)+'%';right.style.width=(total?h/total*100:0)+'%';bar.append(left,right);row.append(bar);}compare.append(row);}box.append(compare);}
-            if(eventSection)box.append(eventSection);if(data.players?.length){box.append(el('h3','선수 기록'));for(const group of data.players){if(!['away','home'].includes(group.side)||!Array.isArray(group.columns)||!Array.isArray(group.entries))continue;const details=el('details',null,'score-player-group');details.append(el('summary',m[group.side+'Team']+' · '+group.title));const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');for(const label of ['선수',...group.columns])head.append(el('th',label));table.append(head);for(const entry of group.entries){const tr=el('tr');tr.append(el('th',entry.name));for(const value of entry.values||[])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);details.append(wrap);box.append(details);}}
+            if(eventSection)box.append(eventSection);if(m.sport==='soccer'&&data.lineups?.length)renderLineups(box,data,m,el);if(data.players?.length){box.append(el('h3','선수 기록'));for(const group of data.players){if(!['away','home'].includes(group.side)||!Array.isArray(group.columns)||!Array.isArray(group.entries))continue;const details=el('details',null,'score-player-group');details.open=m.sport==='soccer';details.append(el('summary',m[group.side+'Team']+' · '+group.title));const wrap=el('div',null,'score-detail-table'),table=el('table'),head=el('tr');for(const label of ['선수',...group.columns])head.append(el('th',label));table.append(head);for(const entry of group.entries){const tr=el('tr');tr.append(el('th',m.region==='world'?playerName(entry.name):entry.name));for(const value of entry.values||[])tr.append(el('td',value??'—'));table.append(tr);}wrap.append(table);details.append(wrap);box.append(details);}}
             if(data.recordState==='error')box.append(el('p','상세 기록 공급 연결이 지연되고 있습니다.','score-warning'));
         }
     };
